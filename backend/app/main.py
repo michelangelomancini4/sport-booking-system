@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from dotenv import load_dotenv
 import os
 import mysql.connector
+from datetime import date
 
 load_dotenv()
 
@@ -43,3 +44,30 @@ def list_slots():
     cur.close()
     conn.close()
     return {"rows": rows}
+
+@app.get("/slots/free")
+def free_slots(day: date):
+    conn = get_conn()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("""
+        SELECT
+            s.id_slots,
+            s.field_id,
+            f.name AS field_name,
+            s.starts_at,
+            s.ends_at,
+            s.price_cents,
+            s.is_active
+        FROM slots s
+        JOIN fields f ON f.id = s.field_id
+        LEFT JOIN bookings b ON b.slot_id = s.id_slots
+        WHERE b.id_booking IS NULL
+          AND DATE(s.starts_at) = %s
+        ORDER BY s.starts_at ASC
+    """, (day.isoformat(),))
+
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"rows": rows, "day": day}
