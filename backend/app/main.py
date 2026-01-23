@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 import os
 import mysql.connector
@@ -16,6 +17,13 @@ def get_conn():
         database=os.getenv("DB_NAME", "db_sportbooking"),
         port=int(os.getenv("DB_PORT", "3306")),
     )
+
+class BookingCreate(BaseModel):
+    slot_id: int
+    customer_id: int
+    players_count: int = Field(default=1, ge=1)
+    notes: str | None = None
+
 
 @app.get("/health")
 def health():
@@ -71,3 +79,46 @@ def free_slots(day: date):
     cur.close()
     conn.close()
     return {"rows": rows, "day": day}
+
+@app.post("/bookings")
+def create_booking(payload: BookingCreate):
+    conn = get_conn()
+    cur = conn.cursor(dictionary=True)
+
+    try:
+        cur.execute("""
+            INSERT INTO bookings (slot_id, customer_id, players_count, notes)
+            VALUES (%s, %s, %s, %s)
+        """, (payload.slot_id, payload.customer_id, payload.players_count, payload.notes))
+        conn.commit()
+
+        booking_id = cur.lastrowid
+
+        cur.execute("""
+            SELECT
+              b.id_booking,
+              b.slot_id,
+              b.customer_id,
+              b.players_count,
+              b.notes,
+              b.created_at
+            FROM bookings b
+            WHERE b.id_booking = %s
+        """, (booking_id,))
+        booking = cur.fetchone()
+
+        return {"booking": booking}
+
+    except mysql.connector.IntegrityError as e:
+        msg = str(e)
+
+        # slot già prenotato (UNIQUE su bookings.slot_id)
+        if "Duplicate entry" in msg or "uq_bookings_slot" in msg:
+            raise HTTPException(status_code=409, detail="Slot già prenotato")
+
+        # FK fallita (slot_id o customer_id inesistenti)
+        raise HTTPException(status_code=400, detail="Slot o customer non valido")
+
+    finally:
+        cur.close()
+        conn.close()
