@@ -140,3 +140,33 @@ def delete_booking(booking_id: int):
 
     return {"ok": True, "deleted_id": booking_id}
 
+@app.get("/bookings/")
+def list_bookings():
+    conn = get_conn()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("""
+        SELECT
+          b.id_booking,
+          b.slot_id,
+          b.customer_id,
+          c.full_name,
+          c.phone,
+          c.email,
+          f.name AS field_name,
+          s.starts_at,
+          s.ends_at,
+          b.players_count,
+          b.notes,
+          b.created_at
+        FROM bookings b
+        JOIN customers c ON c.id = b.customer_id
+        JOIN slots s ON s.id_slots = b.slot_id
+        JOIN fields f ON f.id = s.field_id
+        ORDER BY s.starts_at DESC
+    """)
+
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return {"rows": rows}
