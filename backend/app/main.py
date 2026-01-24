@@ -129,7 +129,7 @@ def delete_booking(booking_id: int):
     return {"ok": True, "deleted_id": booking_id}
 
 # GET BOOKING
-@app.get("/bookings/")
+@app.get("/bookings")
 def list_bookings():
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
