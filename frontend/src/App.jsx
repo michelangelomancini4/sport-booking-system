@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { useEffect, useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function run() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await fetch("http://127.0.0.1:8000/health");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const json = await res.json();
+        setData(json);
+      } catch (e) {
+        setError(e?.message || "Errore");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    run();
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>aooooo</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div >
+      <h1>Sports Booking Manager</h1>
 
-export default App
+      {loading && <p>Caricamento...</p>}
+
+      {!loading && error && (
+        <p>
+          <b>Errore:</b> {error}
+        </p>
+      )}
+
+      {!loading && !error && (
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      )}
+    </div>
+  );
+}
