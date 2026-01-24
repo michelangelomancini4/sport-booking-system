@@ -1,33 +1,16 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
-from dotenv import load_dotenv
-import os
 import mysql.connector
 from datetime import date
-
-load_dotenv()
+from app.db import get_conn
+from app.schemas import BookingCreate
 
 app = FastAPI()
-
-def get_conn():
-    return mysql.connector.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "root"),
-        password=os.getenv("DB_PASSWORD", ""),
-        database=os.getenv("DB_NAME", "db_sportbooking"),
-        port=int(os.getenv("DB_PORT", "3306")),
-    )
-
-class BookingCreate(BaseModel):
-    slot_id: int
-    customer_id: int
-    players_count: int = Field(default=1, ge=1)
-    notes: str | None = None
-
 
 @app.get("/health")
 def health():
     return {"ok": True}
+
+# GET SLOTS
 
 @app.get("/slots")
 def list_slots():
@@ -53,6 +36,7 @@ def list_slots():
     conn.close()
     return {"rows": rows}
 
+# GET SLOTS - FREE
 @app.get("/slots/free")
 def free_slots(day: date):
     conn = get_conn()
@@ -79,6 +63,8 @@ def free_slots(day: date):
     cur.close()
     conn.close()
     return {"rows": rows, "day": day}
+
+# POST BOOKING
 
 @app.post("/bookings")
 def create_booking(payload: BookingCreate):
@@ -123,6 +109,8 @@ def create_booking(payload: BookingCreate):
         cur.close()
         conn.close()
 
+# DELETE BOOKING 
+
 @app.delete("/bookings/{booking_id}")
 def delete_booking(booking_id: int):
     conn = get_conn()
@@ -140,6 +128,7 @@ def delete_booking(booking_id: int):
 
     return {"ok": True, "deleted_id": booking_id}
 
+# GET BOOKING
 @app.get("/bookings/")
 def list_bookings():
     conn = get_conn()
