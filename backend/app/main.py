@@ -122,3 +122,21 @@ def create_booking(payload: BookingCreate):
     finally:
         cur.close()
         conn.close()
+
+@app.delete("/bookings/{booking_id}")
+def delete_booking(booking_id: int):
+    conn = get_conn()
+    cur = conn.cursor()
+
+    cur.execute("DELETE FROM bookings WHERE id_booking = %s", (booking_id,))
+    conn.commit()
+
+    deleted = cur.rowcount
+    cur.close()
+    conn.close()
+
+    if deleted == 0:
+        raise HTTPException(status_code=404, detail="Booking non trovata")
+
+    return {"ok": True, "deleted_id": booking_id}
+
