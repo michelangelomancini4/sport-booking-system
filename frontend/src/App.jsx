@@ -24,6 +24,10 @@ export default function App() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
+  const [customers, setCustomers] = useState([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState("");
+
+
   async function loadFreeSlots(selectedDay = day) {
     try {
       setLoadingSlots(true);
@@ -70,7 +74,7 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slot_id: slotId,
-          customer_id: CUSTOMER_ID,
+          customer_id: selectedCustomerId,
           players_count: 1,
           notes: "Booking from React demo",
         }),
@@ -110,11 +114,26 @@ export default function App() {
     }
   }
 
+  async function loadCustomers() {
+    try {
+      const res = await fetch(`${API}/customers`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setCustomers(json.rows || []);
+      if (json.rows?.length) {
+        setSelectedCustomerId(json.rows[0].id); // default: primo cliente
+      }
+    } catch (e) {
+      setError(e?.message || "Errore caricamento clienti");
+    }
+  }
+
+
   // al primo load: carichiamo entrambi
   useEffect(() => {
     loadFreeSlots(day);
     loadBookings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadCustomers();
   }, []);
 
   return (
@@ -141,6 +160,21 @@ export default function App() {
               onChange={(e) => setDay(e.target.value)}
             />
           </label>
+
+          <label style={{ display: "block", marginBottom: 8 }}>
+            Cliente:{" "}
+            <select
+              value={selectedCustomerId}
+              onChange={(e) => setSelectedCustomerId(Number(e.target.value))}
+            >
+              {customers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.full_name}
+                </option>
+              ))}
+            </select>
+          </label>
+
 
           <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
             <button onClick={() => loadFreeSlots(day)} disabled={loadingSlots}>
@@ -179,18 +213,28 @@ export default function App() {
           ) : (
             <ul style={{ marginTop: 12 }}>
               {bookingsData.rows.map((b) => (
-                <li key={b.id_booking} style={{ marginBottom: 10 }}>
+                <li key={b.id_booking} style={{ marginBottom: 12 }}>
                   <div>
                     <b>{b.field_name}</b> — {b.full_name}
                   </div>
+
+                  <div style={{ fontSize: 13, color: "#555" }}>
+                    📞 {b.phone || "—"}
+                  </div>
+
                   <div style={{ fontSize: 13 }}>
                     {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
-                    {new Date(b.ends_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                    {new Date(b.ends_at).toLocaleTimeString("it-IT", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
+
                   <button onClick={() => cancelBooking(b.id_booking)} style={{ marginTop: 6 }}>
                     Annulla
                   </button>
                 </li>
+
               ))}
             </ul>
           )}

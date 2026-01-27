@@ -175,3 +175,25 @@ def list_bookings():
     cur.close()
     conn.close()
     return {"rows": rows}
+
+# GET CUSTOMERS 
+@app.get("/customers")
+def list_customers():
+    conn = get_conn()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute("""
+        SELECT
+            id,
+            full_name,
+            phone,
+            email
+        FROM customers
+        ORDER BY full_name ASC
+    """)
+
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    return {"rows": rows}
