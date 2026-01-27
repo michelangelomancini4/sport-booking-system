@@ -43,9 +43,22 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 12px;
   padding: 12px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 
 }
 
+.box:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.box.user:hover {
+  border-color: #117508;
+}
+
+.box.admin:hover {
+  border-color: #e45604;
+}
 
 
 /* Form */
@@ -93,4 +106,10 @@ button {
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
 }

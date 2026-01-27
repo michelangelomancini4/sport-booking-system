@@ -2,19 +2,10 @@ import "./App.css";
 import { useEffect, useState } from "react";
 
 const API = "http://127.0.0.1:8000";
-const CUSTOMER_ID = 1;
 
-// helper: YYYY-MM-DD di oggi
-function todayISO() {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
 
 export default function App() {
-  const [day, setDay] = useState("2026-01-23"); // per demo: metti il giorno che sai che ha slot
+  const [day, setDay] = useState("2026-01-23");
   const [slotsData, setSlotsData] = useState({ rows: [], day });
   const [bookingsData, setBookingsData] = useState({ rows: [] });
 
@@ -136,23 +127,26 @@ export default function App() {
     loadCustomers();
   }, []);
 
+
   return (
     <div className="app">
       <h1>Sports Booking Manager (Demo)</h1>
 
       {error && (
-        <p className="error"><b>Errore:</b> {error}
+        <p className="error">
+          <b>Errore:</b> {error}
         </p>
       )}
+
       {message && <p className="message">{message}</p>}
 
       <div className="grid">
         {/* USER BOX */}
-        <section style={{ border: "1px solid #ddd", borderRadius: 12, padding: 12 }}>
+        <section className="box user">
           <h2>User</h2>
 
-          <label style={{ display: "block", marginBottom: 8 }}>
-            Giorno:{" "}
+          <label>
+            Giorno:
             <input
               type="date"
               value={day}
@@ -160,8 +154,8 @@ export default function App() {
             />
           </label>
 
-          <label style={{ display: "block", marginBottom: 8 }}>
-            Cliente:{" "}
+          <label>
+            Cliente:
             <select
               value={selectedCustomerId}
               onChange={(e) => setSelectedCustomerId(Number(e.target.value))}
@@ -174,8 +168,7 @@ export default function App() {
             </select>
           </label>
 
-
-          <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+          <div className="actions">
             <button onClick={() => loadFreeSlots(day)} disabled={loadingSlots}>
               {loadingSlots ? "Carico..." : "Carica slot liberi"}
             </button>
@@ -188,10 +181,16 @@ export default function App() {
               {slotsData.rows.map((s) => (
                 <li key={s.id_slots} className="slot-item">
                   <b>{s.field_name}</b>{" "}
-                  {new Date(s.starts_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(s.starts_at).toLocaleTimeString("it-IT", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                   {" - "}
-                  {new Date(s.ends_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
-                  {" · "}€{(s.price_cents / 100).toFixed(2)}{" "}
+                  {new Date(s.ends_at).toLocaleTimeString("it-IT", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  {" · "}€{(s.price_cents / 100).toFixed(2)}
                   <button onClick={() => book(s.id_slots)}>Prenota</button>
                 </li>
               ))}
@@ -200,17 +199,19 @@ export default function App() {
         </section>
 
         {/* ADMIN BOX */}
-        <section className="box">
+        <section className="box admin">
           <h2>Admin</h2>
 
-          <button onClick={loadBookings} disabled={loadingBookings}>
-            {loadingBookings ? "Carico..." : "Ricarica prenotazioni"}
-          </button>
+          <div className="actions">
+            <button onClick={loadBookings} disabled={loadingBookings}>
+              {loadingBookings ? "Carico..." : "Ricarica prenotazioni"}
+            </button>
+          </div>
 
           {bookingsData?.rows?.length === 0 ? (
             <p>Nessuna prenotazione.</p>
           ) : (
-            <ul style={{ marginTop: 12 }}>
+            <ul>
               {bookingsData.rows.map((b) => (
                 <li key={b.id_booking} className="booking-item">
                   <div>
@@ -218,17 +219,19 @@ export default function App() {
                   </div>
 
                   <div className="meta">📞 {b.phone || "—"}</div>
+
                   <div className="meta">
                     {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
-                    {new Date(b.ends_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                    {new Date(b.ends_at).toLocaleTimeString("it-IT", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </div>
 
-
-                  <button onClick={() => cancelBooking(b.id_booking)} style={{ marginTop: 6 }}>
+                  <button onClick={() => cancelBooking(b.id_booking)}>
                     Annulla
                   </button>
                 </li>
-
               ))}
             </ul>
           )}
@@ -236,4 +239,5 @@ export default function App() {
       </div>
     </div>
   );
+
 }
