@@ -137,17 +137,16 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ fontFamily: "system-ui", padding: 16, maxWidth: 900, margin: "0 auto" }}>
+    <div className="app">
       <h1>Sports Booking Manager (Demo)</h1>
 
       {error && (
-        <p>
-          <b>Errore:</b> {error}
+        <p className="error"><b>Errore:</b> {error}
         </p>
       )}
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+      <div className="grid">
         {/* USER BOX */}
         <section style={{ border: "1px solid #ddd", borderRadius: 12, padding: 12 }}>
           <h2>User</h2>
@@ -187,7 +186,7 @@ export default function App() {
           ) : (
             <ul>
               {slotsData.rows.map((s) => (
-                <li key={s.id_slots} style={{ marginBottom: 8 }}>
+                <li key={s.id_slots} className="slot-item">
                   <b>{s.field_name}</b>{" "}
                   {new Date(s.starts_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
                   {" - "}
@@ -201,7 +200,7 @@ export default function App() {
         </section>
 
         {/* ADMIN BOX */}
-        <section style={{ border: "1px solid #ddd", borderRadius: 12, padding: 12 }}>
+        <section className="box">
           <h2>Admin</h2>
 
           <button onClick={loadBookings} disabled={loadingBookings}>
@@ -213,22 +212,17 @@ export default function App() {
           ) : (
             <ul style={{ marginTop: 12 }}>
               {bookingsData.rows.map((b) => (
-                <li key={b.id_booking} style={{ marginBottom: 12 }}>
+                <li key={b.id_booking} className="booking-item">
                   <div>
                     <b>{b.field_name}</b> — {b.full_name}
                   </div>
 
-                  <div style={{ fontSize: 13, color: "#555" }}>
-                    📞 {b.phone || "—"}
+                  <div className="meta">📞 {b.phone || "—"}</div>
+                  <div className="meta">
+                    {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
+                    {new Date(b.ends_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
                   </div>
 
-                  <div style={{ fontSize: 13 }}>
-                    {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
-                    {new Date(b.ends_at).toLocaleTimeString("it-IT", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </div>
 
                   <button onClick={() => cancelBooking(b.id_booking)} style={{ marginTop: 6 }}>
                     Annulla

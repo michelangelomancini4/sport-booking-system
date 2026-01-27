@@ -1,10 +1,96 @@
-#root {
-  max-width: 1280px;
+/* Layout base */
+.app {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  padding: 16px;
 }
 
 body {
-  background-color: #888;
+  background-color: rgb(222, 189, 147);
+
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 12px;
+}
+
+/* Messaggi */
+.message {
+  margin: 8px 0;
+  color: #1a7f37;
+}
+
+.error {
+  margin: 8px 0;
+  color: #b42318;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+}
+
+.box {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+
+}
+
+
+
+/* Form */
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+input,
+select {
+  margin-left: 6px;
+  padding: 4px 6px;
+}
+
+/* Liste */
+ul {
+  padding-left: 16px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+/* Slot / Booking */
+.slot-item,
+.booking-item {
+  margin-bottom: 12px;
+}
+
+/* Meta info */
+.meta {
+  font-size: 13px;
+  color: #555;
+}
+
+/* Bottoni */
+button {
+  margin-left: 6px;
+  padding: 4px 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
