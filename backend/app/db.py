@@ -1,6 +1,7 @@
 import os
 import mysql.connector
 from dotenv import load_dotenv
+from typing import Generator
 
 load_dotenv()
 
@@ -12,3 +13,9 @@ def get_conn():
         database=os.getenv("DB_NAME", "db_sportbooking"),
         port=int(os.getenv("DB_PORT", "3306")),
     )
+def get_db() -> Generator:
+    conn = get_conn()
+    try:
+        yield conn
+    finally:
+        conn.close()

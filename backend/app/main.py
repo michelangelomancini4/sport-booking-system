@@ -1,9 +1,9 @@
-from fastapi import FastAPI, HTTPException , Query
+from fastapi import FastAPI, HTTPException , Query , Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 import mysql.connector
 from datetime import date
-from app.db import get_conn
+from app.db import  get_db
 from app.schemas import BookingCreate
 
 app = FastAPI()
@@ -29,9 +29,9 @@ def root():
 # GET SLOTS
 
 @app.get("/slots")
-def list_slots():
-    conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+def list_slots(db = Depends(get_db)):
+    
+    cur = db.cursor(dictionary=True)
 
     cur.execute("""
         SELECT
@@ -49,14 +49,13 @@ def list_slots():
 
     rows = cur.fetchall()
     cur.close()
-    conn.close()
     return {"rows": rows}
 
 # GET SLOTS - FREE
 @app.get("/slots/free")
-def free_slots(day: date, field_id: int | None = Query(default=None)):
-    conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+def free_slots(day: date, field_id: int | None = Query(default=None), db = Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+
 
     sql = """
         SELECT
@@ -87,67 +86,78 @@ def free_slots(day: date, field_id: int | None = Query(default=None)):
     rows = cur.fetchall()
 
     cur.close()
-    conn.close()
     return {"rows": rows, "day": day.isoformat()}
 
 # POST BOOKING
 
 @app.post("/bookings")
-def create_booking(payload: BookingCreate):
-    conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+def create_booking(payload: BookingCreate, db = Depends(get_db)):
+    cur = db.cursor(dictionary=True)
 
     try:
+        #  INSERT
         cur.execute("""
             INSERT INTO bookings (slot_id, customer_id, players_count, notes)
             VALUES (%s, %s, %s, %s)
-        """, (payload.slot_id, payload.customer_id, payload.players_count, payload.notes))
-        conn.commit()
+        """, (
+            payload.slot_id,
+            payload.customer_id,
+            payload.players_count,
+            payload.notes
+        ))
+        db.commit()
 
         booking_id = cur.lastrowid
 
+        # SELECT 
         cur.execute("""
             SELECT
               b.id_booking,
               b.slot_id,
               b.customer_id,
+              c.full_name,
+              c.phone,
+              c.email,
+              f.name AS field_name,
+              s.field_id,
+              s.starts_at,
+              s.ends_at,
               b.players_count,
               b.notes,
               b.created_at
             FROM bookings b
+            JOIN customers c ON c.id = b.customer_id
+            JOIN slots s ON s.id_slots = b.slot_id
+            JOIN fields f ON f.id = s.field_id
             WHERE b.id_booking = %s
         """, (booking_id,))
-        booking = cur.fetchone()
 
+        booking = cur.fetchone()
         return {"booking": booking}
 
     except mysql.connector.IntegrityError as e:
         msg = str(e)
 
-        # slot già prenotato (UNIQUE su bookings.slot_id)
         if "Duplicate entry" in msg or "uq_bookings_slot" in msg:
             raise HTTPException(status_code=409, detail="Slot già prenotato")
 
-        # FK fallita (slot_id o customer_id inesistenti)
         raise HTTPException(status_code=400, detail="Slot o customer non valido")
 
     finally:
         cur.close()
-        conn.close()
+
 
 # DELETE BOOKING 
 
 @app.delete("/bookings/{booking_id}")
-def delete_booking(booking_id: int):
-    conn = get_conn()
-    cur = conn.cursor()
+def delete_booking(booking_id: int, db = Depends(get_db)):
+    cur = db.cursor(dictionary=True)
 
     cur.execute("DELETE FROM bookings WHERE id_booking = %s", (booking_id,))
-    conn.commit()
+    db.commit()
 
     deleted = cur.rowcount
     cur.close()
-    conn.close()
 
     if deleted == 0:
         raise HTTPException(status_code=404, detail="Booking non trovata")
@@ -160,9 +170,9 @@ def list_bookings(
     day: date | None = Query(default=None),
     field_id: int | None = Query(default=None),
     customer_id: int | None = Query(default=None),
+    db = Depends(get_db)
 ):
-    conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+    cur = db.cursor(dictionary=True)
 
     sql = """
         SELECT
@@ -209,14 +219,13 @@ def list_bookings(
     rows = cur.fetchall()
 
     cur.close()
-    conn.close()
     return {"rows": rows}
 
 # GET CUSTOMERS 
 @app.get("/customers")
-def list_customers():
-    conn = get_conn()
-    cur = conn.cursor(dictionary=True)
+def list_customers(db = Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+
 
     cur.execute("""
         SELECT
@@ -230,6 +239,5 @@ def list_customers():
 
     rows = cur.fetchall()
     cur.close()
-    conn.close()
 
     return {"rows": rows}
