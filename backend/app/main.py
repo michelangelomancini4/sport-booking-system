@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException , Query
 from fastapi.middleware.cors import CORSMiddleware
 
 import mysql.connector
@@ -54,11 +54,11 @@ def list_slots():
 
 # GET SLOTS - FREE
 @app.get("/slots/free")
-def free_slots(day: date):
+def free_slots(day: date, field_id: int | None = Query(default=None)):
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
 
-    cur.execute("""
+    sql = """
         SELECT
             s.id_slots,
             s.field_id,
@@ -71,14 +71,24 @@ def free_slots(day: date):
         JOIN fields f ON f.id = s.field_id
         LEFT JOIN bookings b ON b.slot_id = s.id_slots
         WHERE b.id_booking IS NULL
+          AND s.is_active = 1
           AND DATE(s.starts_at) = %s
-        ORDER BY s.starts_at ASC
-    """, (day.isoformat(),))
+    """
 
+    params = [day.isoformat()]
+
+    if field_id is not None:
+        sql += " AND s.field_id = %s"
+        params.append(field_id)
+
+    sql += " ORDER BY s.starts_at ASC"
+
+    cur.execute(sql, tuple(params))
     rows = cur.fetchall()
+
     cur.close()
     conn.close()
-    return {"rows": rows, "day": day}
+    return {"rows": rows, "day": day.isoformat()}
 
 # POST BOOKING
 
