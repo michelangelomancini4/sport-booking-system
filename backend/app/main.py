@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
 from datetime import date
 from app.db import  get_db
-from app.schemas import BookingCreate
+from app.schemas import BookingCreate , CustomersListOut , BookingsListOut
 
 app = FastAPI()
 
@@ -20,6 +20,7 @@ app.add_middleware(
 @app.get("/health")
 def health():
     return {"ok": True}
+
 
 @app.get("/")
 def root():
@@ -165,7 +166,7 @@ def delete_booking(booking_id: int, db = Depends(get_db)):
     return {"ok": True, "deleted_id": booking_id}
 
 # GET BOOKING
-@app.get("/bookings")
+@app.get("/bookings", response_model=BookingsListOut)
 def list_bookings(
     day: date | None = Query(default=None),
     field_id: int | None = Query(default=None),
@@ -222,7 +223,7 @@ def list_bookings(
     return {"rows": rows}
 
 # GET CUSTOMERS 
-@app.get("/customers")
+@app.get("/customers", response_model=CustomersListOut)
 def list_customers(db = Depends(get_db)):
     cur = db.cursor(dictionary=True)
 
