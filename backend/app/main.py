@@ -156,11 +156,15 @@ def delete_booking(booking_id: int):
 
 # GET BOOKING
 @app.get("/bookings")
-def list_bookings():
+def list_bookings(
+    day: date | None = Query(default=None),
+    field_id: int | None = Query(default=None),
+    customer_id: int | None = Query(default=None),
+):
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
 
-    cur.execute("""
+    sql = """
         SELECT
           b.id_booking,
           b.slot_id,
@@ -169,6 +173,7 @@ def list_bookings():
           c.phone,
           c.email,
           f.name AS field_name,
+          s.field_id,
           s.starts_at,
           s.ends_at,
           b.players_count,
@@ -178,10 +183,31 @@ def list_bookings():
         JOIN customers c ON c.id = b.customer_id
         JOIN slots s ON s.id_slots = b.slot_id
         JOIN fields f ON f.id = s.field_id
-        ORDER BY s.starts_at DESC
-    """)
+    """
 
+    where = []
+    params = []
+
+    if day is not None:
+        where.append("DATE(s.starts_at) = %s")
+        params.append(day.isoformat())
+
+    if field_id is not None:
+        where.append("s.field_id = %s")
+        params.append(field_id)
+
+    if customer_id is not None:
+        where.append("b.customer_id = %s")
+        params.append(customer_id)
+
+    if where:
+        sql += " WHERE " + " AND ".join(where)
+
+    sql += " ORDER BY s.starts_at DESC"
+
+    cur.execute(sql, tuple(params))
     rows = cur.fetchall()
+
     cur.close()
     conn.close()
     return {"rows": rows}
