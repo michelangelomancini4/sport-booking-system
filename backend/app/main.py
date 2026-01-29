@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import mysql.connector
 from datetime import date
 from app.db import  get_db
-from app.schemas import BookingCreate , CustomersListOut , BookingsListOut
+from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut
 
 app = FastAPI()
 
@@ -29,7 +29,7 @@ def root():
 
 # GET SLOTS
 
-@app.get("/slots")
+@app.get("/slots", response_model=SlotsListOut)
 def list_slots(db = Depends(get_db)):
     
     cur = db.cursor(dictionary=True)
@@ -53,7 +53,7 @@ def list_slots(db = Depends(get_db)):
     return {"rows": rows}
 
 # GET SLOTS - FREE
-@app.get("/slots/free")
+@app.get("/slots/free", response_model=FreeSlotsOut)
 def free_slots(day: date, field_id: int | None = Query(default=None), db = Depends(get_db)):
     cur = db.cursor(dictionary=True)
 
@@ -91,7 +91,7 @@ def free_slots(day: date, field_id: int | None = Query(default=None), db = Depen
 
 # POST BOOKING
 
-@app.post("/bookings")
+@app.post("/bookings", response_model=BookingCreateOut)
 def create_booking(payload: BookingCreate, db = Depends(get_db)):
     cur = db.cursor(dictionary=True)
 
@@ -150,7 +150,7 @@ def create_booking(payload: BookingCreate, db = Depends(get_db)):
 
 # DELETE BOOKING 
 
-@app.delete("/bookings/{booking_id}")
+@app.delete("/bookings/{booking_id}", response_model=DeleteBookingOut)
 def delete_booking(booking_id: int, db = Depends(get_db)):
     cur = db.cursor(dictionary=True)
 
