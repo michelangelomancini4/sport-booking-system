@@ -2,6 +2,11 @@ from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
 
+# health test
+class HealthOut(BaseModel):
+    ok: bool
+
+
 # BOOKING SECTION
 class BookingCreate(BaseModel):
     slot_id: int

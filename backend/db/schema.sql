@@ -14,8 +14,7 @@ CREATE TABLE `slots` (
   `ends_at` datetime NOT NULL,
   `price_cents` int NOT NULL DEFAULT '0',
   `is_active` tinyint NOT NULL DEFAULT '1',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  KEY `fk_slots_field_idx` (`id_slots`),
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,  
   KEY `fk_slots_field_idx1` (`field_id`),
   CONSTRAINT `fk_slots_field` FOREIGN KEY (`field_id`) REFERENCES `fields` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

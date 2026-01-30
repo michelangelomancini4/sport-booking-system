@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException , Query , Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-import mysql.connector
+from mysql.connector import IntegrityError
 from datetime import date
 from app.db import  get_db
-from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut
+from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut, HealthOut
 
 app = FastAPI()
 
@@ -17,7 +17,7 @@ app.add_middleware(
 )
 
 
-@app.get("/health")
+@app.get("/health", response_model=HealthOut)
 def health():
     return {"ok": True}
 
@@ -33,6 +33,7 @@ def root():
 def list_slots(db = Depends(get_db)):
     
     cur = db.cursor(dictionary=True)
+    
     try:
         cur.execute("""
             SELECT
@@ -53,6 +54,7 @@ def list_slots(db = Depends(get_db)):
     
     finally:
         cur.close()
+
 
 # GET SLOTS - FREE
 @app.get("/slots/free", response_model=FreeSlotsOut)
@@ -138,7 +140,7 @@ def create_booking(payload: BookingCreate, db = Depends(get_db)):
         booking = cur.fetchone()
         return {"booking": booking}
 
-    except mysql.connector.IntegrityError as e:
+    except IntegrityError as e:
         msg = str(e)
 
         if "Duplicate entry" in msg or "uq_bookings_slot" in msg:
@@ -154,18 +156,19 @@ def create_booking(payload: BookingCreate, db = Depends(get_db)):
 
 @app.delete("/bookings/{booking_id}", response_model=DeleteBookingOut)
 def delete_booking(booking_id: int, db = Depends(get_db)):
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
+    try:
+        cur.execute("DELETE FROM bookings WHERE id_booking = %s", (booking_id,))
+        deleted = cur.rowcount
 
-    cur.execute("DELETE FROM bookings WHERE id_booking = %s", (booking_id,))
-    db.commit()
+        if deleted == 0:
+            raise HTTPException(status_code=404, detail="Booking non trovata")
 
-    deleted = cur.rowcount
-    cur.close()
+        db.commit()
+        return {"ok": True, "deleted_id": booking_id}
+    finally:
+        cur.close()
 
-    if deleted == 0:
-        raise HTTPException(status_code=404, detail="Booking non trovata")
-
-    return {"ok": True, "deleted_id": booking_id}
 
 # GET BOOKING
 @app.get("/bookings", response_model=BookingsListOut)
