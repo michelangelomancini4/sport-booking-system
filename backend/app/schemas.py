@@ -46,6 +46,10 @@ class DeleteBookingOut(BaseModel):
     deleted_id: int
 
 
+class BookingUpdate(BaseModel):
+    players_count: Optional[int] = Field(default=None, ge=1, le=50)
+    notes: Optional[str] = None
+
 # CUSTOMER SECTION
 
 class CustomerOut(BaseModel):
@@ -57,6 +61,13 @@ class CustomerOut(BaseModel):
 class CustomersListOut(BaseModel):
     rows: List[CustomerOut]
 
+class CustomerCreate(BaseModel):
+    full_name: str = Field(min_length=2, max_length=120)
+    phone: Optional[str] = None
+    email: Optional[str] = None
+
+class CustomerCreateOut(BaseModel):
+    customer: CustomerOut
 # SLOT SECTION
 
 class SlotOut(BaseModel):
