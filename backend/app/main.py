@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mysql.connector import IntegrityError
 from datetime import date
 from app.db import  get_db
-from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut, HealthOut
+from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut, HealthOut ,CustomerCreate, CustomerCreateOut, BookingUpdate
 
 app = FastAPI()
 
@@ -151,6 +151,63 @@ def create_booking(payload: BookingCreate, db = Depends(get_db)):
     finally:
         cur.close()
 
+# PATCH BOOKING
+@app.patch("/bookings/{booking_id}", response_model=BookingCreateOut)
+def update_booking(booking_id: int, payload: BookingUpdate, db=Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+    try:
+        fields = []
+        params = []
+
+        if payload.players_count is not None:
+            fields.append("players_count = %s")
+            params.append(payload.players_count)
+
+        if payload.notes is not None:
+            fields.append("notes = %s")
+            params.append(payload.notes)
+
+        if not fields:
+            raise HTTPException(status_code=400, detail="Nessun campo da aggiornare")
+
+        params.append(booking_id)
+
+        sql = "UPDATE bookings SET " + ", ".join(fields) + " WHERE id_booking = %s"
+        cur.execute(sql, tuple(params))
+
+        if cur.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Booking non trovata")
+
+        db.commit()
+
+        cur.execute("""
+            SELECT
+              b.id_booking,
+              b.slot_id,
+              b.customer_id,
+              c.full_name,
+              c.phone,
+              c.email,
+              f.name AS field_name,
+              s.field_id,
+              s.starts_at,
+              s.ends_at,
+              b.players_count,
+              b.notes,
+              b.created_at
+            FROM bookings b
+            JOIN customers c ON c.id = b.customer_id
+            JOIN slots s ON s.id_slots = b.slot_id
+            JOIN fields f ON f.id = s.field_id
+            WHERE b.id_booking = %s
+        """, (booking_id,))
+        booking = cur.fetchone()
+
+        return {"booking": booking}
+
+    finally:
+        cur.close()
+
 
 # DELETE BOOKING 
 
@@ -250,3 +307,35 @@ def list_customers(db = Depends(get_db)):
     finally:
         cur.close()
 
+# POST CUSTOMERS
+@app.post("/customers", response_model=CustomerCreateOut, status_code=201)
+def create_customer(payload: CustomerCreate, db=Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            INSERT INTO customers (full_name, phone, email)
+            VALUES (%s, %s, %s)
+        """, (payload.full_name, payload.phone, payload.email))
+        db.commit()
+
+        customer_id = cur.lastrowid
+
+        cur.execute("""
+            SELECT id, full_name, phone, email
+            FROM customers
+            WHERE id = %s
+        """, (customer_id,))
+        customer = cur.fetchone()
+
+        return {"customer": customer}
+
+    except IntegrityError as e:
+        msg = str(e)
+
+        if "Duplicate entry" in msg:
+            raise HTTPException(status_code=409, detail="Cliente già esistente")
+
+        raise HTTPException(status_code=400, detail="Dati cliente non validi")
+
+    finally:
+        cur.close()
