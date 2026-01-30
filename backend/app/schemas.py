@@ -68,6 +68,9 @@ class CustomerCreate(BaseModel):
 
 class CustomerCreateOut(BaseModel):
     customer: CustomerOut
+class CustomerGetOut(BaseModel):
+    customer: CustomerOut
+
 # SLOT SECTION
 
 class SlotOut(BaseModel):

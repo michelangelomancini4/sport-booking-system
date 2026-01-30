@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mysql.connector import IntegrityError
 from datetime import date
 from app.db import  get_db
-from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut, HealthOut ,CustomerCreate, CustomerCreateOut, BookingUpdate
+from app.schemas import BookingCreate , CustomersListOut ,SlotsListOut,FreeSlotsOut, BookingsListOut, BookingCreateOut, DeleteBookingOut, HealthOut ,CustomerCreate, CustomerCreateOut, BookingUpdate,CustomerGetOut
 
 app = FastAPI()
 
@@ -306,6 +306,31 @@ def list_customers(db = Depends(get_db)):
     
     finally:
         cur.close()
+
+# GET CUSTOMERS BY ID
+@app.get("/customers/{customer_id}", response_model=CustomerGetOut)
+def get_customer(customer_id: int, db=Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT
+                id,
+                full_name,
+                phone,
+                email
+            FROM customers
+            WHERE id = %s
+        """, (customer_id,))
+
+        customer = cur.fetchone()
+
+        if customer is None:
+            raise HTTPException(status_code=404, detail="Cliente non trovato")
+
+        return {"customer": customer}
+    finally:
+        cur.close()
+
 
 # POST CUSTOMERS
 @app.post("/customers", response_model=CustomerCreateOut, status_code=201)
