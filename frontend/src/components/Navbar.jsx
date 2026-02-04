@@ -18,6 +18,7 @@ export default function Navbar() {
                 <NavLink to="/demo" style={styles.link}>
                     Demo
                 </NavLink>
+
             </div>
         </nav>
     );

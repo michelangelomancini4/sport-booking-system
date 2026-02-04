@@ -1,10 +1,11 @@
-import ".././App.css";
+import "../App.css";
 import { useEffect, useState } from "react";
 
-const API = "http://127.0.0.1:8000";
+import { getFreeSlots } from "../api/slots";
+import { getBookings, createBooking, deleteBooking } from "../api/bookings";
+import { getCustomers } from "../api/customers";
 
-
-export default function DemoApp() {
+export default function DemoPage() {
     const [day, setDay] = useState("2026-01-23");
     const [slotsData, setSlotsData] = useState({ rows: [], day });
     const [bookingsData, setBookingsData] = useState({ rows: [] });
@@ -16,8 +17,7 @@ export default function DemoApp() {
     const [message, setMessage] = useState("");
 
     const [customers, setCustomers] = useState([]);
-    const [selectedCustomerId, setSelectedCustomerId] = useState("");
-
+    const [selectedCustomerId, setSelectedCustomerId] = useState(0); // "" oppure number
 
     async function loadFreeSlots(selectedDay = day) {
         try {
@@ -25,10 +25,7 @@ export default function DemoApp() {
             setError("");
             setMessage("");
 
-            const res = await fetch(`${API}/slots/free?day=${selectedDay}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            const json = await res.json();
+            const json = await getFreeSlots(selectedDay);
             setSlotsData(json);
         } catch (e) {
             setError(e?.message || "Errore");
@@ -43,10 +40,7 @@ export default function DemoApp() {
             setError("");
             setMessage("");
 
-            const res = await fetch(`${API}/bookings`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            const json = await res.json();
+            const json = await getBookings();
             setBookingsData(json);
         } catch (e) {
             setError(e?.message || "Errore");
@@ -55,32 +49,47 @@ export default function DemoApp() {
         }
     }
 
+    async function loadCustomers() {
+        try {
+            const json = await getCustomers();
+            const rows = json.rows || [];
+            setCustomers(rows);
+
+            if (rows.length) {
+                setSelectedCustomerId(rows[0].id); // default primo cliente (number)
+            }
+        } catch (e) {
+            setError(e?.message || "Errore caricamento clienti");
+        }
+    }
+
     async function book(slotId) {
         try {
             setError("");
             setMessage("");
 
-            const res = await fetch(`${API}/bookings`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    slot_id: slotId,
-                    customer_id: selectedCustomerId,
-                    players_count: 1,
-                    notes: "Booking from React demo",
-                }),
-            });
-
-            if (res.status === 409) {
-                setMessage("Slot già prenotato (409).");
+            // prevenzione: se non hai selezionato un cliente
+            if (!selectedCustomerId) {
+                setMessage("Seleziona un cliente prima di prenotare.");
                 return;
             }
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+            await createBooking({
+                slot_id: slotId,
+                customer_id: selectedCustomerId,
+                players_count: 1,
+                notes: "Booking from React demo",
+            });
 
             setMessage("Prenotazione creata ✅");
             await loadFreeSlots(); // aggiorna user view
-            await loadBookings();  // aggiorna admin view
+            await loadBookings(); // aggiorna admin view
         } catch (e) {
+            // Il nostro client mette e.status se è un errore HTTP
+            if (e?.status === 409) {
+                setMessage("Slot già prenotato (409).");
+                return;
+            }
             setError(e?.message || "Errore");
         }
     }
@@ -90,43 +99,25 @@ export default function DemoApp() {
             setError("");
             setMessage("");
 
-            const res = await fetch(`${API}/bookings/${bookingId}`, { method: "DELETE" });
-            if (res.status === 404) {
-                setMessage("Booking non trovata (404).");
-                return;
-            }
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            await deleteBooking(bookingId);
 
             setMessage("Prenotazione annullata ✅");
             await loadFreeSlots();
             await loadBookings();
         } catch (e) {
+            if (e?.status === 404) {
+                setMessage("Booking non trovata (404).");
+                return;
+            }
             setError(e?.message || "Errore");
         }
     }
 
-    async function loadCustomers() {
-        try {
-            const res = await fetch(`${API}/customers`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const json = await res.json();
-            setCustomers(json.rows || []);
-            if (json.rows?.length) {
-                setSelectedCustomerId(json.rows[0].id); // default: primo cliente
-            }
-        } catch (e) {
-            setError(e?.message || "Errore caricamento clienti");
-        }
-    }
-
-
-    // al primo load: carichiamo entrambi
     useEffect(() => {
         loadFreeSlots(day);
         loadBookings();
         loadCustomers();
     }, []);
-
 
     return (
         <div className="app">
@@ -160,6 +151,7 @@ export default function DemoApp() {
                             value={selectedCustomerId}
                             onChange={(e) => setSelectedCustomerId(Number(e.target.value))}
                         >
+                            <option value={0}>— Seleziona —</option>
                             {customers.map((c) => (
                                 <option key={c.id} value={c.id}>
                                     {c.full_name}
@@ -239,5 +231,4 @@ export default function DemoApp() {
             </div>
         </div>
     );
-
 }
