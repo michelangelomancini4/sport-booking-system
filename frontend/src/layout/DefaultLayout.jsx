@@ -6,9 +6,7 @@ export default function DefaultLayout() {
     return (
         <div className={styles.appShell}>
             <header className={styles.header}>
-                <div className={styles.navbar}>
-                    <Navbar />
-                </div>
+                <Navbar />
             </header>
 
             <main className={styles.main}>

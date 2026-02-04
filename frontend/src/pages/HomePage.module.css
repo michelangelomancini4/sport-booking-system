@@ -1,0 +1,14 @@
+.hometitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* debug */
+    background-color: yellowgreen;
+}
+
+.jumbotron {
+    display: flex;
+    /* debug */
+    border-color: blueviolet;
+    border: solid 2px;
+}

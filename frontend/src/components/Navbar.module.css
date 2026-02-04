@@ -1,0 +1,45 @@
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 75px;
+    /* gap: 14px; */
+    /* debug */
+    background-color: green;
+}
+
+.logo {
+    font-weight: 750;
+    letter-spacing: 0.2px;
+    font-size: 20px;
+    line-height: 1;
+}
+
+
+
+.links {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.link {
+    text-decoration: none;
+    color: #1f2937;
+    padding: 8px 10px;
+    border-radius: 10px;
+    transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.link:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.link:active {
+    transform: translateY(1px);
+}
+
+.active {
+    background: #111827;
+    color: #ffffff;
+}

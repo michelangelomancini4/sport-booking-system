@@ -1,46 +1,58 @@
 import { NavLink } from "react-router-dom";
+import styles from "./Navbar.module.css";
 
 export default function Navbar() {
     return (
-        <nav style={styles.nav}>
-            <h3 style={styles.logo}>Sport Booking</h3>
+        <nav className={styles.nav}>
+            <NavLink
+                to="/"
+                className={({ isActive }) =>
+                    isActive ? `${styles.link} ${styles.active}` : styles.link
+                }
+            >
+                <div className={styles.logo}>Sport Booking</div>
 
-            <div style={styles.links}>
-                <NavLink to="/" style={styles.link}>
+            </NavLink>
+
+
+            <div className={styles.links}>
+                <NavLink
+                    to="/"
+                    className={({ isActive }) =>
+                        isActive ? `${styles.link} ${styles.active}` : styles.link
+                    }
+                    end
+                >
                     Home
                 </NavLink>
-                <NavLink to="/booking" style={styles.link}>
+
+                <NavLink
+                    to="/booking"
+                    className={({ isActive }) =>
+                        isActive ? `${styles.link} ${styles.active}` : styles.link
+                    }
+                >
                     Prenota
                 </NavLink>
-                <NavLink to="/admin" style={styles.link}>
+
+                <NavLink
+                    to="/admin"
+                    className={({ isActive }) =>
+                        isActive ? `${styles.link} ${styles.active}` : styles.link
+                    }
+                >
                     Admin
                 </NavLink>
-                <NavLink to="/demo" style={styles.link}>
+
+                <NavLink
+                    to="/demo"
+                    className={({ isActive }) =>
+                        isActive ? `${styles.link} ${styles.active}` : styles.link
+                    }
+                >
                     Demo
                 </NavLink>
-
             </div>
         </nav>
     );
 }
-
-const styles = {
-    nav: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "12px 20px",
-        borderBottom: "1px solid #ddd",
-    },
-    logo: {
-        margin: 0,
-    },
-    links: {
-        display: "flex",
-        gap: "16px",
-    },
-    link: {
-        textDecoration: "none",
-        color: "#333",
-    },
-};
