@@ -8,7 +8,25 @@
 
 .jumbotron {
     display: flex;
+    width: 80%;
+    margin-left: 10%;
     /* debug */
     border-color: blueviolet;
     border: solid 2px;
+}
+
+.jumbo_left_box {
+    /* debug */
+    background-color: indianred;
+    height: 300px;
+    width: 50%;
+
+}
+
+.jumbo_right_box {
+    /* debug */
+    background-color: rgb(172, 10, 56);
+    height: 300px;
+    width: 50%;
+
 }
