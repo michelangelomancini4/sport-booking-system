@@ -1,4 +1,5 @@
-import "../App.css";
+import styles from "./DemoPage.module.css";
+
 import { useEffect, useState } from "react";
 
 import { getFreeSlots } from "../api/slots";
@@ -120,20 +121,20 @@ export default function DemoPage() {
     }, []);
 
     return (
-        <div className="app">
+        <div className={styles.app}>
             <h1>Sports Booking Manager (Demo)</h1>
 
             {error && (
-                <p className="error">
+                <p className={styles.error}>
                     <b>Errore:</b> {error}
                 </p>
             )}
 
-            {message && <p className="message">{message}</p>}
+            {message && <p className={styles.message}>{message}</p>}
 
-            <div className="grid">
+            <div className={styles.grid}>
                 {/* USER BOX */}
-                <section className="box user">
+                <section className={`${styles.box} ${styles.user}`}>
                     <h2>User</h2>
 
                     <label>
@@ -160,7 +161,7 @@ export default function DemoPage() {
                         </select>
                     </label>
 
-                    <div className="actions">
+                    <div className={styles.actions}>
                         <button onClick={() => loadFreeSlots(day)} disabled={loadingSlots}>
                             {loadingSlots ? "Carico..." : "Carica slot liberi"}
                         </button>
@@ -171,7 +172,7 @@ export default function DemoPage() {
                     ) : (
                         <ul>
                             {slotsData.rows.map((s) => (
-                                <li key={s.id_slots} className="slot-item">
+                                <li key={s.id_slots} className={styles.slotItem}>
                                     <b>{s.field_name}</b>{" "}
                                     {new Date(s.starts_at).toLocaleTimeString("it-IT", {
                                         hour: "2-digit",
@@ -191,10 +192,10 @@ export default function DemoPage() {
                 </section>
 
                 {/* ADMIN BOX */}
-                <section className="box admin">
+                <section className={`${styles.box} ${styles.admin}`}>
                     <h2>Admin</h2>
 
-                    <div className="actions">
+                    <div className={styles.actions}>
                         <button onClick={loadBookings} disabled={loadingBookings}>
                             {loadingBookings ? "Carico..." : "Ricarica prenotazioni"}
                         </button>
@@ -205,14 +206,14 @@ export default function DemoPage() {
                     ) : (
                         <ul>
                             {bookingsData.rows.map((b) => (
-                                <li key={b.id_booking} className="booking-item">
+                                <li key={b.id_booking} className={styles.bookingItem}>
                                     <div>
                                         <b>{b.field_name}</b> — {b.full_name}
                                     </div>
 
-                                    <div className="meta">📞 {b.phone || "—"}</div>
+                                    <div className={styles.meta}>📞 {b.phone || "—"}</div>
 
-                                    <div className="meta">
+                                    <div className={styles.meta}>
                                         {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
                                         {new Date(b.ends_at).toLocaleTimeString("it-IT", {
                                             hour: "2-digit",
@@ -231,4 +232,5 @@ export default function DemoPage() {
             </div>
         </div>
     );
+
 }
