@@ -1,6 +1,7 @@
 import styles from "./HomePage.module.css"
 import foto1 from "../assets/foto1.png";
 import foto2 from "../assets/foto2.png";
+import { Link } from "react-router-dom";
 
 
 
@@ -27,8 +28,15 @@ export default function HomePage() {
             </div>
             {/* BOOKING BOX SECTION */}
             <div className={styles.booking_box_container}>
-                <div className={styles.booking_box} >
-                    <h3>qui andrà la box</h3>
+                <div className={styles.booking_box}>
+                    <h3 className={styles.booking_title}>Prenota in pochi click</h3>
+                    <p className={styles.booking_subtitle}>Scegli sport, giorno e orario</p>
+
+                    <p className={styles.booking_sports}>Padel · Calcetto · Tennis</p>
+
+                    <Link to="/booking" className={styles.booking_cta}>
+                        Prenota ora
+                    </Link>
                 </div>
             </div>
             {/* CARDS SECTION */}

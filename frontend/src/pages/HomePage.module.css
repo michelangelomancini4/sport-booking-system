@@ -46,22 +46,51 @@
 .booking_box_container {
     display: flex;
     justify-content: center;
-    /* align-items: center; */
-    height: 360px;
-    /* debug */
-    background-color: aqua;
+    padding: 28px 16px;
 }
 
 .booking_box {
-
     width: 100%;
-    max-width: 340px;
-    min-height: 220px;
-    margin: 10px 0;
+    max-width: 420px;
+    padding: 20px 18px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    background: #fff;
+    text-align: center;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
 
-    /* debug */
-    border-color: blueviolet;
-    border: solid 2px;
+.booking_title {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+}
+
+.booking_subtitle {
+    margin: 0 0 14px;
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 14px;
+}
+
+.booking_sports {
+    margin: 0 0 18px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.booking_cta {
+    display: inline-block;
+    text-decoration: none;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #111827;
+    color: #fff;
+    font-weight: 700;
+}
+
+.booking_cta:hover {
+    filter: brightness(1.08);
 }
 
 
