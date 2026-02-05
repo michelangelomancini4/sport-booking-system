@@ -6,11 +6,26 @@
     background-color: yellowgreen;
 }
 
+/* JUMBOTRON */
+
 .jumbotron {
     display: flex;
-    width: 80%;
-    margin-left: 10%;
+    max-width: 1100px;
+    margin: 0 auto;
     /* debug */
+    border-color: blueviolet;
+    border: solid 2px;
+}
+
+.jumbo_left_box,
+.jumbo_right_box {
+    flex: 1;
+    height: 320px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    /* debug */
+
     border-color: blueviolet;
     border: solid 2px;
 }
@@ -18,15 +33,75 @@
 .jumbo_left_box {
     /* debug */
     background-color: indianred;
-    height: 300px;
-    width: 50%;
 
 }
 
 .jumbo_right_box {
     /* debug */
     background-color: rgb(172, 10, 56);
-    height: 300px;
-    width: 50%;
 
+}
+
+/* BOOKING BOX SECTION */
+.booking_box_container {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    height: 360px;
+    /* debug */
+    background-color: aqua;
+}
+
+.booking_box {
+
+    width: 100%;
+    max-width: 340px;
+    min-height: 220px;
+    margin: 10px 0;
+
+    /* debug */
+    border-color: blueviolet;
+    border: solid 2px;
+}
+
+
+/* CARDS SECTION */
+
+.cards_container {
+    height: 400px;
+    display: flex;
+    justify-content: space-around;
+
+
+    /* debug */
+    border-color: rgb(11, 195, 33);
+    border: solid 2px;
+    background-color: rgb(209, 4, 8);
+
+}
+
+.first_card,
+.second_card,
+.third_card {
+    flex-basis: 23%;
+    /* debug */
+    border-color: rgb(206, 84, 3);
+    border: dashed 2px;
+
+}
+
+.first_card {
+    /* debug */
+    background-color: rgb(6, 152, 81);
+}
+
+.second_card {
+    /* debug */
+    background-color: rgb(172, 22, 109);
+}
+
+.third_card {
+
+    /* debug */
+    background-color: rgb(216, 239, 14);
 }

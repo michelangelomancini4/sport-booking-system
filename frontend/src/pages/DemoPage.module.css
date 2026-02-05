@@ -1,4 +1,3 @@
-/* Layout base (scopato dentro .app) */
 .app {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     max-width: 900px;
@@ -6,8 +5,6 @@
     padding: 16px;
 }
 
-/* niente body globale: metti lo sfondo in index.css se ti serve */
-/* .appScope: tutti i tag sono scopati sotto .app */
 .app h1 {
     margin-bottom: 16px;
 }
