@@ -1,11 +1,3 @@
-.hometitle {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* debug */
-    background-color: yellowgreen;
-}
-
 /* JUMBOTRON */
 
 .jumbotron {
@@ -37,19 +29,21 @@
     font-weight: 700;
     letter-spacing: 0.5px;
     margin: 0;
+    color: rgba(255, 255, 255, 0.92);
 }
 
 .jumbo_subtitle {
     margin-top: 10px;
     font-size: 16px;
     opacity: 0.9;
+    color: rgba(255, 255, 255, 0.75);
 }
 
 
 .jumbo_left_box,
 .jumbo_right_box {
     flex: 1;
-    height: 320px;
+    height: 440px;
     width: 100%;
     overflow: hidden;
     background-size: cover;
@@ -69,12 +63,7 @@
 
 }
 
-.homeContext {
-    text-align: center;
-    margin: 18px 0 8px;
-    color: rgba(0, 0, 0, 0.65);
-    font-weight: 600;
-}
+
 
 
 /* BOOKING BOX SECTION */

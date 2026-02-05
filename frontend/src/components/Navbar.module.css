@@ -3,16 +3,22 @@
     align-items: center;
     justify-content: space-between;
     height: 75px;
-    /* gap: 14px; */
-    /* debug */
-    background-color: green;
+
+    background: rgba(73, 182, 93, 0.547);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(17, 24, 39, 0.08);
+    padding: 0 18px;
 }
 
+
 .logo {
-    font-weight: 750;
+    font-weight: 800;
     letter-spacing: 0.2px;
     font-size: 20px;
     line-height: 1;
+
+    padding: 8px 12px;
+    border-radius: 12px;
 }
 
 
@@ -25,7 +31,7 @@
 
 .link {
     text-decoration: none;
-    color: #1f2937;
+    color: #191e24;
     padding: 8px 10px;
     border-radius: 10px;
     transition: background 0.15s ease, transform 0.05s ease;
@@ -41,5 +47,5 @@
 
 .active {
     background: #111827;
-    color: #ffffff;
+    color: #e9e8e8;
 }

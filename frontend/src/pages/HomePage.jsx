@@ -24,7 +24,7 @@ export default function HomePage() {
                 {/* OVERLAY */}
                 <div className={styles.jumbo_overlay}>
                     <h1 className={styles.jumbo_title}>
-                        Gioca. Prenota. Torna in campo.
+                        Gioca. Prenota. Divertiti.
                     </h1>
                     <p className={styles.jumbo_subtitle}>
                         Prenotazione semplice. Nessuna attesa.
@@ -32,9 +32,6 @@ export default function HomePage() {
                 </div>
             </div>
 
-            <p className={styles.homeContext}>
-                Campi sportivi · Prenotazione rapida
-            </p>
 
 
             {/* BOOKING BOX SECTION */}
