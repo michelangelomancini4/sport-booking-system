@@ -42,6 +42,14 @@
 
 }
 
+.homeContext {
+    text-align: center;
+    margin: 18px 0 8px;
+    color: rgba(0, 0, 0, 0.65);
+    font-weight: 600;
+}
+
+
 /* BOOKING BOX SECTION */
 .booking_box_container {
     display: flex;
@@ -95,42 +103,69 @@
 
 
 /* CARDS SECTION */
+.cardsSection {
+    padding: 26px 16px;
+}
 
-.cards_container {
-    height: 400px;
+.cardsContainer {
+    max-width: 1100px;
+    margin: 0 auto;
+
     display: flex;
-    justify-content: space-around;
-
-
-    /* debug */
-    border-color: rgb(11, 195, 33);
-    border: solid 2px;
-    background-color: rgb(209, 4, 8);
-
+    gap: 16px;
+    justify-content: space-between;
 }
 
-.first_card,
-.second_card,
-.third_card {
-    flex-basis: 23%;
-    /* debug */
-    border-color: rgb(206, 84, 3);
-    border: dashed 2px;
-
+.card {
+    flex: 1;
+    /* tutte larghe uguali */
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 14px;
+    padding: 16px 14px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
 }
 
-.first_card {
-    /* debug */
-    background-color: rgb(6, 152, 81);
+.cardIcon {
+    font-size: 22px;
+    margin-bottom: 8px;
 }
 
-.second_card {
-    /* debug */
-    background-color: rgb(172, 22, 109);
+.cardTitle {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-weight: 800;
 }
 
-.third_card {
+.cardText {
+    margin: 0;
+    color: rgba(0, 0, 0, 0.72);
+    font-size: 14px;
+    line-height: 1.4;
+}
 
-    /* debug */
-    background-color: rgb(216, 239, 14);
+.cardLink {
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 700;
+    text-decoration: none;
+    color: #111827;
+}
+
+.cardLink:hover {
+    text-decoration: underline;
+}
+
+.cardHint {
+    margin: 6px 0 0;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.55);
+}
+
+
+/* Responsive */
+@media (max-width: 900px) {
+    .cardsContainer {
+        flex-direction: column;
+    }
 }

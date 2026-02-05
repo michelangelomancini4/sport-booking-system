@@ -26,6 +26,10 @@ export default function HomePage() {
                     <h3>foto2</h3>
                 </div>
             </div>
+            <p className={styles.homeContext}>
+                Campi sportivi · Prenotazione rapida
+            </p>
+
             {/* BOOKING BOX SECTION */}
             <div className={styles.booking_box_container}>
                 <div className={styles.booking_box}>
@@ -40,18 +44,49 @@ export default function HomePage() {
                 </div>
             </div>
             {/* CARDS SECTION */}
-            <div className={styles.cards_container}>
-                <div className={styles.first_card}>
-                    <h4>card</h4>
-                </div>
-                <div className={styles.second_card}>
-                    <h4>card</h4>
-                </div>
-                <div className={styles.third_card}>
-                    <h4>card</h4>
-                </div>
+            <section className={styles.cardsSection}>
+                <div className={styles.cardsContainer}>
+                    <article className={styles.card}>
+                        <div className={styles.cardIcon}>📍</div>
+                        <h4 className={styles.cardTitle}>Dove siamo</h4>
+                        <p className={styles.cardText}>Indirizzo / zona</p>
 
-            </div>
+                        <a
+                            className={styles.cardLink}
+                            href="https://www.google.com/maps?q=centro%20sportivo%20padel"
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Apri su Maps →
+                        </a>
+                    </article>
+
+                    <article className={styles.card}>
+                        <div className={styles.cardIcon}>⏰</div>
+                        <h4 className={styles.cardTitle}>Orari</h4>
+                        <p className={styles.cardText}>09:00 – 23:00</p>
+                        <p className={styles.cardHint}>Tutti i giorni</p>
+                    </article>
+
+                    <article className={styles.card}>
+                        <div className={styles.cardIcon}>📞</div>
+                        <h4 className={styles.cardTitle}>Contatti</h4>
+                        <p className={styles.cardText}>Telefono / WhatsApp</p>
+
+                        <a
+                            className={styles.cardLink}
+                            href="https://wa.me/393331234567"
+                            target="_blank"
+                            rel="noreferrer"
+                            title="Placeholder: cambia numero quando lo hai"
+                        >
+                            Scrivici su WhatsApp →
+                        </a>
+                    </article>
+                </div>
+            </section>
+
+
         </div >
     )
 }
