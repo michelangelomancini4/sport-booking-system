@@ -8,27 +8,34 @@ import { Link } from "react-router-dom";
 export default function HomePage() {
     return (
         <div>
-            <div className={styles.hometitle}>
-                <h1>PRENOTA ORA </h1>
-            </div>
+
             {/* JUMBOTRON SECTION */}
             <div className={styles.jumbotron}>
-                <div className={styles.jumbo_left_box} style={{
-                    backgroundImage: `url(${foto1})`,
+                <div
+                    className={styles.jumbo_left_box}
+                    style={{ backgroundImage: `url(${foto1})` }}
+                />
 
-                }}>
-                    <h3>foto1</h3>
-                </div>
-                <div className={styles.jumbo_right_box} style={{
-                    backgroundImage: `url(${foto2})`,
+                <div
+                    className={styles.jumbo_right_box}
+                    style={{ backgroundImage: `url(${foto2})` }}
+                />
 
-                }} >
-                    <h3>foto2</h3>
+                {/* OVERLAY */}
+                <div className={styles.jumbo_overlay}>
+                    <h1 className={styles.jumbo_title}>
+                        Gioca. Prenota. Torna in campo.
+                    </h1>
+                    <p className={styles.jumbo_subtitle}>
+                        Prenotazione semplice. Nessuna attesa.
+                    </p>
                 </div>
             </div>
+
             <p className={styles.homeContext}>
                 Campi sportivi · Prenotazione rapida
             </p>
+
 
             {/* BOOKING BOX SECTION */}
             <div className={styles.booking_box_container}>

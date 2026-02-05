@@ -9,25 +9,52 @@
 /* JUMBOTRON */
 
 .jumbotron {
+    position: relative;
     display: flex;
-    max-width: 1100px;
     margin: 0 auto;
-    /* debug */
-    border-color: blueviolet;
-    border: solid 2px;
+
 }
+
+.jumbo_overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    color: white;
+
+    /* gradient per leggibilità */
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.25));
+}
+
+.jumbo_title {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.jumbo_subtitle {
+    margin-top: 10px;
+    font-size: 16px;
+    opacity: 0.9;
+}
+
 
 .jumbo_left_box,
 .jumbo_right_box {
     flex: 1;
     height: 320px;
+    width: 100%;
     overflow: hidden;
     background-size: cover;
     background-position: center;
-    /* debug */
 
-    border-color: blueviolet;
-    border: solid 2px;
 }
 
 .jumbo_left_box {
