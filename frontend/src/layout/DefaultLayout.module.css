@@ -5,13 +5,12 @@
 
 .header {}
 
-.navbar {
-    max-width: 1100px;
-    margin: 0 auto;
-    /* padding: 10px 18px; */
-}
+.navbar {}
 
-.main {}
+.main {
+    padding-top: 75px;
+    /* stessa altezza navbar */
+}
 
 .footer {
     background: #fff;
