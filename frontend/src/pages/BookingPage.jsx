@@ -3,7 +3,10 @@ import styles from "./BookingPage.module.css";
 
 const API_BASE = "http://127.0.0.1:8000";
 
-// Demo mapping: sport -> field_id (adatta se nel DB hai id diversi)
+/**
+ * Mapping “stabile” sport -> sport_id (come in tabella sports del DB).
+ 
+ */
 const SPORT_TO_SPORT_ID = {
     padel: 1,
     calcetto: 2,
@@ -14,50 +17,79 @@ const SPORTS = [
     { key: "calcetto", label: "Calcetto" },
 ];
 
-
-function todayISO() {
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-}
-
+/**
+ * Helper: da datetime (stringa) torna "HH:MM"
+ * Gestisce sia "2026-01-23T09:00:00" sia "2026-01-23 09:00:00"
+ */
 function hhmm(dateTimeString) {
-    // dateTimeString tipo "2026-01-23T09:00:00" o "2026-01-23 09:00:00"
     const d = new Date(dateTimeString);
-    if (Number.isNaN(d.getTime())) {
-        // fallback se il parsing non va: prendi substring
-        return String(dateTimeString).slice(11, 16);
-    }
+    if (Number.isNaN(d.getTime())) return String(dateTimeString).slice(11, 16);
     const h = String(d.getHours()).padStart(2, "0");
     const m = String(d.getMinutes()).padStart(2, "0");
     return `${h}:${m}`;
 }
 
 export default function BookingPage() {
+    // --- Selezioni utente (UI) ---
     const [sport, setSport] = useState("padel");
-    const [day, setDay] = useState("2026-01-23"); //  data preimpostata
+    const [day, setDay] = useState("2026-01-23");
+    const [selectedFieldId, setSelectedFieldId] = useState(""); // "" = tutti i campi
     const [selectedSlotId, setSelectedSlotId] = useState(null);
 
-    // mini-form booking (demo)
+    // --- Form di prenotazione (demo) ---
     const [playersCount, setPlayersCount] = useState(4);
     const [notes, setNotes] = useState("");
 
-    // data dal backend
-    const [slots, setSlots] = useState([]);
-    const [loadingSlots, setLoadingSlots] = useState(false);
-    const [slotsError, setSlotsError] = useState("");
-
-    const [selectedFieldId, setSelectedFieldId] = useState(""); // "" = tutti i campi dello sport
-    const [fields, setFields] = useState([]); // [{ id, name }]
-
+    // --- Dati runtime: campi e slot dal backend ---
+    const [fields, setFields] = useState([]); // [{id, name}]
     const [loadingFields, setLoadingFields] = useState(false);
     const [fieldsError, setFieldsError] = useState("");
 
+    const [slots, setSlots] = useState([]); // [{id, start, end, ...}]
+    const [loadingSlots, setLoadingSlots] = useState(false);
+    const [slotsError, setSlotsError] = useState("");
 
+    // sportId deriva dalla scelta sport (serve per query API)
     const sportId = SPORT_TO_SPORT_ID[sport] ?? null;
 
+    /**
+     * 1) FETCH FIELDS (STRUTTURALI)
+   
+     */
+    async function fetchFields() {
+        setLoadingFields(true);
+        setFieldsError("");
+
+        try {
+            const qs = new URLSearchParams();
+            if (sportId) qs.set("sport_id", String(sportId));
+
+            const res = await fetch(`${API_BASE}/fields?${qs.toString()}`);
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || `Errore GET fields (${res.status})`);
+            }
+
+            const data = await res.json(); // { rows: [...] }
+            const rows = Array.isArray(data?.rows) ? data.rows : [];
+
+            //  id + name per la select
+            const nextFields = rows
+                .map((f) => ({ id: f.id, name: f.name }))
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+            setFields(nextFields);
+        } catch (e) {
+            setFields([]);
+            setFieldsError(e?.message || "Errore caricamento campi");
+        } finally {
+            setLoadingFields(false);
+        }
+    }
+
+    /**
+     * 2) FETCH SLOTS (OPERATIVI)
+         */
     async function fetchSlots() {
         setLoadingSlots(true);
         setSlotsError("");
@@ -74,11 +106,10 @@ export default function BookingPage() {
                 throw new Error(text || `Errore GET slots (${res.status})`);
             }
 
-            const data = await res.json(); // { rows: [...], day: "..." }
+            const data = await res.json();
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
-
-
+            // mappiamo la risposta del BE in un formato più comodo per l’UI
             const mapped = rows.map((r) => ({
                 id: r.id_slots,
                 start: hhmm(r.starts_at),
@@ -98,55 +129,28 @@ export default function BookingPage() {
         }
     }
 
-    async function fetchFields() {
-        setLoadingFields(true);
-        setFieldsError("");
-
-        try {
-            const qs = new URLSearchParams();
-            if (sportId) qs.set("sport_id", String(sportId));
-
-            const res = await fetch(`${API_BASE}/fields?${qs.toString()}`);
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || `Errore GET fields (${res.status})`);
-            }
-
-            const data = await res.json(); // { rows: [...] }
-            const rows = Array.isArray(data?.rows) ? data.rows : [];
-
-            // io tengo solo id e name per il select
-            const nextFields = rows
-                .map((f) => ({ id: f.id, name: f.name }))
-                .sort((a, b) => a.name.localeCompare(b.name));
-
-            setFields(nextFields);
-        } catch (e) {
-            setFields([]);
-            setFieldsError(e?.message || "Errore caricamento campi");
-        } finally {
-            setLoadingFields(false);
-        }
-    }
-
+    /**
+     * Quando cambia SPORT:
+     * - resettiamo campo e slot selezionati
+     * - puliamo gli slot vecchi (UX)
+     * - ricarichiamo i campi strutturali di quello sport
+     */
     useEffect(() => {
         setSelectedFieldId("");
         setSelectedSlotId(null);
         setSlots([]);
-
-        // carica campi "strutturali" per questo sport
         fetchFields();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sport]);
 
-
-
+    /**
+     * Quando cambia (day/sport/campo):
+     * - ricarichiamo gli slot disponibili
+     */
     useEffect(() => {
-        // ricarica quando cambia giorno o sport/field
         fetchSlots();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [day, sport, selectedFieldId]);
 
+    // Slot selezionato completo (per riepilogo + conferma)
     const selectedSlot = useMemo(
         () => slots.find((s) => s.id === selectedSlotId) || null,
         [slots, selectedSlotId]
@@ -154,11 +158,14 @@ export default function BookingPage() {
 
     const canConfirm = Boolean(day && selectedSlot && !loadingSlots);
 
+    /**
+     * Conferma: POST /bookings
+     * (demo: customer_id fisso = 1)
+     */
     async function handleConfirm() {
         if (!canConfirm) return;
 
         try {
-            // Demo: customer fisso (metti un cliente seedato id=1 nel DB)
             const payload = {
                 slot_id: selectedSlot.id,
                 customer_id: 1,
@@ -183,7 +190,7 @@ export default function BookingPage() {
                 throw new Error(text || `Errore POST booking (${res.status})`);
             }
 
-            const data = await res.json(); // { booking: ... }
+            const data = await res.json();
             alert(`Prenotazione confermata! ID: ${data?.booking?.id_booking ?? "OK"}`);
 
             setNotes("");
@@ -203,7 +210,7 @@ export default function BookingPage() {
 
             <div className={styles.layout}>
                 <section className={styles.panel}>
-                    {/* Sport */}
+                    {/* SPORT */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Sport</div>
 
@@ -212,19 +219,17 @@ export default function BookingPage() {
                                 <button
                                     key={sp.key}
                                     type="button"
-                                    className={`${styles.chip} ${sport === sp.key ? styles.chipActive : ""}`}
+                                    className={`${styles.chip} ${sport === sp.key ? styles.chipActive : ""
+                                        }`}
                                     onClick={() => setSport(sp.key)}
                                 >
                                     {sp.label}
                                 </button>
                             ))}
                         </div>
-
-                        {/* <div className={styles.muted}>
-                            (demo) sport → field_id: <b>{fieldId ?? "—"}</b>
-                        </div> */}
                     </div>
-                    {/* Campo */}
+
+                    {/* CAMPO (da /fields) */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Campo</div>
 
@@ -236,7 +241,6 @@ export default function BookingPage() {
                                 onChange={(e) => setSelectedFieldId(e.target.value)}
                                 disabled={loadingFields || fields.length === 0}
                             >
-
                                 <option value="">Tutti i campi</option>
                                 {fields.map((f) => (
                                     <option key={f.id} value={f.id}>
@@ -245,10 +249,12 @@ export default function BookingPage() {
                                 ))}
                             </select>
                         </label>
+
+                        {/* opzionale: se vuoi vedere errore campi */}
+                        {fieldsError && <div className={styles.muted}>Errore campi: {fieldsError}</div>}
                     </div>
 
-
-                    {/* Giorno */}
+                    {/* GIORNO */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Giorno</div>
 
@@ -263,7 +269,7 @@ export default function BookingPage() {
                         </label>
                     </div>
 
-                    {/* Slot */}
+                    {/* SLOT */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Orari disponibili</div>
 
@@ -274,7 +280,9 @@ export default function BookingPage() {
                         )}
 
                         {!loadingSlots && !slotsError && slots.length === 0 && (
-                            <div className={styles.muted}>Nessuno slot disponibile per questo giorno.</div>
+                            <div className={styles.muted}>
+                                Nessuno slot disponibile per questo giorno.
+                            </div>
                         )}
 
                         {!loadingSlots && !slotsError && slots.length > 0 && (
@@ -283,7 +291,8 @@ export default function BookingPage() {
                                     <button
                                         key={s.id}
                                         type="button"
-                                        className={`${styles.slot} ${selectedSlotId === s.id ? styles.slotActive : ""}`}
+                                        className={`${styles.slot} ${selectedSlotId === s.id ? styles.slotActive : ""
+                                            }`}
                                         onClick={() => setSelectedSlotId(s.id)}
                                     >
                                         <span className={styles.slotTime}>
@@ -298,7 +307,7 @@ export default function BookingPage() {
                         )}
                     </div>
 
-                    {/* Extra (demo) */}
+                    {/* DETTAGLI BOOKING */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Dettagli</div>
 
@@ -324,14 +333,10 @@ export default function BookingPage() {
                                 />
                             </label>
                         </div>
-                        {/* 
-                        <div className={styles.muted}>
-                            (demo) customer_id fisso = <b>1</b>
-                        </div> */}
                     </div>
                 </section>
 
-                {/* Summary */}
+                {/* SUMMARY */}
                 <aside className={styles.summary}>
                     <div className={styles.summaryCard}>
                         <div className={styles.sectionTitle}>Riepilogo</div>
@@ -362,11 +367,6 @@ export default function BookingPage() {
                         >
                             Conferma prenotazione
                         </button>
-
-                        <p className={styles.hint}>
-                            {/* Nota: per ora prenota come cliente demo (id=1). Quando facciamo la pagina clienti,
-                            lo rendiamo reale. */}
-                        </p>
                     </div>
                 </aside>
             </div>
