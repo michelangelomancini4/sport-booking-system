@@ -25,6 +25,8 @@ class BookingOut(BaseModel):
 
     field_name: str
     field_id: int
+    sport_id: int
+    sport_name: str
 
     starts_at: datetime
     ends_at: datetime
@@ -81,6 +83,8 @@ class SlotOut(BaseModel):
     ends_at: datetime
     price_cents: int
     is_active: int  
+    sport_id: int
+    sport_name: str
 
 class SlotsListOut(BaseModel):
     rows: List[SlotOut]
