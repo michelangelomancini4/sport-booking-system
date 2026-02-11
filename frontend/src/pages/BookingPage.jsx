@@ -48,8 +48,12 @@ export default function BookingPage() {
     const [slots, setSlots] = useState([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [slotsError, setSlotsError] = useState("");
+
     const [selectedFieldId, setSelectedFieldId] = useState(""); // "" = tutti i campi dello sport
     const [fields, setFields] = useState([]); // [{ id, name }]
+
+    const [loadingFields, setLoadingFields] = useState(false);
+    const [fieldsError, setFieldsError] = useState("");
 
 
     const sportId = SPORT_TO_SPORT_ID[sport] ?? null;
@@ -73,16 +77,7 @@ export default function BookingPage() {
             const data = await res.json(); // { rows: [...], day: "..." }
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
-            if (!selectedFieldId) {
-                const map = new Map();
-                for (const r of rows) {
-                    map.set(r.field_id, r.field_name);
-                }
-                const nextFields = Array.from(map.entries())
-                    .map(([id, name]) => ({ id, name }))
-                    .sort((a, b) => a.name.localeCompare(b.name));
-                setFields(nextFields);
-            }
+
 
             const mapped = rows.map((r) => ({
                 id: r.id_slots,
@@ -102,11 +97,48 @@ export default function BookingPage() {
             setLoadingSlots(false);
         }
     }
+
+    async function fetchFields() {
+        setLoadingFields(true);
+        setFieldsError("");
+
+        try {
+            const qs = new URLSearchParams();
+            if (sportId) qs.set("sport_id", String(sportId));
+
+            const res = await fetch(`${API_BASE}/fields?${qs.toString()}`);
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || `Errore GET fields (${res.status})`);
+            }
+
+            const data = await res.json(); // { rows: [...] }
+            const rows = Array.isArray(data?.rows) ? data.rows : [];
+
+            // io tengo solo id e name per il select
+            const nextFields = rows
+                .map((f) => ({ id: f.id, name: f.name }))
+                .sort((a, b) => a.name.localeCompare(b.name));
+
+            setFields(nextFields);
+        } catch (e) {
+            setFields([]);
+            setFieldsError(e?.message || "Errore caricamento campi");
+        } finally {
+            setLoadingFields(false);
+        }
+    }
+
     useEffect(() => {
         setSelectedFieldId("");
-        setFields([]);
         setSelectedSlotId(null);
+        setSlots([]);
+
+        // carica campi "strutturali" per questo sport
+        fetchFields();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [sport]);
+
 
 
     useEffect(() => {
@@ -202,8 +234,9 @@ export default function BookingPage() {
                                 className={styles.input}
                                 value={selectedFieldId}
                                 onChange={(e) => setSelectedFieldId(e.target.value)}
-                                disabled={fields.length === 0}
+                                disabled={loadingFields || fields.length === 0}
                             >
+
                                 <option value="">Tutti i campi</option>
                                 {fields.map((f) => (
                                     <option key={f.id} value={f.id}>

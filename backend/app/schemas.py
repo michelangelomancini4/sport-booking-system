@@ -93,3 +93,14 @@ class FreeSlotsOut(BaseModel):
     rows: List[SlotOut]
     day: str
 
+# FIELDS
+class FieldOut(BaseModel):
+    id: int
+    name: str
+    sport_id: int
+    sport_name: str
+    is_active: int
+
+class FieldsListOut(BaseModel):
+    rows: List[FieldOut]
+

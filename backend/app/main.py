@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers.bookings import router as bookings_router
 from app.routers.customers import router as customers_router
 from app.routers.slots import router as slots_router
+from app.routers.fields import router as fields_router
 from app.schemas import HealthOut
 
 app = FastAPI()
@@ -27,3 +28,4 @@ def root():
 app.include_router(slots_router)
 app.include_router(customers_router)
 app.include_router(bookings_router)
+app.include_router(fields_router)
