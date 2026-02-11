@@ -30,7 +30,12 @@ def list_slots(db=Depends(get_db)):
 
 
 @router.get("/free", response_model=FreeSlotsOut)
-def free_slots(day: date, field_id: int | None = Query(default=None), db=Depends(get_db)):
+def free_slots(
+    day: date,
+    field_id: int | None = Query(default=None),
+    sport_id: int | None = Query(default=None),
+    db=Depends(get_db),
+):
     cur = db.cursor(dictionary=True)
     try:
         sql = """
@@ -41,18 +46,27 @@ def free_slots(day: date, field_id: int | None = Query(default=None), db=Depends
                 s.starts_at,
                 s.ends_at,
                 s.price_cents,
-                s.is_active
+                s.is_active,
+                f.sport_id,
+                sp.name AS sport_name
             FROM slots s
             JOIN fields f ON f.id = s.field_id
+            JOIN sports sp ON sp.id = f.sport_id
             LEFT JOIN bookings b ON b.slot_id = s.id_slots
             WHERE b.id_booking IS NULL
               AND s.is_active = 1
               AND DATE(s.starts_at) = %s
         """
+
         params = [day.isoformat()]
+
         if field_id is not None:
             sql += " AND s.field_id = %s"
             params.append(field_id)
+
+        if sport_id is not None:
+            sql += " AND f.sport_id = %s"
+            params.append(sport_id)
 
         sql += " ORDER BY s.starts_at ASC"
 

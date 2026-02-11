@@ -8,10 +8,16 @@ BOOKING_FULL_SELECT = """
       c.full_name,
       c.phone,
       c.email,
+
       f.name AS field_name,
       s.field_id,
+
+      f.sport_id,
+      sp.name AS sport_name,
+
       s.starts_at,
       s.ends_at,
+
       b.players_count,
       b.notes,
       b.created_at
@@ -19,8 +25,10 @@ BOOKING_FULL_SELECT = """
     JOIN customers c ON c.id = b.customer_id
     JOIN slots s ON s.id_slots = b.slot_id
     JOIN fields f ON f.id = s.field_id
+    JOIN sports sp ON sp.id = f.sport_id
     WHERE b.id_booking = %s
 """
+
 
 def fetch_booking_full(cur, booking_id: int) -> Optional[Dict[str, Any]]:
     cur.execute(BOOKING_FULL_SELECT, (booking_id,))
