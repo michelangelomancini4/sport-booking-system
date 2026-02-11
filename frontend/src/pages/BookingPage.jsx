@@ -4,17 +4,16 @@ import styles from "./BookingPage.module.css";
 const API_BASE = "http://127.0.0.1:8000";
 
 // Demo mapping: sport -> field_id (adatta se nel DB hai id diversi)
-const SPORT_TO_FIELD_ID = {
+const SPORT_TO_SPORT_ID = {
     padel: 1,
     calcetto: 2,
-    tennis: 3,
 };
 
 const SPORTS = [
     { key: "padel", label: "Padel" },
     { key: "calcetto", label: "Calcetto" },
-    { key: "tennis", label: "Tennis" },
 ];
+
 
 function todayISO() {
     const d = new Date();
@@ -49,8 +48,11 @@ export default function BookingPage() {
     const [slots, setSlots] = useState([]);
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [slotsError, setSlotsError] = useState("");
+    const [selectedFieldId, setSelectedFieldId] = useState(""); // "" = tutti i campi dello sport
+    const [fields, setFields] = useState([]); // [{ id, name }]
 
-    const fieldId = SPORT_TO_FIELD_ID[sport] ?? null;
+
+    const sportId = SPORT_TO_SPORT_ID[sport] ?? null;
 
     async function fetchSlots() {
         setLoadingSlots(true);
@@ -59,7 +61,8 @@ export default function BookingPage() {
 
         try {
             const qs = new URLSearchParams({ day });
-            if (fieldId) qs.set("field_id", String(fieldId));
+            if (sportId) qs.set("sport_id", String(sportId));
+            if (selectedFieldId) qs.set("field_id", String(selectedFieldId));
 
             const res = await fetch(`${API_BASE}/slots/free?${qs.toString()}`);
             if (!res.ok) {
@@ -70,11 +73,23 @@ export default function BookingPage() {
             const data = await res.json(); // { rows: [...], day: "..." }
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
+            if (!selectedFieldId) {
+                const map = new Map();
+                for (const r of rows) {
+                    map.set(r.field_id, r.field_name);
+                }
+                const nextFields = Array.from(map.entries())
+                    .map(([id, name]) => ({ id, name }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                setFields(nextFields);
+            }
+
             const mapped = rows.map((r) => ({
                 id: r.id_slots,
                 start: hhmm(r.starts_at),
                 end: hhmm(r.ends_at),
                 price_cents: r.price_cents,
+                field_id: r.field_id,
                 field_name: r.field_name,
                 raw: r,
             }));
@@ -87,12 +102,18 @@ export default function BookingPage() {
             setLoadingSlots(false);
         }
     }
+    useEffect(() => {
+        setSelectedFieldId("");
+        setFields([]);
+        setSelectedSlotId(null);
+    }, [sport]);
+
 
     useEffect(() => {
         // ricarica quando cambia giorno o sport/field
         fetchSlots();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [day, sport]);
+    }, [day, sport, selectedFieldId]);
 
     const selectedSlot = useMemo(
         () => slots.find((s) => s.id === selectedSlotId) || null,
@@ -171,6 +192,28 @@ export default function BookingPage() {
                             (demo) sport → field_id: <b>{fieldId ?? "—"}</b>
                         </div> */}
                     </div>
+                    {/* Campo */}
+                    <div className={styles.section}>
+                        <div className={styles.sectionTitle}>Campo</div>
+
+                        <label className={styles.label}>
+                            <span className={styles.muted}>Seleziona campo (opzionale)</span>
+                            <select
+                                className={styles.input}
+                                value={selectedFieldId}
+                                onChange={(e) => setSelectedFieldId(e.target.value)}
+                                disabled={fields.length === 0}
+                            >
+                                <option value="">Tutti i campi</option>
+                                {fields.map((f) => (
+                                    <option key={f.id} value={f.id}>
+                                        {f.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
+
 
                     {/* Giorno */}
                     <div className={styles.section}>
