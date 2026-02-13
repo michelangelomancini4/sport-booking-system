@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime , time , date
 
 # health test
 class HealthOut(BaseModel):
@@ -92,6 +92,33 @@ class SlotsListOut(BaseModel):
 class FreeSlotsOut(BaseModel):
     rows: List[SlotOut]
     day: str
+
+class SlotsGenerateIn(BaseModel):
+    sport_id: int
+    date_from: date
+    date_to: date
+
+    start_time: time = Field(default=time(10, 0))
+    end_time: time = Field(default=time(23, 0))
+
+    slot_minutes: int = Field(default=60, ge=15, le=240)
+
+    # opzionale: se non lo passi, lo deduciamo da sport_id (Padel 30€, Calcetto 50€)
+    price_cents: Optional[int] = Field(default=None, ge=0)
+
+
+class SlotsGenerateOut(BaseModel):
+    sport_id: int
+    date_from: date
+    date_to: date
+    start_time: time
+    end_time: time
+    slot_minutes: int
+    price_cents: int
+
+    fields_count: int
+    created: int
+    skipped: int
 
 # FIELDS
 class FieldOut(BaseModel):
