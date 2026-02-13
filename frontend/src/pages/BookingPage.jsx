@@ -36,6 +36,11 @@ export default function BookingPage() {
     const [selectedFieldId, setSelectedFieldId] = useState(""); // "" = tutti i campi
     const [selectedSlotId, setSelectedSlotId] = useState(null);
 
+    const sportLabel = SPORTS.find((s) => s.key === sport)?.label ?? sport;
+
+
+
+
     // --- Form di prenotazione (demo) ---
     const [playersCount, setPlayersCount] = useState(4);
     const [notes, setNotes] = useState("");
@@ -155,6 +160,13 @@ export default function BookingPage() {
         () => slots.find((s) => s.id === selectedSlotId) || null,
         [slots, selectedSlotId]
     );
+    const selectedFieldName =
+        selectedSlot?.field_name ||
+        fields.find((f) => String(f.id) === String(selectedFieldId))?.name ||
+        (selectedFieldId ? `Campo #${selectedFieldId}` : "Tutti i campi");
+
+    const selectedPrice =
+        selectedSlot ? `€${(selectedSlot.price_cents / 100).toFixed(2)}` : "—";
 
     const canConfirm = Boolean(day && selectedSlot && !loadingSlots);
 
@@ -200,6 +212,7 @@ export default function BookingPage() {
             alert(e?.message || "Errore durante la prenotazione");
         }
     }
+    const minPlayers = sport === "calcetto" ? 5 : 1;
 
     return (
         <div className={styles.page}>
@@ -281,8 +294,10 @@ export default function BookingPage() {
 
                         {!loadingSlots && !slotsError && slots.length === 0 && (
                             <div className={styles.muted}>
-                                Nessuno slot disponibile per questo giorno.
+                                Nessuna disponibilità per la data selezionata. Prova a cambiare giorno
+                                {selectedFieldId ? " o a selezionare 'Tutti i campi'." : " o campo."}
                             </div>
+
                         )}
 
                         {!loadingSlots && !slotsError && slots.length > 0 && (
@@ -317,10 +332,12 @@ export default function BookingPage() {
                                 <input
                                     className={styles.input}
                                     type="number"
-                                    min="0"
+                                    min={minPlayers}
+                                    step="1"
                                     value={playersCount}
                                     onChange={(e) => setPlayersCount(e.target.value)}
                                 />
+
                             </label>
 
                             <label className={styles.label}>
@@ -343,13 +360,23 @@ export default function BookingPage() {
 
                         <div className={styles.summaryLine}>
                             <span className={styles.muted}>Sport</span>
-                            <span className={styles.summaryValue}>{sport}</span>
+                            <span className={styles.summaryValue}>{sportLabel}</span>
                         </div>
 
                         <div className={styles.summaryLine}>
                             <span className={styles.muted}>Giorno</span>
                             <span className={styles.summaryValue}>{day}</span>
                         </div>
+                        <div className={styles.summaryLine}>
+                            <span className={styles.muted}>Campo</span>
+                            <span className={styles.summaryValue}>{selectedFieldName}</span>
+                        </div>
+
+                        <div className={styles.summaryLine}>
+                            <span className={styles.muted}>Prezzo</span>
+                            <span className={styles.summaryValue}>{selectedPrice}</span>
+                        </div>
+
 
                         <div className={styles.summaryLine}>
                             <span className={styles.muted}>Slot</span>
