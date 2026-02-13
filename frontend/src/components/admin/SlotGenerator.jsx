@@ -1,0 +1,189 @@
+import { useState } from "react";
+
+const API_BASE = "http://127.0.0.1:8000";
+
+const SPORTS = [
+    { label: "Padel", sport_id: 1 },
+    { label: "Calcetto", sport_id: 2 },
+];
+
+export default function SlotGenerator({ styles }) {
+    const [sportId, setSportId] = useState(1);
+    const [dateFrom, setDateFrom] = useState("2026-01-23");
+    const [dateTo, setDateTo] = useState("2026-01-23");
+    const [startTime, setStartTime] = useState("10:00:00");
+    const [endTime, setEndTime] = useState("23:00:00");
+    const [slotMinutes, setSlotMinutes] = useState(60);
+    const [priceCents, setPriceCents] = useState(""); // opzionale override
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [result, setResult] = useState(null);
+
+    async function handleGenerate() {
+        setLoading(true);
+        setError("");
+        setResult(null);
+
+        try {
+            const payload = {
+                sport_id: Number(sportId),
+                date_from: dateFrom,
+                date_to: dateTo,
+                start_time: startTime,
+                end_time: endTime,
+                slot_minutes: Number(slotMinutes),
+            };
+
+            if (priceCents !== "") payload.price_cents = Number(priceCents);
+
+            const res = await fetch(`${API_BASE}/slots/generate`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || `Errore generate (${res.status})`);
+            }
+
+            const data = await res.json();
+            setResult(data);
+        } catch (e) {
+            setError(e?.message || "Errore durante la generazione");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
+        <>
+            <div className={styles.formGrid}>
+                <label className={styles.field}>
+                    <span className={styles.label}>Sport</span>
+                    <select
+                        className={styles.input}
+                        value={sportId}
+                        onChange={(e) => setSportId(e.target.value)}
+                    >
+                        {SPORTS.map((s) => (
+                            <option key={s.sport_id} value={s.sport_id}>
+                                {s.label}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Slot minutes</span>
+                    <input
+                        className={styles.input}
+                        type="number"
+                        min="15"
+                        step="15"
+                        value={slotMinutes}
+                        onChange={(e) => setSlotMinutes(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Date from</span>
+                    <input
+                        className={styles.input}
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Date to</span>
+                    <input
+                        className={styles.input}
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Start time</span>
+                    <input
+                        className={styles.input}
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>End time</span>
+                    <input
+                        className={styles.input}
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Price cents (override)</span>
+                    <input
+                        className={styles.input}
+                        type="number"
+                        min="0"
+                        value={priceCents}
+                        onChange={(e) => setPriceCents(e.target.value)}
+                        placeholder="(blank = default)"
+                    />
+                    <span className={styles.hint}>
+                        Lascia vuoto per usare il prezzo default dello sport.
+                    </span>
+                </label>
+            </div>
+
+            <div className={styles.actions}>
+                <button className={styles.primaryBtn} onClick={handleGenerate} disabled={loading}>
+                    {loading ? "Generating..." : "Generate slots"}
+                </button>
+                {error && <span className={styles.error}>{error}</span>}
+            </div>
+
+            {result && (
+                <div className={styles.resultCard}>
+                    <div className={styles.resultTitle}>Result</div>
+
+                    <div className={styles.resultGrid}>
+                        <div>
+                            <span className={styles.muted}>Sport ID</span>
+                            <div className={styles.value}>{result.sport_id}</div>
+                        </div>
+                        <div>
+                            <span className={styles.muted}>Fields</span>
+                            <div className={styles.value}>{result.fields_count}</div>
+                        </div>
+                        <div>
+                            <span className={styles.muted}>Created</span>
+                            <div className={styles.value}>{result.created}</div>
+                        </div>
+                        <div>
+                            <span className={styles.muted}>Skipped</span>
+                            <div className={styles.value}>{result.skipped}</div>
+                        </div>
+                        <div>
+                            <span className={styles.muted}>Price</span>
+                            <div className={styles.value}>€{(result.price_cents / 100).toFixed(2)}</div>
+                        </div>
+                        <div>
+                            <span className={styles.muted}>Range</span>
+                            <div className={styles.value}>
+                                {result.date_from} → {result.date_to} ({result.start_time}–{result.end_time})
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+}

@@ -61,7 +61,7 @@ export default function BookingPage() {
      * 1) FETCH FIELDS (STRUTTURALI)
    
      */
-    async function fetchFields() {
+    async function fetchFields(signal) {
         setLoadingFields(true);
         setFieldsError("");
 
@@ -69,22 +69,23 @@ export default function BookingPage() {
             const qs = new URLSearchParams();
             if (sportId) qs.set("sport_id", String(sportId));
 
-            const res = await fetch(`${API_BASE}/fields?${qs.toString()}`);
+            const res = await fetch(`${API_BASE}/fields?${qs.toString()}`, { signal });
             if (!res.ok) {
                 const text = await res.text();
                 throw new Error(text || `Errore GET fields (${res.status})`);
             }
 
-            const data = await res.json(); // { rows: [...] }
+            const data = await res.json();
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
-            //  id + name per la select
             const nextFields = rows
                 .map((f) => ({ id: f.id, name: f.name }))
                 .sort((a, b) => a.name.localeCompare(b.name));
 
             setFields(nextFields);
         } catch (e) {
+            // Se è abort, non segnare errore né resettare (evita flicker)
+            if (e?.name === "AbortError") return;
             setFields([]);
             setFieldsError(e?.message || "Errore caricamento campi");
         } finally {
@@ -92,10 +93,11 @@ export default function BookingPage() {
         }
     }
 
+
     /**
      * 2) FETCH SLOTS (OPERATIVI)
          */
-    async function fetchSlots() {
+    async function fetchSlots(signal) {
         setLoadingSlots(true);
         setSlotsError("");
         setSelectedSlotId(null);
@@ -105,7 +107,7 @@ export default function BookingPage() {
             if (sportId) qs.set("sport_id", String(sportId));
             if (selectedFieldId) qs.set("field_id", String(selectedFieldId));
 
-            const res = await fetch(`${API_BASE}/slots/free?${qs.toString()}`);
+            const res = await fetch(`${API_BASE}/slots/free?${qs.toString()}`, { signal });
             if (!res.ok) {
                 const text = await res.text();
                 throw new Error(text || `Errore GET slots (${res.status})`);
@@ -114,7 +116,6 @@ export default function BookingPage() {
             const data = await res.json();
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
-            // mappiamo la risposta del BE in un formato più comodo per l’UI
             const mapped = rows.map((r) => ({
                 id: r.id_slots,
                 start: hhmm(r.starts_at),
@@ -127,12 +128,14 @@ export default function BookingPage() {
 
             setSlots(mapped);
         } catch (e) {
+            if (e?.name === "AbortError") return;
             setSlots([]);
             setSlotsError(e?.message || "Errore caricamento slot");
         } finally {
             setLoadingSlots(false);
         }
     }
+
 
     /**
      * Quando cambia SPORT:
@@ -141,19 +144,34 @@ export default function BookingPage() {
      * - ricarichiamo i campi strutturali di quello sport
      */
     useEffect(() => {
+        const ac = new AbortController();
+
         setSelectedFieldId("");
         setSelectedSlotId(null);
         setSlots([]);
-        fetchFields();
+
+        fetchFields(ac.signal);
+
+        return () => ac.abort();
     }, [sport]);
 
-    /**
-     * Quando cambia (day/sport/campo):
-     * - ricarichiamo gli slot disponibili
-     */
+
     useEffect(() => {
-        fetchSlots();
-    }, [day, sport, selectedFieldId]);
+        const ac = new AbortController();
+
+        // Guardia: se ho un field selezionato ma non è tra i fields correnti, non chiamare
+        if (
+            selectedFieldId &&
+            !fields.some((f) => String(f.id) === String(selectedFieldId))
+        ) {
+            return () => ac.abort();
+        }
+
+        fetchSlots(ac.signal);
+
+        return () => ac.abort();
+    }, [day, sport, selectedFieldId, fields]);
+
 
     // Slot selezionato completo (per riepilogo + conferma)
     const selectedSlot = useMemo(
