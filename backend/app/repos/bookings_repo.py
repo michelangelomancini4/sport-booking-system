@@ -1,5 +1,4 @@
 from typing import Optional, Dict, Any
-
 BOOKING_FULL_SELECT = """
     SELECT
       b.id_booking,
@@ -20,6 +19,7 @@ BOOKING_FULL_SELECT = """
 
       b.players_count,
       b.notes,
+      b.status,
       b.created_at
     FROM bookings b
     JOIN customers c ON c.id = b.customer_id

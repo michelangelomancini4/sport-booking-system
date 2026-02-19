@@ -4,6 +4,8 @@ import { getBookings, deleteBooking } from "../../api/bookings";
 export default function BookingsPanel({ styles }) {
     const [bookingsData, setBookingsData] = useState({ rows: [] });
     const [loadingBookings, setLoadingBookings] = useState(false);
+    const [cancelingId, setCancelingId] = useState(null);
+
     const [bookingsError, setBookingsError] = useState("");
     const [bookingsMsg, setBookingsMsg] = useState("");
 
@@ -13,7 +15,7 @@ export default function BookingsPanel({ styles }) {
             setBookingsError("");
             setBookingsMsg("");
 
-            const json = await getBookings();
+            const json = await getBookings(); // backend default: status=active
             setBookingsData(json);
         } catch (e) {
             setBookingsError(e?.message || "Errore caricamento prenotazioni");
@@ -23,20 +25,38 @@ export default function BookingsPanel({ styles }) {
     }
 
     async function cancelBooking(bookingId) {
+        const ok = window.confirm("Vuoi annullare questa prenotazione?");
+        if (!ok) return;
+
         try {
+            setCancelingId(bookingId);
             setBookingsError("");
             setBookingsMsg("");
 
             await deleteBooking(bookingId);
 
+            // Optimistic UI: rimuovi subito la card
+            setBookingsData((prev) => ({
+                ...prev,
+                rows: prev.rows.filter((b) => b.id_booking !== bookingId),
+            }));
+
             setBookingsMsg("Prenotazione annullata ✅");
-            await loadBookings();
+            // Se vuoi “syncare” comunque col backend, sblocca:
+            // await loadBookings();
         } catch (e) {
             if (e?.status === 404) {
+                // Idempotente: se non esiste più, la togliamo comunque dalla UI
+                setBookingsData((prev) => ({
+                    ...prev,
+                    rows: prev.rows.filter((b) => b.id_booking !== bookingId),
+                }));
                 setBookingsMsg("Booking non trovata (404).");
                 return;
             }
             setBookingsError(e?.message || "Errore annullamento prenotazione");
+        } finally {
+            setCancelingId(null);
         }
     }
 
@@ -47,12 +67,18 @@ export default function BookingsPanel({ styles }) {
     return (
         <>
             <div className={styles.actions}>
-                <button className={styles.secondaryBtn} onClick={loadBookings} disabled={loadingBookings}>
+                <button
+                    className={styles.secondaryBtn}
+                    onClick={loadBookings}
+                    disabled={loadingBookings}
+                >
                     {loadingBookings ? "Carico..." : "Ricarica prenotazioni"}
                 </button>
 
                 {bookingsMsg && <span className={styles.message}>{bookingsMsg}</span>}
-                {bookingsError && <span className={styles.error}>{bookingsError}</span>}
+                {bookingsError && (
+                    <span className={styles.error}>{bookingsError}</span>
+                )}
             </div>
 
             {bookingsData?.rows?.length === 0 ? (
@@ -77,8 +103,15 @@ export default function BookingsPanel({ styles }) {
                                 </div>
                             </div>
 
-                            <button className={styles.dangerBtn} onClick={() => cancelBooking(b.id_booking)}>
-                                Annulla
+                            <button
+                                className={styles.dangerBtn}
+                                onClick={() => cancelBooking(b.id_booking)}
+                                disabled={cancelingId === b.id_booking}
+                                title={
+                                    cancelingId === b.id_booking ? "Annullamento in corso..." : ""
+                                }
+                            >
+                                {cancelingId === b.id_booking ? "Annullando..." : "Annulla"}
                             </button>
                         </li>
                     ))}

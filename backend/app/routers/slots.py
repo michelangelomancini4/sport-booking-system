@@ -52,7 +52,9 @@ def free_slots(
             FROM slots s
             JOIN fields f ON f.id = s.field_id
             JOIN sports sp ON sp.id = f.sport_id
-            LEFT JOIN bookings b ON b.slot_id = s.id_slots
+            LEFT JOIN bookings b
+            ON b.slot_id = s.id_slots
+            AND b.status = 'active'
             WHERE b.id_booking IS NULL
               AND s.is_active = 1
               AND f.is_active = 1

@@ -16,8 +16,10 @@ def list_bookings(
     day: date | None = Query(default=None),
     field_id: int | None = Query(default=None),
     customer_id: int | None = Query(default=None),
-    db = Depends(get_db)
+    status: str | None = Query(default="active"),
+    db=Depends(get_db),
 ):
+
     cur = db.cursor(dictionary=True)
     try:
         sql = """
@@ -39,6 +41,7 @@ def list_bookings(
             s.ends_at,
             b.players_count,
             b.notes,
+            b.status,
             b.created_at
             FROM bookings b
             JOIN customers c ON c.id = b.customer_id
@@ -46,6 +49,7 @@ def list_bookings(
             JOIN fields f ON f.id = s.field_id
             JOIN sports sp ON sp.id = f.sport_id
         """
+
 
 
         where = []
@@ -62,6 +66,10 @@ def list_bookings(
         if customer_id is not None:
             where.append("b.customer_id = %s")
             params.append(customer_id)
+        if status is not None:
+            where.append("b.status = %s")
+            params.append(status)
+    
 
         if where:
             sql += " WHERE " + " AND ".join(where)
@@ -142,14 +150,42 @@ def update_booking(booking_id: int, payload: BookingUpdate, db=Depends(get_db)):
         cur.close()
 
 
+# @router.delete("/{booking_id}", response_model=DeleteBookingOut)
+# def delete_booking(booking_id: int, db=Depends(get_db)):
+#     cur = db.cursor()
+#     try:
+#         cur.execute("DELETE FROM bookings WHERE id_booking = %s", (booking_id,))
+#         deleted = cur.rowcount
+#         if deleted == 0:
+#             raise HTTPException(status_code=404, detail="Booking non trovata")
+
+#         db.commit()
+#         return {"ok": True, "deleted_id": booking_id}
+#     finally:
+#         cur.close()
+
 @router.delete("/{booking_id}", response_model=DeleteBookingOut)
 def delete_booking(booking_id: int, db=Depends(get_db)):
     cur = db.cursor()
     try:
-        cur.execute("DELETE FROM bookings WHERE id_booking = %s", (booking_id,))
-        deleted = cur.rowcount
-        if deleted == 0:
-            raise HTTPException(status_code=404, detail="Booking non trovata")
+        cur.execute(
+            """
+            UPDATE bookings
+            SET status = 'cancelled'
+            WHERE id_booking = %s AND status <> 'cancelled'
+            """,
+            (booking_id,),
+        )
+        updated = cur.rowcount
+
+        if updated == 0:
+            # o non esiste, o era già cancelled → distinguiamo in modo pulito
+            cur.execute("SELECT 1 FROM bookings WHERE id_booking = %s", (booking_id,))
+            exists = cur.fetchone()
+            if not exists:
+                raise HTTPException(status_code=404, detail="Booking non trovata")
+            # già cancellata → ok idempotente
+            return {"ok": True, "deleted_id": booking_id}
 
         db.commit()
         return {"ok": True, "deleted_id": booking_id}

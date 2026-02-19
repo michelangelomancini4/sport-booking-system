@@ -34,7 +34,10 @@ class BookingOut(BaseModel):
     players_count: int
     notes: Optional[str] = None
 
+    status: str
     created_at: datetime
+
+
 
 
 class BookingsListOut(BaseModel):
