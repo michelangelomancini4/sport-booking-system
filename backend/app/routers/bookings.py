@@ -17,9 +17,9 @@ def list_bookings(
     field_id: int | None = Query(default=None),
     customer_id: int | None = Query(default=None),
     status: str | None = Query(default="active"),
+    q: str | None = Query(default=None),
     db=Depends(get_db),
 ):
-
     cur = db.cursor(dictionary=True)
     try:
         sql = """
@@ -50,8 +50,6 @@ def list_bookings(
             JOIN sports sp ON sp.id = f.sport_id
         """
 
-
-
         where = []
         params = []
 
@@ -66,10 +64,27 @@ def list_bookings(
         if customer_id is not None:
             where.append("b.customer_id = %s")
             params.append(customer_id)
-        if status is not None:
+
+        # status: se None o "" => non filtrare
+        if status is not None and status != "":
             where.append("b.status = %s")
             params.append(status)
-    
+
+        # 🔎 ricerca testuale (nome / telefono / email / campo / sport)
+        if q is not None:
+            q = q.strip()
+            if q:
+                where.append("""
+                    (
+                      c.full_name LIKE %s OR
+                      c.phone LIKE %s OR
+                      c.email LIKE %s OR
+                      f.name LIKE %s OR
+                      sp.name LIKE %s
+                    )
+                """)
+                like = f"%{q}%"
+                params.extend([like, like, like, like, like])
 
         if where:
             sql += " WHERE " + " AND ".join(where)
@@ -81,7 +96,6 @@ def list_bookings(
         return {"rows": rows}
     finally:
         cur.close()
-
 
 @router.get("/{booking_id}", response_model=BookingCreateOut)
 def get_booking(booking_id: int, db=Depends(get_db)):
