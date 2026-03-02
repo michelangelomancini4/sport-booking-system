@@ -9,13 +9,33 @@ export default function BookingsPanel({ styles }) {
     const [bookingsError, setBookingsError] = useState("");
     const [bookingsMsg, setBookingsMsg] = useState("");
 
+    // --- FILTRI ---
+    const [day, setDay] = useState("2026-01-23");
+    const [status, setStatus] = useState("active");
+    const [fieldId, setFieldId] = useState("");
+    const [q, setQ] = useState("");
+
     async function loadBookings() {
         try {
             setLoadingBookings(true);
             setBookingsError("");
             setBookingsMsg("");
 
-            const json = await getBookings(); // backend default: status=active
+            const params = {
+                day,
+                status,
+                field_id: fieldId ? Number(fieldId) : undefined,
+                q: q.trim() ? q.trim() : undefined,
+            };
+
+            //  rimuove chiavi con undefined/null/""
+            Object.keys(params).forEach((k) => {
+                if (params[k] === undefined || params[k] === null || params[k] === "") {
+                    delete params[k];
+                }
+            });
+
+            const json = await getBookings(params);
             setBookingsData(json);
         } catch (e) {
             setBookingsError(e?.message || "Errore caricamento prenotazioni");
@@ -23,7 +43,6 @@ export default function BookingsPanel({ styles }) {
             setLoadingBookings(false);
         }
     }
-
     async function cancelBooking(bookingId) {
         const ok = window.confirm("Vuoi annullare questa prenotazione?");
         if (!ok) return;
@@ -62,10 +81,57 @@ export default function BookingsPanel({ styles }) {
 
     useEffect(() => {
         loadBookings();
-    }, []);
+    }, [day, status, fieldId, q]);
 
     return (
         <>
+            <div className={styles.formGrid}>
+                <label className={styles.field}>
+                    <span className={styles.label}>Giorno</span>
+                    <input
+                        className={styles.input}
+                        type="date"
+                        value={day}
+                        onChange={(e) => setDay(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Status</span>
+                    <select
+                        className={styles.input}
+                        value={status}
+                        onChange={(e) => setStatus(e.target.value)}
+                    >
+                        <option value="active">Attive</option>
+                        <option value="cancelled">Annullate</option>
+                    </select>
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Campo (ID)</span>
+                    <input
+                        className={styles.input}
+                        type="number"
+                        min="1"
+                        value={fieldId}
+                        onChange={(e) => setFieldId(e.target.value)}
+                        placeholder="opzionale"
+                    />
+                </label>
+
+                <label className={styles.field}>
+                    <span className={styles.label}>Cerca</span>
+                    <input
+                        className={styles.input}
+                        type="text"
+                        value={q}
+                        onChange={(e) => setQ(e.target.value)}
+                        placeholder="nome / telefono / email"
+                    />
+                </label>
+            </div>
+
             <div className={styles.actions}>
                 <button
                     className={styles.secondaryBtn}
