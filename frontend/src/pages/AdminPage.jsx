@@ -24,12 +24,7 @@ export default function AdminPage() {
                 </section>
 
                 <section className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <h2 className={styles.cardTitle}>Prenotazioni</h2>
-                        <p className={styles.cardSubtitle}>
-                            Lista prenotazioni e annullamento (DELETE).
-                        </p>
-                    </div>
+
 
                     <BookingsPanel styles={styles} />
                 </section>

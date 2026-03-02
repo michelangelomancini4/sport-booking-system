@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBookings, deleteBooking } from "../../api/bookings";
+import { RotateCw } from "lucide-react";
 
 export default function BookingsPanel({ styles }) {
     const [bookingsData, setBookingsData] = useState({ rows: [] });
@@ -95,6 +96,23 @@ export default function BookingsPanel({ styles }) {
 
     return (
         <>
+            <div className={styles.cardHeader}>
+                <div>
+                    <h2 className={styles.cardTitle}>Prenotazioni</h2>
+                    <p className={styles.cardSubtitle}>
+                        Lista prenotazioni e annullamento (DELETE).
+                    </p>
+                </div>
+                <button
+                    className={styles.iconBtn}
+                    onClick={loadBookings}
+                    disabled={loadingBookings}
+                    title="Aggiorna"
+                    aria-label="Aggiorna prenotazioni"
+                >
+                    <RotateCw className={loadingBookings ? styles.spin : ""} size={18} />
+                </button>
+            </div>
             <div className={styles.formGrid}>
                 <label className={styles.field}>
                     <span className={styles.label}>Giorno</span>
@@ -118,6 +136,7 @@ export default function BookingsPanel({ styles }) {
                     </select>
                 </label>
 
+
                 <label className={styles.field}>
                     <span className={styles.label}>Campo (ID)</span>
                     <input
@@ -140,22 +159,9 @@ export default function BookingsPanel({ styles }) {
                         placeholder="nome / telefono / email"
                     />
                 </label>
+
             </div>
 
-            <div className={styles.actions}>
-                <button
-                    className={styles.secondaryBtn}
-                    onClick={loadBookings}
-                    disabled={loadingBookings}
-                >
-                    {loadingBookings ? "Carico..." : "Ricarica prenotazioni"}
-                </button>
-
-                {bookingsMsg && <span className={styles.message}>{bookingsMsg}</span>}
-                {bookingsError && (
-                    <span className={styles.error}>{bookingsError}</span>
-                )}
-            </div>
 
             {bookingsData?.rows?.length === 0 ? (
                 <div className={styles.placeholder}>Nessuna prenotazione.</div>
