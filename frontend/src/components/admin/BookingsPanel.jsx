@@ -9,11 +9,21 @@ export default function BookingsPanel({ styles }) {
     const [bookingsError, setBookingsError] = useState("");
     const [bookingsMsg, setBookingsMsg] = useState("");
 
+    const [qDebounced, setQDebounced] = useState("");
+
     // --- FILTRI ---
     const [day, setDay] = useState("2026-01-23");
     const [status, setStatus] = useState("active");
     const [fieldId, setFieldId] = useState("");
     const [q, setQ] = useState("");
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setQDebounced(q);
+        }, 350);
+
+        return () => clearTimeout(timer);
+    }, [q]);
 
     async function loadBookings() {
         try {
@@ -25,7 +35,7 @@ export default function BookingsPanel({ styles }) {
                 day,
                 status,
                 field_id: fieldId ? Number(fieldId) : undefined,
-                q: q.trim() ? q.trim() : undefined,
+                q: qDebounced.trim() ? qDebounced.trim() : undefined,
             };
 
             //  rimuove chiavi con undefined/null/""
@@ -81,7 +91,7 @@ export default function BookingsPanel({ styles }) {
 
     useEffect(() => {
         loadBookings();
-    }, [day, status, fieldId, q]);
+    }, [day, status, fieldId, qDebounced]);
 
     return (
         <>
