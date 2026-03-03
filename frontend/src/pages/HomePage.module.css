@@ -1,3 +1,9 @@
+.page {
+    background: linear-gradient(180deg,
+            #3E5F4A 0%,
+            #2F4F3E 100%);
+}
+
 /* JUMBOTRON */
 
 .jumbotron {
@@ -144,7 +150,7 @@
     flex: 1;
 
     /* tutte larghe uguali */
-    background: #fff;
+    background: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 14px;
     padding: 16px 14px;

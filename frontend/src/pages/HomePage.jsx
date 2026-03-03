@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 
 export default function HomePage() {
     return (
-        <div>
+        <div className={styles.page}>
 
             {/* JUMBOTRON SECTION */}
             <div className={styles.jumbotron}>
@@ -40,7 +40,7 @@ export default function HomePage() {
                     <h3 className={styles.booking_title}>Prenota in pochi click</h3>
                     <p className={styles.booking_subtitle}>Scegli sport, giorno e orario</p>
 
-                    <p className={styles.booking_sports}>Padel · Calcetto · Tennis</p>
+                    <p className={styles.booking_sports}>Padel · Calcetto </p>
 
                     <Link to="/booking" className={styles.booking_cta}>
                         Prenota ora
