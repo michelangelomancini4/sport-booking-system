@@ -4,9 +4,8 @@ import styles from "./BookingPage.module.css";
 const API_BASE = "http://127.0.0.1:8000";
 
 /**
- * Mapping “stabile” sport -> sport_id (come in tabella sports del DB).
- 
- */
+ * Mapping “stabile” sport -> sport_id (come in tabella sports del DB). */
+
 const SPORT_TO_SPORT_ID = {
     padel: 1,
     calcetto: 2,
@@ -37,9 +36,6 @@ export default function BookingPage() {
     const [selectedSlotId, setSelectedSlotId] = useState(null);
 
     const sportLabel = SPORTS.find((s) => s.key === sport)?.label ?? sport;
-
-
-
 
     // --- Form di prenotazione (demo) ---
     const [playersCount, setPlayersCount] = useState(4);
