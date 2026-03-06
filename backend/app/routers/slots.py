@@ -39,27 +39,26 @@ def free_slots(
     cur = db.cursor(dictionary=True)
     try:
         sql = """
-            SELECT
-                s.id_slots,
-                s.field_id,
-                f.name AS field_name,
-                s.starts_at,
-                s.ends_at,
-                s.price_cents,
-                s.is_active,
-                f.sport_id,
-                sp.name AS sport_name
-            FROM slots s
-            JOIN fields f ON f.id = s.field_id
-            JOIN sports sp ON sp.id = f.sport_id
-            LEFT JOIN bookings b
-            ON b.slot_id = s.id_slots
-            AND b.status = 'active'
-            WHERE b.id_booking IS NULL
-              AND s.is_active = 1
-              AND f.is_active = 1
-              AND DATE(s.starts_at) = %s
-        """
+    SELECT
+        s.id_slots,
+        s.field_id,
+        f.name AS field_name,
+        s.starts_at,
+        s.ends_at,
+        s.price_cents,
+        s.is_active,
+        f.sport_id,
+        sp.name AS sport_name
+    FROM slots s
+    JOIN fields f ON f.id = s.field_id
+    JOIN sports sp ON sp.id = f.sport_id
+    LEFT JOIN bookings b
+      ON b.slot_id = s.id_slots
+    WHERE b.id_booking IS NULL
+      AND s.is_active = 1
+      AND f.is_active = 1
+      AND DATE(s.starts_at) = %s
+"""
 
         params = [day.isoformat()]
 
