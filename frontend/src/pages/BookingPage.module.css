@@ -166,6 +166,13 @@
     color: rgba(32, 139, 72, 0.65);
 }
 
+.customerHint {
+    font-size: 0.85rem;
+    color: #5f6b7a;
+    margin-top: 26px;
+    display: inline;
+}
+
 
 /* slots */
 .slots {

@@ -58,6 +58,8 @@ export default function BookingPage() {
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [slotsError, setSlotsError] = useState("");
 
+    const [matchedCustomer, setMatchedCustomer] = useState(null);
+
     // sportId deriva dalla scelta sport (serve per query API)
     const sportId = SPORT_TO_SPORT_ID[sport] ?? null;
 
@@ -202,17 +204,25 @@ export default function BookingPage() {
     async function handlePhoneBlur() {
         const phone = customerPhone.trim();
 
-        if (!phone) return;
+        if (!phone) {
+            setMatchedCustomer(null);
+            return;
+        }
 
         try {
             const res = await getCustomerByPhone(phone);
             const customer = res?.customer;
 
-            if (!customer) return;
+            if (!customer) {
+                setMatchedCustomer(null);
+                return;
+            }
 
+            setMatchedCustomer(customer);
             setCustomerName(customer.full_name || "");
             setCustomerEmail(customer.email || "");
         } catch (e) {
+            setMatchedCustomer(null);
             console.error("Errore ricerca cliente:", e);
         }
     }
@@ -229,15 +239,29 @@ export default function BookingPage() {
         try {
             setSubmitting(true);
 
-            const customerRes = await createCustomer({
-                full_name: customerName.trim(),
-                phone: customerPhone.trim(),
-                email: customerEmail.trim() || null,
-            });
+            let customerId = null;
 
-            const customerId = customerRes?.customer?.id;
-            if (!customerId) {
-                throw new Error("Creazione cliente non riuscita");
+            const existingRes = await getCustomerByPhone(customerPhone.trim());
+            const existingCustomer = existingRes?.customer;
+
+            if (existingCustomer) {
+                customerId = existingCustomer.id;
+
+                // opzionale: riallinea i campi al dato salvato
+                setCustomerName(existingCustomer.full_name || "");
+                setCustomerEmail(existingCustomer.email || "");
+            } else {
+                const customerRes = await createCustomer({
+                    full_name: customerName.trim(),
+                    phone: customerPhone.trim(),
+                    email: customerEmail.trim() || null,
+                });
+
+                customerId = customerRes?.customer?.id;
+
+                if (!customerId) {
+                    throw new Error("Creazione cliente non riuscita");
+                }
             }
 
             const bookingRes = await createBooking({
@@ -391,6 +415,7 @@ export default function BookingPage() {
                                     value={customerName}
                                     onChange={(e) => setCustomerName(e.target.value)}
                                     placeholder="Inserisci nome..."
+                                    readOnly={Boolean(matchedCustomer)}
                                 />
                             </label>
 
@@ -399,11 +424,20 @@ export default function BookingPage() {
                                 <input
                                     className={styles.input}
                                     value={customerPhone}
-                                    onChange={(e) => setCustomerPhone(e.target.value)}
+                                    onChange={(e) => {
+                                        setCustomerPhone(e.target.value);
+                                        setMatchedCustomer(null);
+                                    }}
                                     onBlur={handlePhoneBlur}
                                     placeholder="Inserisci numero di telefono"
                                 />
+
                             </label>
+                            {matchedCustomer && (
+                                <span className={styles.customerHint}>
+                                    Cliente esistente trovato: verranno usati i dati associati a questo numero.
+                                </span>
+                            )}
                         </div>
 
                         <div className={styles.row}>
@@ -415,6 +449,7 @@ export default function BookingPage() {
                                     value={customerEmail}
                                     onChange={(e) => setCustomerEmail(e.target.value)}
                                     placeholder="(opzionale)"
+                                    readOnly={Boolean(matchedCustomer)}
                                 />
                             </label>
                         </div>
