@@ -62,3 +62,25 @@ def create_customer(payload: CustomerCreate, db=Depends(get_db)):
         raise HTTPException(status_code=400, detail="Dati cliente non validi")
     finally:
         cur.close()
+
+
+@router.get("/by-phone/{phone}")
+def get_customer_by_phone(phone: str, db=Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT id, full_name, phone, email
+            FROM customers
+            WHERE phone = %s
+            LIMIT 1
+        """, (phone,))
+        
+        customer = cur.fetchone()
+        
+        if not customer:
+            return {"customer": None}
+
+        return {"customer": customer}
+
+    finally:
+        cur.close()

@@ -10,3 +10,7 @@ export function createCustomer(payload) {
         body: payload,
     });
 }
+
+export function getCustomerByPhone(phone) {
+    return api.request(`/customers/by-phone/${encodeURIComponent(phone)}`);
+}

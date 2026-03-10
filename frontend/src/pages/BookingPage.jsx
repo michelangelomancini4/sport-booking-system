@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createCustomer } from "../api/customers";
-import { createBooking } from "../api/bookings";
+import { createCustomer, getCustomerByPhone } from "../api/customers"; import { createBooking } from "../api/bookings";
 import styles from "./BookingPage.module.css";
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -199,6 +198,26 @@ export default function BookingPage() {
         customerPhone.trim() &&
         !submitting
     );
+
+    async function handlePhoneBlur() {
+        const phone = customerPhone.trim();
+
+        if (!phone) return;
+
+        try {
+            const res = await getCustomerByPhone(phone);
+            const customer = res?.customer;
+
+            if (!customer) return;
+
+            setCustomerName(customer.full_name || "");
+            setCustomerEmail(customer.email || "");
+        } catch (e) {
+            console.error("Errore ricerca cliente:", e);
+        }
+    }
+
+
     /**
  * Conferma:
  * 1) crea cliente via POST /customers
@@ -371,7 +390,7 @@ export default function BookingPage() {
                                     className={styles.input}
                                     value={customerName}
                                     onChange={(e) => setCustomerName(e.target.value)}
-                                    placeholder="Mario Rossi"
+                                    placeholder="Inserisci nome..."
                                 />
                             </label>
 
@@ -381,7 +400,8 @@ export default function BookingPage() {
                                     className={styles.input}
                                     value={customerPhone}
                                     onChange={(e) => setCustomerPhone(e.target.value)}
-                                    placeholder="3331234567"
+                                    onBlur={handlePhoneBlur}
+                                    placeholder="Inserisci numero di telefono"
                                 />
                             </label>
                         </div>
