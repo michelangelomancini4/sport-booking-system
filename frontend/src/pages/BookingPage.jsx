@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { createCustomer } from "../api/customers";
+import { createBooking } from "../api/bookings";
 import styles from "./BookingPage.module.css";
 
 const API_BASE = "http://127.0.0.1:8000";
@@ -40,6 +42,13 @@ export default function BookingPage() {
     // --- Form di prenotazione (demo) ---
     const [playersCount, setPlayersCount] = useState(4);
     const [notes, setNotes] = useState("");
+
+    // ---client states---
+
+    const [customerName, setCustomerName] = useState("");
+    const [customerPhone, setCustomerPhone] = useState("");
+    const [customerEmail, setCustomerEmail] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     // --- Dati runtime: campi e slot dal backend ---
     const [fields, setFields] = useState([]); // [{id, name}]
@@ -182,48 +191,64 @@ export default function BookingPage() {
     const selectedPrice =
         selectedSlot ? `€${(selectedSlot.price_cents / 100).toFixed(2)}` : "—";
 
-    const canConfirm = Boolean(day && selectedSlot && !loadingSlots);
-
+    const canConfirm = Boolean(
+        day &&
+        selectedSlot &&
+        !loadingSlots &&
+        customerName.trim() &&
+        customerPhone.trim() &&
+        !submitting
+    );
     /**
-     * Conferma: POST /bookings
-     * (demo: customer_id fisso = 1)
-     */
+ * Conferma:
+ * 1) crea cliente via POST /customers
+ * 2) crea booking via POST /bookings
+ */
     async function handleConfirm() {
         if (!canConfirm) return;
 
         try {
-            const payload = {
-                slot_id: selectedSlot.id,
-                customer_id: 1,
-                players_count: Number(playersCount) || 0,
-                notes: notes || "",
-            };
+            setSubmitting(true);
 
-            const res = await fetch(`${API_BASE}/bookings`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
+            const customerRes = await createCustomer({
+                full_name: customerName.trim(),
+                phone: customerPhone.trim(),
+                email: customerEmail.trim() || null,
             });
 
-            if (res.status === 409) {
+            const customerId = customerRes?.customer?.id;
+            if (!customerId) {
+                throw new Error("Creazione cliente non riuscita");
+            }
+
+            const bookingRes = await createBooking({
+                slot_id: selectedSlot.id,
+                customer_id: customerId,
+                players_count: Number(playersCount) || 1,
+                notes: notes.trim() || "",
+            });
+
+            alert(
+                `Prenotazione confermata! ID: ${bookingRes?.booking?.id_booking ?? "OK"}`
+            );
+
+            setCustomerName("");
+            setCustomerPhone("");
+            setCustomerEmail("");
+            setNotes("");
+            setSelectedSlotId(null);
+
+            await fetchSlots();
+        } catch (e) {
+            if (e?.status === 409) {
                 alert("Slot già prenotato.");
                 await fetchSlots();
                 return;
             }
 
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || `Errore POST booking (${res.status})`);
-            }
-
-            const data = await res.json();
-            alert(`Prenotazione confermata! ID: ${data?.booking?.id_booking ?? "OK"}`);
-
-            setNotes("");
-            setSelectedSlotId(null);
-            await fetchSlots();
-        } catch (e) {
             alert(e?.message || "Errore durante la prenotazione");
+        } finally {
+            setSubmitting(false);
         }
     }
     const minPlayers = sport === "calcetto" ? 5 : 1;
@@ -339,6 +364,40 @@ export default function BookingPage() {
                     {/* DETTAGLI BOOKING */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Dettagli</div>
+                        <div className={styles.row}>
+                            <label className={styles.label}>
+                                <span className={styles.muted}>Nome e cognome</span>
+                                <input
+                                    className={styles.input}
+                                    value={customerName}
+                                    onChange={(e) => setCustomerName(e.target.value)}
+                                    placeholder="Mario Rossi"
+                                />
+                            </label>
+
+                            <label className={styles.label}>
+                                <span className={styles.muted}>Telefono</span>
+                                <input
+                                    className={styles.input}
+                                    value={customerPhone}
+                                    onChange={(e) => setCustomerPhone(e.target.value)}
+                                    placeholder="3331234567"
+                                />
+                            </label>
+                        </div>
+
+                        <div className={styles.row}>
+                            <label className={styles.label}>
+                                <span className={styles.muted}>Email</span>
+                                <input
+                                    className={styles.input}
+                                    type="email"
+                                    value={customerEmail}
+                                    onChange={(e) => setCustomerEmail(e.target.value)}
+                                    placeholder="(opzionale)"
+                                />
+                            </label>
+                        </div>
 
                         <div className={styles.row}>
                             <label className={styles.label}>
@@ -404,9 +463,9 @@ export default function BookingPage() {
                             className={styles.primaryBtn}
                             onClick={handleConfirm}
                             disabled={!canConfirm}
-                            title={!canConfirm ? "Seleziona uno slot" : "Conferma"}
+                            title={!canConfirm ? "Completa i dati e seleziona uno slot" : "Conferma"}
                         >
-                            Conferma prenotazione
+                            {submitting ? "Conferma in corso..." : "Conferma prenotazione"}
                         </button>
                     </div>
                 </aside>
