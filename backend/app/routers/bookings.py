@@ -16,7 +16,7 @@ def list_bookings(
     day: date | None = Query(default=None),
     field_id: int | None = Query(default=None),
     customer_id: int | None = Query(default=None),
-    status: str | None = Query(default="active"),
+    status: str | None = Query(default=None),
     q: str | None = Query(default=None),
     db=Depends(get_db),
 ):
@@ -180,65 +180,27 @@ def update_booking(booking_id: int, payload: BookingUpdate, db=Depends(get_db)):
 
 @router.delete("/{booking_id}", response_model=DeleteBookingOut)
 def delete_booking(booking_id: int, db=Depends(get_db)):
-    cur = db.cursor(dictionary=True)
+    cur = db.cursor()
     try:
-        # 1) recupera booking attivo
         cur.execute(
             """
-            SELECT
-                id_booking,
-                slot_id,
-                customer_id,
-                players_count,
-                notes,
-                status,
-                created_at
-            FROM bookings
-            WHERE id_booking = %s
+            UPDATE bookings
+            SET status = 'cancelled'
+            WHERE id_booking = %s AND status <> 'cancelled'
             """,
             (booking_id,),
         )
-        booking = cur.fetchone()
+        updated = cur.rowcount
 
-        if booking is None:
-            raise HTTPException(status_code=404, detail="Booking non trovata")
+        if updated == 0:
+            cur.execute("SELECT 1 FROM bookings WHERE id_booking = %s", (booking_id,))
+            exists = cur.fetchone()
+            if not exists:
+                raise HTTPException(status_code=404, detail="Booking non trovata")
 
-        # 2) archivia nello storico come cancelled
-        cur.execute(
-            """
-            INSERT INTO bookings_history (
-                booking_id,
-                slot_id,
-                customer_id,
-                players_count,
-                notes,
-                status,
-                created_at
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """,
-            (
-                booking["id_booking"],
-                booking["slot_id"],
-                booking["customer_id"],
-                booking["players_count"],
-                booking["notes"],
-                "cancelled",
-                booking["created_at"],
-            ),
-        )
-
-        # 3) elimina dalla tabella attiva
-        cur.execute(
-            "DELETE FROM bookings WHERE id_booking = %s",
-            (booking_id,),
-        )
+            return {"ok": True, "deleted_id": booking_id}
 
         db.commit()
         return {"ok": True, "deleted_id": booking_id}
-
-    except Exception:
-        db.rollback()
-        raise
     finally:
         cur.close()

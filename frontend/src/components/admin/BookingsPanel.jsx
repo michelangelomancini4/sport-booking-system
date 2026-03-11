@@ -132,7 +132,8 @@ export default function BookingsPanel({ styles }) {
                         onChange={(e) => setStatus(e.target.value)}
                     >
                         <option value="active">Attive</option>
-                        <option value="cancelled">Annullate</option>
+                        <option value="cancelled">Storico</option>
+                        <option value="">Tutte</option>
                     </select>
                 </label>
 
