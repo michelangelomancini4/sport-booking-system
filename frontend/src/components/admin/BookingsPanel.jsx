@@ -141,15 +141,18 @@ export default function BookingsPanel({ styles }) {
 
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Campo (ID)</span>
-                    <input
+                    <span className={styles.label}>Campo</span>
+                    <select
                         className={styles.input}
-                        type="number"
-                        min="1"
                         value={fieldId}
                         onChange={(e) => setFieldId(e.target.value)}
-                        placeholder="opzionale"
-                    />
+                    >
+                        <option value="">Tutti i campi</option>
+                        <option value="1">Campo Padel 1</option>
+                        <option value="2">Campo Padel 2</option>
+                        <option value="3">Campo Calcetto 1</option>
+                        <option value="4">Campo Calcetto 2</option>
+                    </select>
                 </label>
 
                 <label className={styles.field}>
@@ -202,8 +205,8 @@ export default function BookingsPanel({ styles }) {
                                         <b>{b.field_name}</b> — {b.full_name}
                                         <span
                                             className={`${styles.statusBadge} ${b.status === "cancelled"
-                                                    ? styles.cancelled
-                                                    : styles.active
+                                                ? styles.cancelled
+                                                : styles.active
                                                 }`}
                                         >
                                             {b.status === "cancelled" ? "ANNULLATA" : "ATTIVA"}
