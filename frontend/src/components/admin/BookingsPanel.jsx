@@ -183,7 +183,14 @@ export default function BookingsPanel({ styles }) {
             ) : (
                 <ul className={styles.bookingList}>
                     {[...bookingsData.rows]
-                        .sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at))
+                        .sort((a, b) => {
+                            if (a.status !== b.status) {
+                                if (a.status === "active") return -1;
+                                if (b.status === "active") return 1;
+                            }
+
+                            return new Date(a.starts_at) - new Date(b.starts_at);
+                        })
                         .map((b) => (
                             <li
                                 key={b.id_booking}
@@ -203,17 +210,9 @@ export default function BookingsPanel({ styles }) {
                                         </span>
                                     </div>
 
-                                    <div className={styles.bookingMeta}>
-                                        🏷️ {b.sport_name}
-                                    </div>
-
-                                    <div className={styles.bookingMeta}>
-                                        📞 {b.phone || "—"}
-                                    </div>
-
-                                    <div className={styles.bookingMeta}>
-                                        👥 {b.players_count} giocatori
-                                    </div>
+                                    <div className={styles.bookingMeta}>🏷️ {b.sport_name}</div>
+                                    <div className={styles.bookingMeta}>📞 {b.phone || "—"}</div>
+                                    <div className={styles.bookingMeta}>👥 {b.players_count} giocatori</div>
 
                                     <div className={styles.bookingMeta}>
                                         {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
