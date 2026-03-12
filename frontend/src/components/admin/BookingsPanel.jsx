@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getBookings, deleteBooking } from "../../api/bookings";
 import { RotateCw } from "lucide-react";
 
+import styles from "../../pages/AdminPage.module.css";
+
 export default function BookingsPanel({ styles }) {
     const [bookingsData, setBookingsData] = useState({ rows: [] });
     const [loadingBookings, setLoadingBookings] = useState(false);
@@ -163,19 +165,42 @@ export default function BookingsPanel({ styles }) {
 
             </div>
 
+            {bookingsError && (
+                <div className={styles.error}>
+                    {bookingsError}
+                </div>
+            )}
+
+            {bookingsMsg && (
+                <div className={styles.success}>
+                    {bookingsMsg}
+                </div>
+            )}
+
 
             {bookingsData?.rows?.length === 0 ? (
                 <div className={styles.placeholder}>Nessuna prenotazione.</div>
             ) : (
                 <ul className={styles.bookingList}>
                     {bookingsData.rows.map((b) => (
-                        <li key={b.id_booking} className={styles.bookingItem}>
-                            <div className={styles.bookingMain}>
+                        <li
+                            key={b.id_booking}
+                            className={`${styles.bookingItem} ${b.status === "cancelled" ? styles.bookingCancelled : ""
+                                }`}
+                        >                            <div className={styles.bookingMain}>
                                 <div className={styles.bookingTitle}>
                                     <b>{b.field_name}</b> — {b.full_name}
+                                    <span
+                                        className={`${styles.statusBadge} ${b.status === "cancelled" ? styles.cancelled : styles.active
+                                            }`}
+                                    >
+                                        {b.status === "cancelled" ? "ANNULLATA" : "ATTIVA"}
+                                    </span>
                                 </div>
 
+                                <div className={styles.bookingMeta}>🏷️ {b.sport_name}</div>
                                 <div className={styles.bookingMeta}>📞 {b.phone || "—"}</div>
+                                <div className={styles.bookingMeta}>👥 {b.players_count} giocatori</div>
 
                                 <div className={styles.bookingMeta}>
                                     {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
@@ -184,18 +209,22 @@ export default function BookingsPanel({ styles }) {
                                         minute: "2-digit",
                                     })}
                                 </div>
+
+                                {b.notes && (
+                                    <div className={styles.bookingMeta}>
+                                        📝 {b.notes}
+                                    </div>
+                                )}
                             </div>
 
-                            <button
-                                className={styles.dangerBtn}
-                                onClick={() => cancelBooking(b.id_booking)}
-                                disabled={cancelingId === b.id_booking}
-                                title={
-                                    cancelingId === b.id_booking ? "Annullamento in corso..." : ""
-                                }
-                            >
-                                {cancelingId === b.id_booking ? "Annullando..." : "Annulla"}
-                            </button>
+                            {b.status === "active" && (
+                                <button
+                                    className={styles.dangerBtn}
+                                    onClick={() => cancelBooking(b.id_booking)}
+                                >
+                                    Annulla
+                                </button>
+                            )}
                         </li>
                     ))}
                 </ul>
