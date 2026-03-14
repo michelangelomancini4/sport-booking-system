@@ -287,6 +287,29 @@
 }
 
 
+.errorBox {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    background: rgba(220, 38, 38, 0.12);
+    border: 1px solid rgba(220, 38, 38, 0.25);
+    color: #7f1d1d;
+}
+
+.successBox {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    background: rgba(22, 163, 74, 0.12);
+    border: 1px solid rgba(22, 163, 74, 0.25);
+    color: #278a09;
+}
+
+
 
 /* Responsive */
 @media (max-width: 900px) {

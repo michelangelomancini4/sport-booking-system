@@ -63,6 +63,9 @@ export default function BookingPage() {
 
     const [matchedCustomer, setMatchedCustomer] = useState(null);
 
+    const [submitError, setSubmitError] = useState("");
+    const [submitMsg, setSubmitMsg] = useState("");
+
     // sportId deriva dalla scelta sport (serve per query API)
     const sportId = SPORT_TO_SPORT_ID[sport] ?? null;
 
@@ -102,6 +105,7 @@ export default function BookingPage() {
         setLoadingSlots(true);
         setSlotsError("");
         setSelectedSlotId(null);
+
 
         try {
             const data = await getFreeSlots({
@@ -218,6 +222,8 @@ export default function BookingPage() {
 
         try {
             setSubmitting(true);
+            setSubmitError("");
+            setSubmitMsg("");
 
             let customerId = null;
 
@@ -251,7 +257,7 @@ export default function BookingPage() {
                 notes: notes.trim() || "",
             });
 
-            alert(
+            setSubmitMsg(
                 `Prenotazione confermata! ID: ${bookingRes?.booking?.id_booking ?? "OK"}`
             );
 
@@ -264,12 +270,12 @@ export default function BookingPage() {
             await fetchSlots();
         } catch (e) {
             if (e?.status === 409) {
-                alert("Slot già prenotato.");
+                setSubmitError("Slot già prenotato.");
                 await fetchSlots();
                 return;
             }
 
-            alert(e?.message || "Errore durante la prenotazione");
+            setSubmitError(e?.message || "Errore durante la prenotazione");
         } finally {
             setSubmitting(false);
         }
@@ -492,6 +498,18 @@ export default function BookingPage() {
                                 {selectedSlot ? `${selectedSlot.start}-${selectedSlot.end}` : "—"}
                             </span>
                         </div>
+
+                        {submitError && (
+                            <div className={styles.errorBox}>
+                                {submitError}
+                            </div>
+                        )}
+
+                        {submitMsg && (
+                            <div className={styles.successBox}>
+                                {submitMsg}
+                            </div>
+                        )}
 
                         <button
                             type="button"
