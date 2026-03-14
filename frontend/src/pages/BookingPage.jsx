@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { createCustomer, getCustomerByPhone } from "../api/customers"; import { createBooking } from "../api/bookings";
+import { createCustomer, getCustomerByPhone } from "../api/customers";
+import { createBooking } from "../api/bookings";
+import { getFields } from "../api/fields";
+import { getFreeSlots } from "../api/slots";
 import styles from "./BookingPage.module.css";
 
-const API_BASE = "http://127.0.0.1:8000";
 
 /**
  * Mapping “stabile” sport -> sport_id (come in tabella sports del DB). */
@@ -67,21 +69,15 @@ export default function BookingPage() {
      * 1) FETCH FIELDS (STRUTTURALI)
    
      */
-    async function fetchFields(signal) {
+    async function fetchFields() {
         setLoadingFields(true);
         setFieldsError("");
 
         try {
-            const qs = new URLSearchParams();
-            if (sportId) qs.set("sport_id", String(sportId));
+            const data = await getFields({
+                sport_id: sportId,
+            });
 
-            const res = await fetch(`${API_BASE}/fields?${qs.toString()}`, { signal });
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || `Errore GET fields (${res.status})`);
-            }
-
-            const data = await res.json();
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
             const nextFields = rows
@@ -90,8 +86,6 @@ export default function BookingPage() {
 
             setFields(nextFields);
         } catch (e) {
-            // Se è abort, non segnare errore né resettare (evita flicker)
-            if (e?.name === "AbortError") return;
             setFields([]);
             setFieldsError(e?.message || "Errore caricamento campi");
         } finally {
@@ -103,23 +97,18 @@ export default function BookingPage() {
     /**
      * 2) FETCH SLOTS (OPERATIVI)
          */
-    async function fetchSlots(signal) {
+    async function fetchSlots() {
         setLoadingSlots(true);
         setSlotsError("");
         setSelectedSlotId(null);
 
         try {
-            const qs = new URLSearchParams({ day });
-            if (sportId) qs.set("sport_id", String(sportId));
-            if (selectedFieldId) qs.set("field_id", String(selectedFieldId));
+            const data = await getFreeSlots({
+                day,
+                sport_id: sportId,
+                field_id: selectedFieldId || undefined,
+            });
 
-            const res = await fetch(`${API_BASE}/slots/free?${qs.toString()}`, { signal });
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || `Errore GET slots (${res.status})`);
-            }
-
-            const data = await res.json();
             const rows = Array.isArray(data?.rows) ? data.rows : [];
 
             const mapped = rows.map((r) => ({
@@ -134,7 +123,6 @@ export default function BookingPage() {
 
             setSlots(mapped);
         } catch (e) {
-            if (e?.name === "AbortError") return;
             setSlots([]);
             setSlotsError(e?.message || "Errore caricamento slot");
         } finally {
@@ -150,32 +138,23 @@ export default function BookingPage() {
      * - ricarichiamo i campi strutturali di quello sport
      */
     useEffect(() => {
-        const ac = new AbortController();
-
         setSelectedFieldId("");
         setSelectedSlotId(null);
         setSlots([]);
 
-        fetchFields(ac.signal);
-
-        return () => ac.abort();
+        fetchFields();
     }, [sport]);
 
 
     useEffect(() => {
-        const ac = new AbortController();
-
-        // Guardia: se ho un field selezionato ma non è tra i fields correnti, non chiamare
         if (
             selectedFieldId &&
             !fields.some((f) => String(f.id) === String(selectedFieldId))
         ) {
-            return () => ac.abort();
+            return;
         }
 
-        fetchSlots(ac.signal);
-
-        return () => ac.abort();
+        fetchSlots();
     }, [day, sport, selectedFieldId, fields]);
 
 
