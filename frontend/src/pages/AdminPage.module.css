@@ -12,7 +12,6 @@
     flex-direction: column;
     gap: 16px;
     /* debug */
-    background-color: yellow;
 }
 
 .header {
@@ -94,6 +93,11 @@
 
 .bookinglist {
     flex-basis: 50%;
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+
+    gap: 12px;
 }
 
 .bookingdetail {
@@ -101,10 +105,34 @@
 
 }
 
-.bookingSelected {
-    border: 2px solid rgba(34, 197, 94, 0.55);
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+.bookingTitle {
+    font-size: 15px;
+    font-weight: 600;
 }
+
+.bookingMeta {
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+.bookingItem.bookingSelected {
+    border-left: 9px solid #2e7d32;
+    background: #f1f8f2;
+}
+
+.bookingItem {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.75);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+}
+
+
 
 @media (max-width: 720px) {
     .formGrid {
@@ -200,6 +228,36 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
+}
+
+.editSection {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sectionTitleSmall {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.textarea {
+    min-height: 90px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 10px 12px;
+    outline: none;
+    background: white;
+    resize: vertical;
+    font: inherit;
+}
+
+.textarea:focus {
+    border-color: rgba(0, 0, 0, 0.25);
 }
 
 @media (max-width: 720px) {
@@ -340,8 +398,9 @@
 }
 
 .active {
-    background: #dff3e2;
-    color: #22663a;
+    background: #e6f4ea;
+    color: #1e7a3e;
+    font-weight: 600;
 }
 
 .cancelled {

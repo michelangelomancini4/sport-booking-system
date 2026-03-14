@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBookingById } from "../../api/bookings";
+import { updateBooking } from "../../api/bookings";
 import styles from "../../pages/AdminPage.module.css";
 
 export default function BookingDetailPanel({ selectedBookingId }) {
@@ -7,9 +8,17 @@ export default function BookingDetailPanel({ selectedBookingId }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    // editing states
+    const [playersCount, setPlayersCount] = useState("");
+    const [notes, setNotes] = useState("");
+    const [saving, setSaving] = useState(false);
+    const [saveMsg, setSaveMsg] = useState("");
+
     useEffect(() => {
         if (!selectedBookingId) {
             setBooking(null);
+            setPlayersCount("");
+            setNotes("");
             setError("");
             return;
         }
@@ -21,6 +30,8 @@ export default function BookingDetailPanel({ selectedBookingId }) {
 
                 const data = await getBookingById(selectedBookingId);
                 setBooking(data?.booking ?? null);
+                setPlayersCount(data?.booking?.players_count ?? "");
+                setNotes(data?.booking?.notes ?? "");
             } catch (e) {
                 setBooking(null);
                 setError(e?.message || "Errore caricamento dettaglio prenotazione");
@@ -31,6 +42,28 @@ export default function BookingDetailPanel({ selectedBookingId }) {
 
         loadBookingDetail();
     }, [selectedBookingId]);
+
+    async function handleSave() {
+        try {
+            setSaving(true);
+            setSaveMsg("");
+
+            const payload = {
+                players_count: Number(playersCount),
+                notes: notes
+            };
+
+            const data = await updateBooking(booking.id_booking, payload);
+
+            setBooking(data.booking);
+            setSaveMsg("Modifiche salvate ✓");
+
+        } catch (e) {
+            setSaveMsg("Errore aggiornamento");
+        } finally {
+            setSaving(false);
+        }
+    }
 
     if (!selectedBookingId) {
         return (
@@ -135,10 +168,7 @@ export default function BookingDetailPanel({ selectedBookingId }) {
                     <div className={styles.value}>{booking.email || "—"}</div>
                 </div>
 
-                <div>
-                    <span className={styles.muted}>Giocatori</span>
-                    <div className={styles.value}>{booking.players_count ?? "—"}</div>
-                </div>
+
 
                 <div>
                     <span className={styles.muted}>Inizio</span>
@@ -157,10 +187,40 @@ export default function BookingDetailPanel({ selectedBookingId }) {
                             : "—"}
                     </div>
                 </div>
+            </div>
+            <div className={styles.editSection}>
+                <div className={styles.sectionTitleSmall}>Modifica prenotazione</div>
 
-                <div style={{ gridColumn: "1 / -1" }}>
+                <label className={styles.field}>
+                    <span className={styles.muted}>Giocatori</span>
+                    <input
+                        className={styles.input}
+                        type="number"
+                        value={playersCount}
+                        onChange={(e) => setPlayersCount(e.target.value)}
+                    />
+                </label>
+
+                <label className={styles.field}>
                     <span className={styles.muted}>Note</span>
-                    <div className={styles.value}>{booking.notes || "—"}</div>
+                    <textarea
+                        className={styles.textarea}
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                        rows={4}
+                    />
+                </label>
+
+                <div className={styles.actions}>
+                    <button
+                        className={styles.primaryBtn}
+                        disabled={saving}
+                        onClick={handleSave}
+                    >
+                        {saving ? "Salvataggio..." : "Salva modifiche"}
+                    </button>
+
+                    {saveMsg && <span className={styles.message}>{saveMsg}</span>}
                 </div>
             </div>
         </section>

@@ -244,7 +244,8 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking }) {
                                 <li
                                     key={b.id_booking}
                                     className={`${styles.bookingItem} ${b.status === "cancelled" ? styles.bookingCancelled : ""
-                                        } ${isNow ? styles.bookingNow : ""}`}
+                                        } ${isNow ? styles.bookingNow : ""} ${selectedBookingId === b.id_booking ? styles.bookingSelected : ""
+                                        }`}
                                     onClick={() => onSelectBooking?.(b.id_booking)}
                                 >
                                     <div className={styles.bookingMain}>

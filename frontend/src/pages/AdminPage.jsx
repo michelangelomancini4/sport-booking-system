@@ -29,7 +29,6 @@ export default function AdminPage() {
                 <div className={styles.bookingsection}>
                     <section className={styles.bookinglist}>
                         <BookingsPanel
-                            styles={styles}
                             selectedBookingId={selectedBookingId}
                             onSelectBooking={setSelectedBookingId} />
                     </section>

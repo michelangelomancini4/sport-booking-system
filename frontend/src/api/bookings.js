@@ -18,3 +18,19 @@ export function deleteBooking(id) {
 export function getBookingById(id) {
     return api.request(`/bookings/${id}`);
 }
+
+export async function updateBooking(id, payload) {
+    const res = await fetch(`${API_BASE}/bookings/${id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+        throw new Error("Errore aggiornamento booking");
+    }
+
+    return res.json();
+}
