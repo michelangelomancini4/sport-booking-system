@@ -194,54 +194,69 @@ export default function BookingsPanel({ styles }) {
 
                             return new Date(a.starts_at) - new Date(b.starts_at);
                         })
-                        .map((b) => (
-                            <li
-                                key={b.id_booking}
-                                className={`${styles.bookingItem} ${b.status === "cancelled" ? styles.bookingCancelled : ""
-                                    }`}
-                            >
-                                <div className={styles.bookingMain}>
-                                    <div className={styles.bookingTitle}>
-                                        <b>{b.field_name}</b> — {b.full_name}
-                                        <span
-                                            className={`${styles.statusBadge} ${b.status === "cancelled"
-                                                ? styles.cancelled
-                                                : styles.active
-                                                }`}
-                                        >
-                                            {b.status === "cancelled" ? "ANNULLATA" : "ATTIVA"}
-                                        </span>
-                                    </div>
+                        .map((b) => {
 
-                                    <div className={styles.bookingMeta}>🏷️ {b.sport_name}</div>
-                                    <div className={styles.bookingMeta}>📞 {b.phone || "—"}</div>
-                                    <div className={styles.bookingMeta}>👥 {b.players_count} giocatori</div>
+                            const now = new Date()
+                            const start = new Date(b.starts_at)
+                            const end = new Date(b.ends_at)
 
-                                    <div className={styles.bookingMeta}>
-                                        {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
-                                        {new Date(b.ends_at).toLocaleTimeString("it-IT", {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                        })}
-                                    </div>
+                            const isNow = now >= start && now < end
 
-                                    {b.notes && (
-                                        <div className={styles.bookingMeta}>
-                                            📝 {b.notes}
+                            return (
+
+                                <li
+                                    key={b.id_booking}
+                                    className={`${styles.bookingItem} ${b.status === "cancelled" ? styles.bookingCancelled : ""
+                                        } ${isNow ? styles.bookingNow : ""}`}
+                                >
+                                    <div className={styles.bookingMain}>
+                                        <div className={styles.bookingTitle}>
+                                            <b>{b.field_name}</b> — {b.full_name}
+
+                                            <span
+                                                className={`${styles.statusBadge} ${b.status === "cancelled" ? styles.cancelled : styles.active
+                                                    }`}
+                                            >
+                                                {b.status === "cancelled" ? "ANNULLATA" : "ATTIVA"}
+                                            </span>
+
+                                            {isNow && (
+                                                <span className={styles.nowBadge}>
+                                                    IN CORSO
+                                                </span>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
 
-                                {b.status === "active" && (
-                                    <button
-                                        className={styles.dangerBtn}
-                                        onClick={() => cancelBooking(b.id_booking)}
-                                    >
-                                        Annulla
-                                    </button>
-                                )}
-                            </li>
-                        ))}
+                                        <div className={styles.bookingMeta}>🏷️ {b.sport_name}</div>
+                                        <div className={styles.bookingMeta}>📞 {b.phone || "—"}</div>
+                                        <div className={styles.bookingMeta}>👥 {b.players_count} giocatori</div>
+
+                                        <div className={styles.bookingMeta}>
+                                            {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
+                                            {new Date(b.ends_at).toLocaleTimeString("it-IT", {
+                                                hour: "2-digit",
+                                                minute: "2-digit",
+                                            })}
+                                        </div>
+
+                                        {b.notes && (
+                                            <div className={styles.bookingMeta}>
+                                                📝 {b.notes}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {b.status === "active" && (
+                                        <button
+                                            className={styles.dangerBtn}
+                                            onClick={() => cancelBooking(b.id_booking)}
+                                        >
+                                            Annulla
+                                        </button>
+                                    )}
+                                </li>
+                            )
+                        })}
                 </ul>
             )}
         </>
