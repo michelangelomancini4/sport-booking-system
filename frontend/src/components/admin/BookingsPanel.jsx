@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { getBookings, deleteBooking } from "../../api/bookings";
 import { RotateCw } from "lucide-react";
+import { getTodayYmd } from "../../utils/date";
 
 import styles from "../../pages/AdminPage.module.css";
 
-export default function BookingsPanel({ styles }) {
+export default function BookingsPanel() {
     const [bookingsData, setBookingsData] = useState({ rows: [] });
     const [loadingBookings, setLoadingBookings] = useState(false);
     const [cancelingId, setCancelingId] = useState(null);
@@ -15,7 +16,7 @@ export default function BookingsPanel({ styles }) {
     const [qDebounced, setQDebounced] = useState("");
 
     // --- FILTRI ---
-    const [day, setDay] = useState("2026-01-23");
+    const [day, setDay] = useState(getTodayYmd);
     const [status, setStatus] = useState("active");
     const [fieldId, setFieldId] = useState("");
     const [q, setQ] = useState("");

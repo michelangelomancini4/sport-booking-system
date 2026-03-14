@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { generateSlots } from "../../api/slots";
+import { getTodayYmd } from "../../utils/date";
 
 const SPORTS = [
     { label: "Padel", sport_id: 1 },
@@ -8,8 +9,8 @@ const SPORTS = [
 
 export default function SlotGenerator({ styles }) {
     const [sportId, setSportId] = useState(1);
-    const [dateFrom, setDateFrom] = useState("2026-01-23");
-    const [dateTo, setDateTo] = useState("2026-01-23");
+    const [dateFrom, setDateFrom] = useState(getTodayYmd);
+    const [dateTo, setDateTo] = useState(getTodayYmd);
     const [startTime, setStartTime] = useState("10:00:00");
     const [endTime, setEndTime] = useState("23:00:00");
     const [slotMinutes, setSlotMinutes] = useState(60);

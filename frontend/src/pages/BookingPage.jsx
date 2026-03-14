@@ -3,6 +3,7 @@ import { createCustomer, getCustomerByPhone } from "../api/customers";
 import { createBooking } from "../api/bookings";
 import { getFields } from "../api/fields";
 import { getFreeSlots } from "../api/slots";
+import { getTodayYmd } from "../utils/date";
 import styles from "./BookingPage.module.css";
 
 
@@ -34,7 +35,7 @@ function hhmm(dateTimeString) {
 export default function BookingPage() {
     // --- Selezioni utente (UI) ---
     const [sport, setSport] = useState("padel");
-    const [day, setDay] = useState("2026-01-23");
+    const [day, setDay] = useState(getTodayYmd);
     const [selectedFieldId, setSelectedFieldId] = useState(""); // "" = tutti i campi
     const [selectedSlotId, setSelectedSlotId] = useState(null);
 
