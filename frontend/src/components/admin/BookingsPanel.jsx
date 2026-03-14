@@ -6,7 +6,7 @@ import { getTodayYmd } from "../../utils/date";
 
 import styles from "../../pages/AdminPage.module.css";
 
-export default function BookingsPanel() {
+export default function BookingsPanel({ selectedBookingId, onSelectBooking }) {
     const [bookingsData, setBookingsData] = useState({ rows: [] });
     const [loadingBookings, setLoadingBookings] = useState(false);
     const [cancelingId, setCancelingId] = useState(null);
@@ -245,6 +245,7 @@ export default function BookingsPanel() {
                                     key={b.id_booking}
                                     className={`${styles.bookingItem} ${b.status === "cancelled" ? styles.bookingCancelled : ""
                                         } ${isNow ? styles.bookingNow : ""}`}
+                                    onClick={() => onSelectBooking?.(b.id_booking)}
                                 >
                                     <div className={styles.bookingMain}>
                                         <div className={styles.bookingTitle}>
@@ -286,8 +287,10 @@ export default function BookingsPanel() {
                                     {b.status === "active" && (
                                         <button
                                             className={styles.dangerBtn}
-                                            onClick={() => cancelBooking(b.id_booking)}
-                                        >
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                cancelBooking(b.id_booking);
+                                            }}                                        >
                                             Annulla
                                         </button>
                                     )}

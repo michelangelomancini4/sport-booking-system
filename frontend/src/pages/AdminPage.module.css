@@ -40,8 +40,8 @@
 .sections_container {
     width: 70%;
     margin-left: 15%;
-    display: flex;
-    justify-content: space-around;
+    /* display: flex;
+    justify-content: space-around; */
 }
 
 .card {
@@ -73,6 +73,37 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
+}
+
+/* bookingsection */
+
+.bookingsection {
+
+    display: flex;
+    justify-content: space-between;
+}
+
+.bookingsection section {
+
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 14px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.7);
+    margin: 20px 0px;
+}
+
+.bookinglist {
+    flex-basis: 50%;
+}
+
+.bookingdetail {
+    flex-basis: 30%;
+
+}
+
+.bookingSelected {
+    border: 2px solid rgba(34, 197, 94, 0.55);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
 }
 
 @media (max-width: 720px) {

@@ -1,9 +1,12 @@
 import styles from "./AdminPage.module.css";
+import { useState } from "react";
 
 import SlotGenerator from "../components/admin/SlotGenerator";
 import BookingsPanel from "../components/admin/BookingsPanel";
+import BookingDetailPanel from "../components/admin/BookingDetailPanel";
 
 export default function AdminPage() {
+    const [selectedBookingId, setSelectedBookingId] = useState(null);
     return (
         <div className={styles.page}>
             <header className={styles.header}>
@@ -23,11 +26,19 @@ export default function AdminPage() {
                     <SlotGenerator styles={styles} />
                 </section>
 
-                <section className={styles.card}>
+                <div className={styles.bookingsection}>
+                    <section className={styles.bookinglist}>
+                        <BookingsPanel
+                            styles={styles}
+                            selectedBookingId={selectedBookingId}
+                            onSelectBooking={setSelectedBookingId} />
+                    </section>
+                    <section
+                        className={styles.bookingdetail}
+                    >
 
-
-                    <BookingsPanel styles={styles} />
-                </section>
+                        <BookingDetailPanel selectedBookingId={selectedBookingId} />                    </section>
+                </div>
             </div>
         </div>
     );

@@ -14,3 +14,7 @@ export function createBooking(payload) {
 export function deleteBooking(id) {
     return api.request(`/bookings/${id}`, { method: "DELETE" });
 }
+
+export function getBookingById(id) {
+    return api.request(`/bookings/${id}`);
+}
