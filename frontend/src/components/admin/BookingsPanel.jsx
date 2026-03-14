@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBookings, deleteBooking } from "../../api/bookings";
+import { getFields } from "../../api/fields";
 import { RotateCw } from "lucide-react";
 import { getTodayYmd } from "../../utils/date";
 
@@ -20,6 +21,35 @@ export default function BookingsPanel() {
     const [status, setStatus] = useState("active");
     const [fieldId, setFieldId] = useState("");
     const [q, setQ] = useState("");
+
+    const [fields, setFields] = useState([]);
+    const [loadingFields, setLoadingFields] = useState(false);
+    const [fieldsError, setFieldsError] = useState("");
+
+    async function loadFields() {
+        try {
+            setLoadingFields(true);
+            setFieldsError("");
+
+            const data = await getFields();
+            const rows = Array.isArray(data?.rows) ? data.rows : [];
+
+            const sortedFields = [...rows].sort((a, b) =>
+                a.name.localeCompare(b.name)
+            );
+
+            setFields(sortedFields);
+        } catch (e) {
+            setFields([]);
+            setFieldsError(e?.message || "Errore caricamento campi");
+        } finally {
+            setLoadingFields(false);
+        }
+    }
+
+    useEffect(() => {
+        loadFields();
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -140,19 +170,20 @@ export default function BookingsPanel() {
                     </select>
                 </label>
 
-
                 <label className={styles.field}>
                     <span className={styles.label}>Campo</span>
                     <select
                         className={styles.input}
                         value={fieldId}
                         onChange={(e) => setFieldId(e.target.value)}
+                        disabled={loadingFields}
                     >
                         <option value="">Tutti i campi</option>
-                        <option value="1">Campo Padel 1</option>
-                        <option value="2">Campo Padel 2</option>
-                        <option value="3">Campo Calcetto 1</option>
-                        <option value="4">Campo Calcetto 2</option>
+                        {fields.map((field) => (
+                            <option key={field.id} value={field.id}>
+                                {field.name}
+                            </option>
+                        ))}
                     </select>
                 </label>
 
@@ -168,6 +199,11 @@ export default function BookingsPanel() {
                 </label>
 
             </div>
+            {fieldsError && (
+                <div className={styles.error}>
+                    {fieldsError}
+                </div>
+            )}
 
             {bookingsError && (
                 <div className={styles.error}>
