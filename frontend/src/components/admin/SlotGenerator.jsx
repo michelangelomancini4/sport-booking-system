@@ -1,6 +1,5 @@
 import { useState } from "react";
-
-const API_BASE = "http://127.0.0.1:8000";
+import { generateSlots } from "../../api/slots";
 
 const SPORTS = [
     { label: "Padel", sport_id: 1 },
@@ -37,18 +36,7 @@ export default function SlotGenerator({ styles }) {
 
             if (priceCents !== "") payload.price_cents = Number(priceCents);
 
-            const res = await fetch(`${API_BASE}/slots/generate`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            });
-
-            if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || `Errore generate (${res.status})`);
-            }
-
-            const data = await res.json();
+            const data = await generateSlots(payload);
             setResult(data);
         } catch (e) {
             setError(e?.message || "Errore durante la generazione");
