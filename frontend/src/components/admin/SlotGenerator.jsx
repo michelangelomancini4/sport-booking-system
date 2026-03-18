@@ -11,8 +11,8 @@ export default function SlotGenerator({ styles }) {
     const [sportId, setSportId] = useState(1);
     const [dateFrom, setDateFrom] = useState(getTodayYmd);
     const [dateTo, setDateTo] = useState(getTodayYmd);
-    const [startTime, setStartTime] = useState("10:00:00");
-    const [endTime, setEndTime] = useState("23:00:00");
+    const [startTime, setStartTime] = useState("10:00");
+    const [endTime, setEndTime] = useState("23:00");
     const [slotMinutes, setSlotMinutes] = useState(60);
     const [priceCents, setPriceCents] = useState(""); // opzionale override
 

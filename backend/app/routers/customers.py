@@ -21,6 +21,27 @@ def list_customers(db=Depends(get_db)):
         cur.close()
 
 
+@router.get("/by-phone/{phone}")
+def get_customer_by_phone(phone: str, db=Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT id, full_name, phone, email
+            FROM customers
+            WHERE phone = %s
+            LIMIT 1
+        """, (phone,))
+        
+        customer = cur.fetchone()
+        
+        if not customer:
+            return {"customer": None}
+
+        return {"customer": customer}
+
+    finally:
+        cur.close()
+
 @router.get("/{customer_id}", response_model=CustomerGetOut)
 def get_customer(customer_id: int, db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
@@ -59,28 +80,12 @@ def create_customer(payload: CustomerCreate, db=Depends(get_db)):
         return {"customer": customer}
 
     except IntegrityError:
+        db.rollback()
         raise HTTPException(status_code=400, detail="Dati cliente non validi")
-    finally:
-        cur.close()
 
-
-@router.get("/by-phone/{phone}")
-def get_customer_by_phone(phone: str, db=Depends(get_db)):
-    cur = db.cursor(dictionary=True)
-    try:
-        cur.execute("""
-            SELECT id, full_name, phone, email
-            FROM customers
-            WHERE phone = %s
-            LIMIT 1
-        """, (phone,))
-        
-        customer = cur.fetchone()
-        
-        if not customer:
-            return {"customer": None}
-
-        return {"customer": customer}
+    except Exception:
+        db.rollback()
+        raise
 
     finally:
         cur.close()

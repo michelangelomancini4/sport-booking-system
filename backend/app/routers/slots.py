@@ -18,9 +18,12 @@ def list_slots(db=Depends(get_db)):
                 s.starts_at,
                 s.ends_at,
                 s.price_cents,
-                s.is_active
+                s.is_active,
+                f.sport_id,
+                sp.name AS sport_name
             FROM slots s
             JOIN fields f ON f.id = s.field_id
+            JOIN sports sp ON sp.id = f.sport_id
             ORDER BY s.starts_at ASC
         """)
         rows = cur.fetchall()
@@ -54,6 +57,7 @@ def free_slots(
     JOIN sports sp ON sp.id = f.sport_id
     LEFT JOIN bookings b
       ON b.slot_id = s.id_slots
+      AND b.status <> 'cancelled'
     WHERE b.id_booking IS NULL
       AND s.is_active = 1
       AND f.is_active = 1
@@ -94,14 +98,16 @@ def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db)):
     if price_cents is None:
         price_cents = DEFAULT_PRICE_BY_SPORT.get(payload.sport_id)
         if price_cents is None:
-            raise HTTPException(status_code=400, detail="sport_id non supportato (manca prezzo default)")
+            raise HTTPException(
+                status_code=400,
+                detail="sport_id non supportato (manca prezzo default)"
+            )
 
     # validazione range date
     if payload.date_to < payload.date_from:
         raise HTTPException(status_code=400, detail="date_to deve essere >= date_from")
 
     # validazione orari
-    # (end_time deve permettere almeno uno slot completo)
     start_dt_dummy = datetime.combine(payload.date_from, payload.start_time)
     end_dt_dummy = datetime.combine(payload.date_from, payload.end_time)
     if end_dt_dummy <= start_dt_dummy:
@@ -109,7 +115,6 @@ def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db)):
 
     cur = db.cursor(dictionary=True)
     try:
-        # 1) prendi campi attivi dello sport
         cur.execute(
             """
             SELECT id, name
@@ -120,29 +125,29 @@ def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db)):
             (payload.sport_id,),
         )
         fields = cur.fetchall()
+
         if not fields:
-            raise HTTPException(status_code=404, detail="Nessun campo attivo trovato per questo sport_id")
+            raise HTTPException(
+                status_code=404,
+                detail="Nessun campo attivo trovato per questo sport_id"
+            )
 
         created = 0
         skipped = 0
 
-        # 2) loop giorni inclusivo
         day = payload.date_from
         while day <= payload.date_to:
             day_start = datetime.combine(day, payload.start_time)
             day_end = datetime.combine(day, payload.end_time)
 
-            # 3) loop campi
             for f in fields:
                 field_id = f["id"]
-
-                # 4) loop slot nella finestra oraria
                 t = day_start
+
                 while t + timedelta(minutes=payload.slot_minutes) <= day_end:
                     starts_at = t
                     ends_at = t + timedelta(minutes=payload.slot_minutes)
 
-                    # SKIP duplicati: controlliamo se esiste già lo stesso slot
                     cur.execute(
                         """
                         SELECT 1
@@ -166,7 +171,7 @@ def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db)):
                         )
                         created += 1
 
-                    t = ends_at  # prossimo slot
+                    t = ends_at
 
             day = day + timedelta(days=1)
 
@@ -184,5 +189,14 @@ def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db)):
             "created": created,
             "skipped": skipped,
         }
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         cur.close()

@@ -117,6 +117,7 @@ def create_booking(payload: BookingCreate, db=Depends(get_db)):
             INSERT INTO bookings (slot_id, customer_id, players_count, notes)
             VALUES (%s, %s, %s, %s)
         """, (payload.slot_id, payload.customer_id, payload.players_count, payload.notes))
+
         db.commit()
 
         booking_id = cur.lastrowid
@@ -124,10 +125,18 @@ def create_booking(payload: BookingCreate, db=Depends(get_db)):
         return {"booking": booking}
 
     except IntegrityError as e:
+        db.rollback()
+
         msg = str(e)
         if "Duplicate entry" in msg or "uq_bookings_slot" in msg:
             raise HTTPException(status_code=409, detail="Slot già prenotato")
+
         raise HTTPException(status_code=400, detail="Slot o customer non valido")
+
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         cur.close()
 
@@ -142,6 +151,7 @@ def update_booking(booking_id: int, payload: BookingUpdate, db=Depends(get_db)):
         if payload.players_count is not None:
             fields.append("players_count = %s")
             params.append(payload.players_count)
+
         if payload.notes is not None:
             fields.append("notes = %s")
             params.append(payload.notes)
@@ -160,9 +170,17 @@ def update_booking(booking_id: int, payload: BookingUpdate, db=Depends(get_db)):
 
         booking = fetch_booking_full(cur, booking_id)
         return {"booking": booking}
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         cur.close()
-
 
 # @router.delete("/{booking_id}", response_model=DeleteBookingOut)
 # def delete_booking(booking_id: int, db=Depends(get_db)):
@@ -202,5 +220,14 @@ def delete_booking(booking_id: int, db=Depends(get_db)):
 
         db.commit()
         return {"ok": True, "deleted_id": booking_id}
+
+    except HTTPException:
+        db.rollback()
+        raise
+
+    except Exception:
+        db.rollback()
+        raise
+
     finally:
         cur.close()
