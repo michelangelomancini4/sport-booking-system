@@ -3,19 +3,21 @@ from mysql.connector import IntegrityError
 
 from app.db import get_db
 from app.schemas import CustomersListOut, CustomerCreate, CustomerCreateOut, CustomerGetOut
+from app.repos.customers_repo import (
+    fetch_all_customers,
+    fetch_customer_by_id,
+    fetch_customer_by_phone,
+    insert_customer,
+)
 
 router = APIRouter(prefix="/customers", tags=["customers"])
+
 
 @router.get("", response_model=CustomersListOut)
 def list_customers(db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
     try:
-        cur.execute("""
-            SELECT id, full_name, phone, email
-            FROM customers
-            ORDER BY full_name ASC
-        """)
-        rows = cur.fetchall()
+        rows = fetch_all_customers(cur)
         return {"rows": rows}
     finally:
         cur.close()
@@ -25,33 +27,17 @@ def list_customers(db=Depends(get_db)):
 def get_customer_by_phone(phone: str, db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
     try:
-        cur.execute("""
-            SELECT id, full_name, phone, email
-            FROM customers
-            WHERE phone = %s
-            LIMIT 1
-        """, (phone,))
-        
-        customer = cur.fetchone()
-        
-        if not customer:
-            return {"customer": None}
-
+        customer = fetch_customer_by_phone(cur, phone)
         return {"customer": customer}
-
     finally:
         cur.close()
+
 
 @router.get("/{customer_id}", response_model=CustomerGetOut)
 def get_customer(customer_id: int, db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
     try:
-        cur.execute("""
-            SELECT id, full_name, phone, email
-            FROM customers
-            WHERE id = %s
-        """, (customer_id,))
-        customer = cur.fetchone()
+        customer = fetch_customer_by_id(cur, customer_id)
         if customer is None:
             raise HTTPException(status_code=404, detail="Cliente non trovato")
         return {"customer": customer}
@@ -63,29 +49,20 @@ def get_customer(customer_id: int, db=Depends(get_db)):
 def create_customer(payload: CustomerCreate, db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
     try:
-        cur.execute("""
-            INSERT INTO customers (full_name, phone, email)
-            VALUES (%s, %s, %s)
-        """, (payload.full_name, payload.phone, payload.email))
+        customer_id = insert_customer(
+            cur,
+            full_name=payload.full_name,
+            phone=payload.phone,
+            email=payload.email,
+        )
         db.commit()
-
-        customer_id = cur.lastrowid
-        cur.execute("""
-            SELECT id, full_name, phone, email
-            FROM customers
-            WHERE id = %s
-        """, (customer_id,))
-        customer = cur.fetchone()
-
+        customer = fetch_customer_by_id(cur, customer_id)
         return {"customer": customer}
-
     except IntegrityError:
         db.rollback()
         raise HTTPException(status_code=400, detail="Dati cliente non validi")
-
     except Exception:
         db.rollback()
         raise
-
     finally:
         cur.close()

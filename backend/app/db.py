@@ -12,6 +12,7 @@ def get_conn():
         password=os.getenv("DB_PASSWORD", ""),
         database=os.getenv("DB_NAME", "db_sportbooking"),
         port=int(os.getenv("DB_PORT", "3306")),
+        charset="utf8mb4",
     )
 def get_db() -> Generator:
     conn = get_conn()
