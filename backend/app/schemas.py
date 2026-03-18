@@ -55,6 +55,33 @@ class BookingUpdate(BaseModel):
     players_count: Optional[int] = Field(default=None, ge=1, le=50)
     notes: Optional[str] = None
 
+class BookingHistoryOut(BaseModel):
+    id_booking_history: int
+    booking_id: int
+    slot_id: int
+    customer_id: int
+
+    full_name: str
+    phone: Optional[str] = None
+    email: Optional[str] = None
+
+    field_name: str
+    field_id: int
+    sport_id: int
+    sport_name: str
+
+    starts_at: datetime
+    ends_at: datetime
+
+    players_count: int
+    notes: Optional[str] = None
+
+    status: str
+    created_at: datetime
+    archived_at: datetime
+
+class BookingsHistoryListOut(BaseModel):
+    rows: List[BookingHistoryOut]
 # CUSTOMER SECTION
 
 class CustomerOut(BaseModel):

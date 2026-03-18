@@ -175,3 +175,78 @@ def cancel_booking(cur, booking_id: int) -> int:
 def booking_exists(cur, booking_id: int) -> bool:
     cur.execute("SELECT 1 FROM bookings WHERE id_booking = %s", (booking_id,))
     return cur.fetchone() is not None
+
+def booking_in_history(cur, booking_id: int) -> bool:
+    cur.execute("SELECT 1 FROM bookings_history WHERE booking_id = %s", (booking_id,))
+    return cur.fetchone() is not None
+
+def fetch_bookings_history(
+    cur,
+    day=None,
+    customer_id=None,
+    q=None,
+) -> List[Dict[str, Any]]:
+    sql = """
+        SELECT
+          bh.id_booking_history,
+          bh.booking_id,
+          bh.slot_id,
+          bh.customer_id,
+          c.full_name,
+          c.phone,
+          c.email,
+
+          f.name AS field_name,
+          s.field_id,
+
+          f.sport_id,
+          sp.name AS sport_name,
+
+          s.starts_at,
+          s.ends_at,
+
+          bh.players_count,
+          bh.notes,
+          bh.status,
+          bh.created_at,
+          bh.archived_at
+        FROM bookings_history bh
+        JOIN customers c ON c.id = bh.customer_id
+        JOIN slots s ON s.id_slots = bh.slot_id
+        JOIN fields f ON f.id = s.field_id
+        JOIN sports sp ON sp.id = f.sport_id
+    """
+
+    where = []
+    params = []
+
+    if day is not None:
+        where.append("DATE(s.starts_at) = %s")
+        params.append(day.isoformat())
+
+    if customer_id is not None:
+        where.append("bh.customer_id = %s")
+        params.append(customer_id)
+
+    if q is not None:
+        q = q.strip()
+        if q:
+            where.append("""
+                (
+                  c.full_name LIKE %s OR
+                  c.phone LIKE %s OR
+                  c.email LIKE %s OR
+                  f.name LIKE %s OR
+                  sp.name LIKE %s
+                )
+            """)
+            like = f"%{q}%"
+            params.extend([like, like, like, like, like])
+
+    if where:
+        sql += " WHERE " + " AND ".join(where)
+
+    sql += " ORDER BY bh.archived_at DESC"
+
+    cur.execute(sql, tuple(params))
+    return cur.fetchall()

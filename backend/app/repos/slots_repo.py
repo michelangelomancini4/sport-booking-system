@@ -44,7 +44,6 @@ def fetch_free_slots(
         JOIN sports sp ON sp.id = f.sport_id
         LEFT JOIN bookings b
           ON b.slot_id = s.id_slots
-          AND b.status <> 'cancelled'
         WHERE b.id_booking IS NULL
           AND s.is_active = 1
           AND f.is_active = 1

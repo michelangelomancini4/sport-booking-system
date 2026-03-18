@@ -1,5 +1,5 @@
-import styles from "./AdminPage.module.css";
 import { useState } from "react";
+import styles from "./AdminPage.module.css";
 
 import SlotGenerator from "../components/admin/SlotGenerator";
 import BookingsPanel from "../components/admin/BookingsPanel";
@@ -7,6 +7,8 @@ import BookingDetailPanel from "../components/admin/BookingDetailPanel";
 
 export default function AdminPage() {
     const [selectedBookingId, setSelectedBookingId] = useState(null);
+    const [isHistory, setIsHistory] = useState(false);
+
     return (
         <div className={styles.page}>
             <header className={styles.header}>
@@ -22,7 +24,6 @@ export default function AdminPage() {
                             Crea slot in bulk per sport e intervallo date.
                         </p>
                     </div>
-
                     <SlotGenerator styles={styles} />
                 </section>
 
@@ -30,13 +31,19 @@ export default function AdminPage() {
                     <section className={styles.bookinglist}>
                         <BookingsPanel
                             selectedBookingId={selectedBookingId}
-                            onSelectBooking={setSelectedBookingId} />
+                            onSelectBooking={setSelectedBookingId}
+                            onModeChange={(mode) => {
+                                setIsHistory(mode === "history");
+                                setSelectedBookingId(null);
+                            }}
+                        />
                     </section>
-                    <section
-                        className={styles.bookingdetail}
-                    >
-
-                        <BookingDetailPanel selectedBookingId={selectedBookingId} />                    </section>
+                    <section className={styles.bookingdetail}>
+                        <BookingDetailPanel
+                            selectedBookingId={selectedBookingId}
+                            isHistory={isHistory}
+                        />
+                    </section>
                 </div>
             </div>
         </div>

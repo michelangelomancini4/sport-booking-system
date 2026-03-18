@@ -25,3 +25,9 @@ export function updateBooking(id, payload) {
         body: payload,
     });
 }
+
+export function getBookingsHistory(params = {}) {
+    const qs = new URLSearchParams(params).toString();
+    const url = qs ? `/bookings/history?${qs}` : "/bookings/history";
+    return api.request(url);
+}

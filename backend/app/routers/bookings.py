@@ -5,15 +5,18 @@ from mysql.connector import IntegrityError
 from app.db import get_db
 from app.schemas import (
     BookingCreate, BookingUpdate,
-    BookingCreateOut, BookingsListOut, DeleteBookingOut
+    BookingCreateOut, BookingsListOut, DeleteBookingOut,
+    BookingsHistoryListOut,  
 )
 from app.repos.bookings_repo import (
     fetch_booking_full,
     fetch_bookings_list,
+    fetch_bookings_history,
     insert_booking,
     update_booking,
     cancel_booking,
     booking_exists,
+    booking_in_history,  
 )
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
@@ -36,7 +39,20 @@ def list_bookings(
     finally:
         cur.close()
 
-
+@router.get("/history", response_model=BookingsHistoryListOut)
+def list_bookings_history(
+    day: date | None = Query(default=None),
+    customer_id: int | None = Query(default=None),
+    q: str | None = Query(default=None),
+    db=Depends(get_db),
+):
+    cur = db.cursor(dictionary=True)
+    try:
+        rows = fetch_bookings_history(cur, day=day, customer_id=customer_id, q=q)
+        return {"rows": rows}
+    finally:
+        cur.close()
+        
 @router.get("/{booking_id}", response_model=BookingCreateOut)
 def get_booking(booking_id: int, db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
@@ -112,9 +128,9 @@ def delete_booking(booking_id: int, db=Depends(get_db)):
     try:
         updated = cancel_booking(cur, booking_id)
         if updated == 0:
-            if not booking_exists(cur, booking_id):
-                raise HTTPException(status_code=404, detail="Booking non trovata")
-            raise HTTPException(status_code=409, detail="Prenotazione già annullata")
+            if booking_in_history(cur, booking_id):
+                raise HTTPException(status_code=409, detail="Prenotazione già annullata")
+            raise HTTPException(status_code=404, detail="Booking non trovata")
         db.commit()
         return {"ok": True, "deleted_id": booking_id}
     except HTTPException:

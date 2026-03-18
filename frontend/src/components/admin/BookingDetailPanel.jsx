@@ -3,7 +3,7 @@ import { getBookingById } from "../../api/bookings";
 import { updateBooking } from "../../api/bookings";
 import styles from "../../pages/AdminPage.module.css";
 
-export default function BookingDetailPanel({ selectedBookingId }) {
+export default function BookingDetailPanel({ selectedBookingId, isHistory }) {
     const [booking, setBooking] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -223,6 +223,12 @@ export default function BookingDetailPanel({ selectedBookingId }) {
                     {saveMsg && <span className={styles.message}>{saveMsg}</span>}
                 </div>
             </div>
+            {!isHistory && (
+                <div className={styles.editSection}>
+                    <div className={styles.sectionTitleSmall}>Modifica prenotazione</div>
+                    {/* ... form invariato ... */}
+                </div>
+            )}
         </section>
     );
 }
