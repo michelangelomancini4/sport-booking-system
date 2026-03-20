@@ -1,4 +1,3 @@
-import DemoPage from "./pages/DemoPage";
 import HomePage from "./pages/HomePage";
 import AdminPage from "./pages/AdminPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -13,7 +12,6 @@ export default function App() {
         <Routes>
           <Route element={<DefaultLayout />}>
             <Route path="/" element={< HomePage />} />
-            <Route path="/demo" element={<DemoPage />} />
             <Route path="/admin" element={<AdminPage />} />
             <Route path="/booking" element={<BookingPage />} />
             <Route path="*" element={<NotFoundPage />} />

@@ -60,15 +60,7 @@ export default function Navbar() {
                         Admin
                     </NavLink>
 
-                    <NavLink
-                        to="/demo"
-                        onClick={close}
-                        className={({ isActive }) =>
-                            isActive ? `${styles.link} ${styles.active}` : styles.link
-                        }
-                    >
-                        Demo
-                    </NavLink>
+
                 </div>
             </div>
         </nav>
