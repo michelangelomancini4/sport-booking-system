@@ -5,7 +5,7 @@ import { RotateCw } from "lucide-react";
 import { getTodayYmd } from "../../utils/date";
 import styles from "../../pages/AdminPage.module.css";
 
-export default function BookingsPanel({ selectedBookingId, onSelectBooking }) {
+export default function BookingsPanel({ selectedBookingId, onSelectBooking, onModeChange }) {
     const [bookingsData, setBookingsData] = useState({ rows: [] });
     const [loadingBookings, setLoadingBookings] = useState(false);
     const [cancelingId, setCancelingId] = useState(null);
@@ -217,7 +217,7 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking }) {
                             <li
                                 key={rowId}
                                 className={`${styles.bookingItem} ${isHistory ? styles.bookingCancelled : ""} ${isNow ? styles.bookingNow : ""} ${selectedBookingId === bookingId ? styles.bookingSelected : ""}`}
-                                onClick={() => !isHistory && onSelectBooking?.(bookingId)}
+                                onClick={() => onSelectBooking?.(bookingId, b)}
                             >
                                 <div className={styles.bookingMain}>
                                     <div className={styles.bookingTitle}>

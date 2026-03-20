@@ -7,6 +7,7 @@ import BookingDetailPanel from "../components/admin/BookingDetailPanel";
 
 export default function AdminPage() {
     const [selectedBookingId, setSelectedBookingId] = useState(null);
+    const [selectedBooking, setSelectedBooking] = useState(null);
     const [isHistory, setIsHistory] = useState(false);
 
     return (
@@ -31,16 +32,21 @@ export default function AdminPage() {
                     <section className={styles.bookinglist}>
                         <BookingsPanel
                             selectedBookingId={selectedBookingId}
-                            onSelectBooking={setSelectedBookingId}
+                            onSelectBooking={(id, booking) => {
+                                setSelectedBookingId(id);
+                                setSelectedBooking(booking);
+                            }}
                             onModeChange={(mode) => {
                                 setIsHistory(mode === "history");
                                 setSelectedBookingId(null);
+                                setSelectedBooking(null);
                             }}
                         />
                     </section>
                     <section className={styles.bookingdetail}>
                         <BookingDetailPanel
                             selectedBookingId={selectedBookingId}
+                            selectedBooking={selectedBooking}
                             isHistory={isHistory}
                         />
                     </section>

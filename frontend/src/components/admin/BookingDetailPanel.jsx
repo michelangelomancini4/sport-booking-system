@@ -1,63 +1,30 @@
 import { useEffect, useState } from "react";
-import { getBookingById } from "../../api/bookings";
 import { updateBooking } from "../../api/bookings";
 import styles from "../../pages/AdminPage.module.css";
 
-export default function BookingDetailPanel({ selectedBookingId, isHistory }) {
-    const [booking, setBooking] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-
-    // editing states
+export default function BookingDetailPanel({ selectedBookingId, selectedBooking, isHistory }) {
     const [playersCount, setPlayersCount] = useState("");
     const [notes, setNotes] = useState("");
     const [saving, setSaving] = useState(false);
     const [saveMsg, setSaveMsg] = useState("");
 
+    const booking = selectedBooking ?? null;
+
     useEffect(() => {
-        if (!selectedBookingId) {
-            setBooking(null);
-            setPlayersCount("");
-            setNotes("");
-            setError("");
-            return;
-        }
-
-        async function loadBookingDetail() {
-            try {
-                setLoading(true);
-                setError("");
-
-                const data = await getBookingById(selectedBookingId);
-                setBooking(data?.booking ?? null);
-                setPlayersCount(data?.booking?.players_count ?? "");
-                setNotes(data?.booking?.notes ?? "");
-            } catch (e) {
-                setBooking(null);
-                setError(e?.message || "Errore caricamento dettaglio prenotazione");
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadBookingDetail();
+        setPlayersCount(booking?.players_count ?? "");
+        setNotes(booking?.notes ?? "");
+        setSaveMsg("");
     }, [selectedBookingId]);
 
     async function handleSave() {
         try {
             setSaving(true);
             setSaveMsg("");
-
-            const payload = {
+            await updateBooking(booking.id_booking, {
                 players_count: Number(playersCount),
-                notes: notes
-            };
-
-            const data = await updateBooking(booking.id_booking, payload);
-
-            setBooking(data.booking);
+                notes: notes,
+            });
             setSaveMsg("Modifiche salvate ✓");
-
         } catch (e) {
             setSaveMsg("Errore aggiornamento");
         } finally {
@@ -80,32 +47,6 @@ export default function BookingDetailPanel({ selectedBookingId, isHistory }) {
         );
     }
 
-    if (loading) {
-        return (
-            <section className={styles.card}>
-                <div className={styles.cardHeader}>
-                    <div>
-                        <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
-                        <p className={styles.cardSubtitle}>Caricamento dettaglio...</p>
-                    </div>
-                </div>
-            </section>
-        );
-    }
-
-    if (error) {
-        return (
-            <section className={styles.card}>
-                <div className={styles.cardHeader}>
-                    <div>
-                        <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
-                    </div>
-                </div>
-                <div className={styles.error}>{error}</div>
-            </section>
-        );
-    }
-
     if (!booking) {
         return (
             <section className={styles.card}>
@@ -124,109 +65,102 @@ export default function BookingDetailPanel({ selectedBookingId, isHistory }) {
             <div className={styles.cardHeader}>
                 <div>
                     <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
-                    <p className={styles.cardSubtitle}>
-                        Scheda completa della booking selezionata.
-                    </p>
+                    <p className={styles.cardSubtitle}>Scheda completa della booking selezionata.</p>
                 </div>
             </div>
 
             <div className={styles.resultGrid}>
                 <div>
                     <span className={styles.muted}>ID booking</span>
-                    <div className={styles.value}>{booking.id_booking}</div>
+                    <div className={styles.value}>{booking.id_booking ?? booking.booking_id}</div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Status</span>
-                    <div className={styles.value}>
-                        {booking.status === "cancelled" ? "Annullata" : "Attiva"}
-                    </div>
+                    <div className={styles.value}>{booking.status === "cancelled" ? "Annullata" : "Attiva"}</div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Sport</span>
                     <div className={styles.value}>{booking.sport_name || "—"}</div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Campo</span>
                     <div className={styles.value}>{booking.field_name || "—"}</div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Cliente</span>
                     <div className={styles.value}>{booking.full_name || "—"}</div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Telefono</span>
                     <div className={styles.value}>{booking.phone || "—"}</div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Email</span>
                     <div className={styles.value}>{booking.email || "—"}</div>
                 </div>
-
-
-
                 <div>
                     <span className={styles.muted}>Inizio</span>
                     <div className={styles.value}>
-                        {booking.starts_at
-                            ? new Date(booking.starts_at).toLocaleString("it-IT")
-                            : "—"}
+                        {booking.starts_at ? new Date(booking.starts_at).toLocaleString("it-IT") : "—"}
                     </div>
                 </div>
-
                 <div>
                     <span className={styles.muted}>Fine</span>
                     <div className={styles.value}>
-                        {booking.ends_at
-                            ? new Date(booking.ends_at).toLocaleString("it-IT")
-                            : "—"}
+                        {booking.ends_at ? new Date(booking.ends_at).toLocaleString("it-IT") : "—"}
                     </div>
                 </div>
-            </div>
-            <div className={styles.editSection}>
-                <div className={styles.sectionTitleSmall}>Modifica prenotazione</div>
-
-                <label className={styles.field}>
+                <div>
                     <span className={styles.muted}>Giocatori</span>
-                    <input
-                        className={styles.input}
-                        type="number"
-                        value={playersCount}
-                        onChange={(e) => setPlayersCount(e.target.value)}
-                    />
-                </label>
-
-                <label className={styles.field}>
-                    <span className={styles.muted}>Note</span>
-                    <textarea
-                        className={styles.textarea}
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        rows={4}
-                    />
-                </label>
-
-                <div className={styles.actions}>
-                    <button
-                        className={styles.primaryBtn}
-                        disabled={saving}
-                        onClick={handleSave}
-                    >
-                        {saving ? "Salvataggio..." : "Salva modifiche"}
-                    </button>
-
-                    {saveMsg && <span className={styles.message}>{saveMsg}</span>}
+                    <div className={styles.value}>{booking.players_count}</div>
                 </div>
+                {booking.notes && (
+                    <div>
+                        <span className={styles.muted}>Note</span>
+                        <div className={styles.value}>{booking.notes}</div>
+                    </div>
+                )}
+                {isHistory && booking.archived_at && (
+                    <div>
+                        <span className={styles.muted}>Annullata il</span>
+                        <div className={styles.value}>
+                            {new Date(booking.archived_at).toLocaleString("it-IT")}
+                        </div>
+                    </div>
+                )}
             </div>
+
             {!isHistory && (
                 <div className={styles.editSection}>
                     <div className={styles.sectionTitleSmall}>Modifica prenotazione</div>
-                    {/* ... form invariato ... */}
+                    <label className={styles.field}>
+                        <span className={styles.muted}>Giocatori</span>
+                        <input
+                            className={styles.input}
+                            type="number"
+                            value={playersCount}
+                            onChange={(e) => setPlayersCount(e.target.value)}
+                        />
+                    </label>
+                    <label className={styles.field}>
+                        <span className={styles.muted}>Note</span>
+                        <textarea
+                            className={styles.textarea}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            rows={4}
+                        />
+                    </label>
+                    <div className={styles.actions}>
+                        <button
+                            className={styles.primaryBtn}
+                            disabled={saving}
+                            onClick={handleSave}
+                        >
+                            {saving ? "Salvataggio..." : "Salva modifiche"}
+                        </button>
+                        {saveMsg && <span className={styles.message}>{saveMsg}</span>}
+                    </div>
                 </div>
             )}
         </section>
