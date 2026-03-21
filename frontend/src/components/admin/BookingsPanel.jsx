@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getBookings, getBookingsHistory, deleteBooking } from "../../api/bookings";
 import { getFields } from "../../api/fields";
+import ConfirmModal from "./ConfirmModal";
 import { RotateCw } from "lucide-react";
 import { getTodayYmd } from "../../utils/date";
 import styles from "../../pages/AdminPage.module.css";
@@ -22,6 +23,8 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
     const [fields, setFields] = useState([]);
     const [loadingFields, setLoadingFields] = useState(false);
     const [fieldsError, setFieldsError] = useState("");
+
+    const [confirmBookingId, setConfirmBookingId] = useState(null);
 
     async function loadFields() {
         try {
@@ -81,9 +84,13 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
         }
     }
 
-    async function cancelBooking(bookingId) {
-        const ok = window.confirm("Vuoi annullare questa prenotazione?");
-        if (!ok) return;
+    function requestCancel(bookingId) {
+        setConfirmBookingId(bookingId);
+    }
+
+    async function confirmCancel() {
+        const bookingId = confirmBookingId;
+        setConfirmBookingId(null); // chiudi subito il modale
         try {
             setCancelingId(bookingId);
             setBookingsError("");
@@ -100,7 +107,7 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
                     ...prev,
                     rows: prev.rows.filter((b) => b.id_booking !== bookingId),
                 }));
-                setBookingsMsg("Booking non trovata (404).");
+                setBookingsMsg("Prenotazione non trovata.");
                 return;
             }
             setBookingsError(e?.message || "Errore annullamento prenotazione");
@@ -115,9 +122,11 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
 
     // le righe dello storico usano id_booking_history come key
     const isHistory = mode === "history";
+    const now = new Date();
 
     return (
         <>
+
             <div className={styles.cardHeader}>
                 <div>
                     <h2 className={styles.cardTitle}>Prenotazioni</h2>
@@ -203,8 +212,8 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
                 <div className={styles.placeholder}>Nessuna prenotazione.</div>
             ) : (
                 <ul className={styles.bookingList}>
+
                     {bookingsData.rows.map((b) => {
-                        const now = new Date();
                         const start = new Date(b.starts_at);
                         const end = new Date(b.ends_at);
                         const isNow = !isHistory && now >= start && now < end;
@@ -250,7 +259,7 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
                                         className={styles.dangerBtn}
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            cancelBooking(b.id_booking);
+                                            requestCancel(b.id_booking);
                                         }}
                                     >
                                         Annulla
@@ -260,6 +269,13 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
                         );
                     })}
                 </ul>
+            )}
+            {confirmBookingId && (
+                <ConfirmModal
+                    message="Vuoi annullare questa prenotazione? L'operazione non è reversibile."
+                    onConfirm={confirmCancel}
+                    onCancel={() => setConfirmBookingId(null)}
+                />
             )}
         </>
     );

@@ -25,8 +25,9 @@ export default function BookingDetailPanel({ selectedBookingId, selectedBooking,
                 notes: notes,
             });
             setSaveMsg("Modifiche salvate ✓");
+            setTimeout(() => setSaveMsg(""), 3000);
         } catch (e) {
-            setSaveMsg("Errore aggiornamento");
+            setSaveMsg(e?.message || "Errore aggiornamento");
         } finally {
             setSaving(false);
         }
