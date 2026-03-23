@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+import re
 from typing import List, Optional
 from datetime import datetime , time , date
 
@@ -95,8 +96,19 @@ class CustomersListOut(BaseModel):
 
 class CustomerCreate(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
-    phone: Optional[str] = None
+    phone: Optional[str] = Field(default=None, min_length=6, max_length=30)
     email: Optional[str] = None
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, v):
+        if v is None:
+            return v
+        # rimuove spazi e trattini per confronto
+        cleaned = re.sub(r"[\s\-]", "", v)
+        if not re.match(r"^\+?\d{6,20}$", cleaned):
+            raise ValueError("Numero di telefono non valido")
+        return v
 
 class CustomerCreateOut(BaseModel):
     customer: CustomerOut
