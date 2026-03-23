@@ -5,6 +5,7 @@ from app.routers.bookings import router as bookings_router
 from app.routers.customers import router as customers_router
 from app.routers.slots import router as slots_router
 from app.routers.fields import router as fields_router
+from app.routers.auth import router as auth_router  
 from app.schemas import HealthOut
 
 app = FastAPI()
@@ -25,6 +26,7 @@ def health():
 def root():
     return {"message": "API Sport Booking attiva"}
 
+app.include_router(auth_router)      
 app.include_router(slots_router)
 app.include_router(customers_router)
 app.include_router(bookings_router)

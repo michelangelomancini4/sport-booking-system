@@ -173,3 +173,8 @@ class FieldOut(BaseModel):
 class FieldsListOut(BaseModel):
     rows: List[FieldOut]
 
+# --- Auth ---
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
