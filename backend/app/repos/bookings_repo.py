@@ -123,14 +123,18 @@ def insert_booking(cur, slot_id: int, customer_id: int, players_count: int, note
     """, (slot_id, customer_id, players_count, notes))
     return cur.lastrowid
 
+# defense in depth 
+ALLOWED_BOOKING_FIELDS = {"players_count", "notes"}
 
 def update_booking(cur, booking_id: int, fields: dict) -> int:
-    """
-    Aggiorna i campi passati in fields (es. {"players_count": 2, "notes": "..."}).
-    Restituisce il numero di righe aggiornate.
-    """
-    set_clauses = [f"{k} = %s" for k in fields]
-    params = list(fields.values()) + [booking_id]
+    # ignora qualsiasi campo non in whitelist
+    safe_fields = {k: v for k, v in fields.items() if k in ALLOWED_BOOKING_FIELDS}
+    
+    if not safe_fields:
+        return 0
+
+    set_clauses = [f"{k} = %s" for k in safe_fields]
+    params = list(safe_fields.values()) + [booking_id]
     sql = "UPDATE bookings SET " + ", ".join(set_clauses) + " WHERE id_booking = %s"
     cur.execute(sql, tuple(params))
     return cur.rowcount
