@@ -53,7 +53,8 @@ CREATE TABLE `customers` (
   `email` varchar(120) DEFAULT NULL,
   `notes` text,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_customers_phone` (`phone`)  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- -----------------------------------------------------
@@ -119,6 +120,21 @@ CREATE TABLE `bookings_history` (
   KEY `idx_bh_customer` (`customer_id`),
   KEY `idx_bh_status` (`status`),
   KEY `idx_bh_archived_at` (`archived_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- -----------------------------------------------------
+-- Table: admin_users
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `admin_users`;
+
+CREATE TABLE `admin_users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `is_active` tinyint NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_admin_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 SET SQL_MODE=@OLD_SQL_MODE;
