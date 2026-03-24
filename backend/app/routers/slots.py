@@ -1,6 +1,8 @@
 from datetime import date
 from fastapi import APIRouter, Depends, Query, HTTPException
 
+from app.auth.dependencies import get_current_admin
+
 from app.db import get_db
 from app.schemas import SlotsListOut, FreeSlotsOut, SlotsGenerateIn, SlotsGenerateOut
 from app.repos.slots_repo import (
@@ -44,7 +46,7 @@ def free_slots(
 
 
 @router.post("/generate", response_model=SlotsGenerateOut)
-def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db)):
+def generate_slots(payload: SlotsGenerateIn, db=Depends(get_db),current_admin: str = Depends(get_current_admin),):
     price_cents = payload.price_cents
     if price_cents is None:
         price_cents = DEFAULT_PRICE_BY_SPORT.get(payload.sport_id)

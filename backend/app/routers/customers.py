@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from mysql.connector import IntegrityError
 
+from app.auth.dependencies import get_current_admin
+
 from app.db import get_db
 from app.schemas import CustomersListOut, CustomerCreate, CustomerCreateOut, CustomerGetOut
 from app.repos.customers_repo import (
@@ -14,7 +16,7 @@ router = APIRouter(prefix="/customers", tags=["customers"])
 
 
 @router.get("", response_model=CustomersListOut)
-def list_customers(db=Depends(get_db)):
+def list_customers(db=Depends(get_db),current_admin: str = Depends(get_current_admin),):
     cur = db.cursor(dictionary=True)
     try:
         rows = fetch_all_customers(cur)
@@ -24,7 +26,7 @@ def list_customers(db=Depends(get_db)):
 
 
 @router.get("/by-phone/{phone}")
-def get_customer_by_phone(phone: str, db=Depends(get_db)):
+def get_customer_by_phone(phone: str, db=Depends(get_db),):
     cur = db.cursor(dictionary=True)
     try:
         customer = fetch_customer_by_phone(cur, phone)
@@ -34,7 +36,7 @@ def get_customer_by_phone(phone: str, db=Depends(get_db)):
 
 
 @router.get("/{customer_id}", response_model=CustomerGetOut)
-def get_customer(customer_id: int, db=Depends(get_db)):
+def get_customer(customer_id: int, db=Depends(get_db),current_admin: str = Depends(get_current_admin),):
     cur = db.cursor(dictionary=True)
     try:
         customer = fetch_customer_by_id(cur, customer_id)

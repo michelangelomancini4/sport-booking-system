@@ -2,6 +2,8 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Query
 from mysql.connector import IntegrityError
 
+from app.auth.dependencies import get_current_admin
+
 from app.db import get_db
 from app.schemas import (
     BookingCreate, BookingUpdate,
@@ -30,6 +32,7 @@ def list_bookings(
     status: str | None = Query(default=None),
     q: str | None = Query(default=None),
     db=Depends(get_db),
+    current_admin: str = Depends(get_current_admin),
 ):
     cur = db.cursor(dictionary=True)
     try:
@@ -45,6 +48,7 @@ def list_bookings_history(
     customer_id: int | None = Query(default=None),
     q: str | None = Query(default=None),
     db=Depends(get_db),
+    current_admin: str = Depends(get_current_admin),
 ):
     cur = db.cursor(dictionary=True)
     try:
@@ -54,7 +58,11 @@ def list_bookings_history(
         cur.close()
         
 @router.get("/{booking_id}", response_model=BookingCreateOut)
-def get_booking(booking_id: int, db=Depends(get_db)):
+def get_booking(
+    booking_id: int,
+    db=Depends(get_db),
+    current_admin: str = Depends(get_current_admin),
+):
     cur = db.cursor(dictionary=True)
     try:
         booking = fetch_booking_full(cur, booking_id)
@@ -93,7 +101,12 @@ def create_booking(payload: BookingCreate, db=Depends(get_db)):
 
 
 @router.patch("/{booking_id}", response_model=BookingCreateOut)
-def update_booking_route(booking_id: int, payload: BookingUpdate, db=Depends(get_db)):
+def update_booking_route(
+    booking_id: int,
+    payload: BookingUpdate,
+    db=Depends(get_db),
+    current_admin: str = Depends(get_current_admin),
+):
     cur = db.cursor(dictionary=True)
     try:
         fields = {}
@@ -123,7 +136,7 @@ def update_booking_route(booking_id: int, payload: BookingUpdate, db=Depends(get
 
 
 @router.delete("/{booking_id}", response_model=DeleteBookingOut)
-def delete_booking(booking_id: int, db=Depends(get_db)):
+def delete_booking(booking_id: int, db=Depends(get_db),current_admin: str = Depends(get_current_admin),):
     cur = db.cursor(dictionary=True)
     try:
         updated = cancel_booking(cur, booking_id)

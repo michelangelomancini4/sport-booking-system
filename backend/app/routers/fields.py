@@ -10,6 +10,7 @@ router = APIRouter(prefix="/fields", tags=["fields"])
 def list_fields(
     sport_id: int | None = Query(default=None),
     db=Depends(get_db),
+    
 ):
     cur = db.cursor(dictionary=True)
     try:
