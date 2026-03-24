@@ -23,12 +23,15 @@ export default function HomePage() {
 
                 {/* OVERLAY */}
                 <div className={styles.jumbo_overlay}>
+                    <p className={styles.jumbo_eyebrow}>Centro Sportivo</p>
                     <h1 className={styles.jumbo_title}>
-                        Gioca. Prenota. Divertiti.
+                        Gioca. Prenota. <span>Divertiti.</span>
                     </h1>
+
                     <p className={styles.jumbo_subtitle}>
                         Prenotazione semplice. Nessuna attesa.
                     </p>
+                    <Link to="/booking" className={styles.jumbo_cta}>Prenota ora</Link>
                 </div>
             </div>
 

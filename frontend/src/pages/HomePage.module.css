@@ -1,17 +1,66 @@
-.page {
-    background: linear-gradient(180deg,
-            #3E5F4A 0%,
-            #2F4F3E 100%);
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+    --bg: #0f172a;
+    /* sfondo pagina - dark navy */
+    --card: #1e293b;
+    /* superfici card - un livello sopra il bg */
+    --card2: #162032;
+    /* variante card più scura */
+    --border: rgba(255, 255, 255, 0.08);
+    /* bordi sottili su dark */
+    --border-accent: rgba(34, 197, 94, 0.25);
+    /* bordo verde per elementi in evidenza */
+    --text: rgba(255, 255, 255, 0.92);
+    /* testo principale */
+    --muted: rgba(255, 255, 255, 0.50);
+    /* testo secondario */
+    --muted2: rgba(255, 255, 255, 0.28);
+    /* testo terziario, hint */
+    --accent: #22c55e;
+    /* verde sport - colore d'azione */
+    --accent2: #16a34a;
+    /* verde scuro - hover, gradient */
+    --accent-bg: rgba(34, 197, 94, 0.10);
+    /* verde trasparente per icone/badge */
 }
 
-/* JUMBOTRON */
 
+/* ============================================================
+   PAGE
+   Lo sfondo ora è dark navy uniforme.
+   Prima era il verde #3E5F4A che creava discontinuità
+   con le altre pagine. Ora tutta l'app condivide --bg.
+   ============================================================ */
+.page {
+    background: var(--bg);
+}
+
+
+/* ============================================================
+   JUMBOTRON
+  
+   ============================================================ */
 .jumbotron {
     position: relative;
     display: flex;
     margin: 0 auto;
     overflow: hidden;
 }
+
+
+.jumbo_left_box,
+.jumbo_right_box {
+    flex: 1;
+    height: 460px;
+    width: 100%;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-color: var(--card2);
+}
+
 
 .jumbo_overlay {
     position: absolute;
@@ -21,15 +70,15 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: white;
+    color: var(--text);
+    gap: 10px;
 
     background: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.45) 0%,
-            rgba(0, 0, 0, 0.22) 55%,
-            rgba(0, 0, 0, 0.00) 100%);
-
-    z-index: 2;
+            rgba(15, 23, 42, 0.65) 0%,
+            rgba(15, 23, 42, 0.62) 50%,
+            rgba(15, 23, 42, 0.85) 100%);
 }
+
 
 .jumbotron::after {
     content: "";
@@ -37,192 +86,219 @@
     left: 0;
     right: 0;
     bottom: 0;
-    height: 140px;
+    height: 120px;
     pointer-events: none;
     z-index: 3;
-
     background: linear-gradient(to bottom,
-            rgba(62, 95, 74, 0) 0%,
-            rgba(62, 95, 74, 0.50) 55%,
-            rgba(62, 95, 74, 0.82) 100%);
+            transparent 0%,
+            rgba(15, 23, 42, 0.70) 60%,
+            rgba(15, 23, 42, 1.00) 100%);
+}
+
+
+.jumbo_eyebrow {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.85;
+    margin: 0;
 }
 
 .jumbo_title {
-    font-size: 36px;
+    font-size: 38px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: -0.02em;
     margin: 0;
-    color: rgba(255, 255, 255, 0.92);
+    color: var(--text);
+    line-height: 1.15;
+}
+
+.jumbo_title span {
+    color: var(--accent);
 }
 
 .jumbo_subtitle {
-    margin-top: 10px;
-    font-size: 16px;
-    opacity: 0.9;
-    color: rgba(255, 255, 255, 0.75);
+    margin: 0;
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+/* CTA nell'hero */
+.jumbo_cta {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 11px 26px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    color: #052e16;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: filter 0.15s ease;
+}
+
+.jumbo_cta:hover {
+    filter: brightness(1.06);
 }
 
 
-.jumbo_left_box,
-.jumbo_right_box {
-    flex: 1;
-    height: 440px;
-    width: 100%;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
-
-}
-
-.jumbo_left_box {
-    /* debug */
-    background-color: indianred;
-
-}
-
-.jumbo_right_box {
-    /* debug */
-    background-color: rgb(172, 10, 56);
-
-}
-
-
-
-
-/* BOOKING BOX SECTION */
+/* ============================================================
+   BOOKING BOX SECTION
+   ============================================================ */
 .booking_box_container {
     display: flex;
     justify-content: center;
-    padding: 28px 16px;
+    padding: 32px 16px;
 }
 
 .booking_box {
     width: 100%;
     max-width: 420px;
-    padding: 20px 18px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 14px;
-    background: #fff;
+    padding: 22px 20px;
+    border: 1px solid var(--border-accent);
+    border-radius: 16px;
+    background: var(--card);
     text-align: center;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
 }
 
 .booking_title {
     margin: 0 0 6px;
-    font-size: 20px;
-    font-weight: 800;
-    letter-spacing: 0.2px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text);
 }
 
 .booking_subtitle {
-    margin: 0 0 14px;
-    color: rgba(0, 0, 0, 0.7);
-    font-size: 14px;
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 13px;
 }
+
 
 .booking_sports {
     margin: 0 0 18px;
     font-weight: 600;
-    letter-spacing: 0.2px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--accent);
 }
 
 .booking_cta {
     display: inline-block;
     text-decoration: none;
-    padding: 10px 14px;
+    padding: 11px 22px;
     border-radius: 12px;
-    background: #111827;
-    color: #fff;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    color: #052e16;
     font-weight: 700;
+    font-size: 14px;
+    transition: filter 0.15s ease;
 }
 
 .booking_cta:hover {
-    filter: brightness(1.08);
+    filter: brightness(1.06);
 }
 
 
-/* CARDS SECTION */
+/* ============================================================
+   CARDS SECTION (Dove siamo / Orari / Contatti)
+   
+   ============================================================ */
 .cardsSection {
-    padding: 26px 16px;
+    padding: 0 16px 36px;
 }
 
-/* .cardsContainer {
-    max-width: 1100px;
-    margin: 0 auto;
-
-    display: flex;
-    gap: 16px;
-    justify-content: space-between;
-} */
 .cardsContainer {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     max-width: 900px;
     margin: 0 auto;
-    padding: 0 16px;
+    padding: 0;
 }
-
 
 .card {
     flex: 1;
-
-    /* tutte larghe uguali */
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 14px;
-    padding: 16px 14px;
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px 16px;
 }
 
+/* Contenitore icona */
 .cardIcon {
-    font-size: 22px;
-    margin-bottom: 8px;
+    width: 34px;
+    height: 34px;
+    background: var(--accent-bg);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 16px;
 }
 
 .cardTitle {
-    margin: 0 0 6px;
-    font-size: 16px;
-    font-weight: 800;
+    margin: 0 0 5px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
 }
 
 .cardText {
     margin: 0;
-    color: rgba(0, 0, 0, 0.72);
-    font-size: 14px;
-    line-height: 1.4;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
 }
 
 .cardLink {
     display: inline-block;
     margin-top: 10px;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 13px;
     text-decoration: none;
-    color: #111827;
+    color: var(--accent);
+    transition: opacity 0.15s ease;
 }
 
 .cardLink:hover {
-    text-decoration: underline;
+    opacity: 0.8;
 }
 
 .cardHint {
-    margin: 6px 0 0;
+    margin: 5px 0 0;
     font-size: 12px;
-    color: rgba(0, 0, 0, 0.55);
+    color: var(--muted2);
 }
 
-/* Responsive */
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 900px) {
     .cardsContainer {
         flex-direction: column;
-        gap: 16px;
+        gap: 12px;
         align-items: center;
-        /* 👈 fondamentale */
     }
 
     .card {
-        flex: 1;
         width: 100%;
-        max-width: 340px;
-        /* 👈 qui stringi la card */
+        max-width: 360px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .jumbo_left_box,
+    .jumbo_right_box {
+        height: 380px;
+    }
+
+    .jumbo_title {
+        font-size: 28px;
     }
 }
