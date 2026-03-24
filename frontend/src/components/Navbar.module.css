@@ -77,6 +77,24 @@
     box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.45);
 }
 
+.logoutBtn {
+    text-decoration: none;
+    color: #cbd5e1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: inherit;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.logoutBtn:hover {
+    background: rgba(220, 20, 60, 0.12);
+    color: #f87171;
+}
+
 
 /* --- Hamburger hidden on desktop --- */
 .menuBtn {

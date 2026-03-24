@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import styles from "./AdminPage.module.css";
 
 import SlotGenerator from "../components/admin/SlotGenerator";
@@ -9,12 +11,22 @@ export default function AdminPage() {
     const [selectedBookingId, setSelectedBookingId] = useState(null);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [isHistory, setIsHistory] = useState(false);
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+
+    function handleLogout() {
+        logout()
+        navigate("/login")
+    }
 
     return (
         <div className={styles.page}>
             <header className={styles.header}>
                 <h1 className={styles.title}>Admin Dashboard</h1>
                 <p className={styles.subtitle}>Gestione operativa del centro sportivo.</p>
+                <button onClick={handleLogout} className={styles.logoutBtn}>
+                    Logout
+                </button>
             </header>
 
             <div className={styles.sections_container}>
