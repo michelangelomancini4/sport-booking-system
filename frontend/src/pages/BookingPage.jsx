@@ -290,12 +290,13 @@ export default function BookingPage() {
                 <h1 className={styles.title}>Prenota</h1>
                 <p className={styles.subtitle}>Scegli sport, giorno e fascia oraria.</p>
             </header>
-            <div style={{ margin: "0 5% 18px" }}>
-                <OpeningHours />
-            </div>
+
 
             <div className={styles.layout}>
                 <section className={styles.panel}>
+                    <div className={styles.section}>
+                        <OpeningHours />
+                    </div>
                     {/* SPORT */}
                     <div className={styles.section}>
                         <div className={styles.sectionTitle}>Sport</div>

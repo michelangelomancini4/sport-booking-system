@@ -1,37 +1,41 @@
+/* ============================================================
+   DESIGN TOKENS
+   Stesse variabili di HomePage — design system unificato.
+   ============================================================ */
 :root {
-    --bg: #0b1220;
-    /* pagina */
-    --card: #0f172a;
-    /* pannelli */
-    --card2: #111c33;
-    /* variante */
-    --border: rgba(255, 255, 255, .10);
-    --text: rgba(255, 255, 255, .92);
-    --muted: rgba(255, 255, 255, .65);
-    --muted2: rgba(255, 255, 255, .50);
-
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #162032;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-accent: rgba(34, 197, 94, 0.25);
+    --text: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.50);
+    --muted2: rgba(255, 255, 255, 0.28);
     --accent: #22c55e;
-    /* green sport */
     --accent2: #16a34a;
-
-    --shadow: 0 14px 40px rgba(0, 0, 0, .35);
-
+    --accent-bg: rgba(34, 197, 94, 0.10);
+    --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
 }
 
-
-
-
+/* ============================================================
+   PAGE
+   Sfondo dark navy — coerente con HomePage e Navbar.
+   Prima era #cacfd8 (grigio freddo) che strideva col pannello dark.
+   ============================================================ */
 .page {
-
     min-width: 100%;
     margin: 0 auto;
-    padding: 28px 0px 60px;
-    /* color: var(--text); */
-    background: #cacfd8
+    padding: 28px 0 60px;
+    background: var(--bg);
+    color: var(--text);
 }
 
+/* ============================================================
+   HEADER
+   Titolo bianco, subtitle verde accent — stesso pattern HomePage.
+   ============================================================ */
 .header {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     text-align: center;
 }
 
@@ -39,43 +43,51 @@
     font-size: 28px;
     font-weight: 800;
     margin: 0 0 6px;
-    letter-spacing: .2px;
+    letter-spacing: -0.02em;
+    color: var(--text);
 }
 
 .subtitle {
     margin: 0;
-    color: var(--accent2);
+    color: var(--accent);
+    font-size: 14px;
+    opacity: 0.85;
 }
 
-
+/* ============================================================
+   LAYOUT
+   Flex container per pannello sinistro + summary destra.
+   ============================================================ */
 .layout {
     display: flex;
     gap: 18px;
     align-items: flex-start;
     margin: 0 5%;
-
-
-    /* niente debug */
-    background: transparent;
 }
 
-
-/* left panel */
+/* ============================================================
+   PANEL (sinistra)
+   Card dark con bordo sottile.
+   Rimosso il linear-gradient — un colore piatto è più pulito
+   e non crea banding visivo su schermi ad alto contrasto.
+   ============================================================ */
 .panel {
     flex: 1;
     border-radius: 18px;
     border: 1px solid var(--border);
-    padding: 20px;
-    background: linear-gradient(180deg, var(--card), var(--card2));
+    padding: 22px;
+    background: var(--card);
     box-shadow: var(--shadow);
-
-
-
+    min-width: 0;
+    /* evita overflow in flexbox */
 }
 
-
 .section {
-    margin-bottom: 22px;
+    margin-bottom: 24px;
+}
+
+.section:last-child {
+    margin-bottom: 0;
 }
 
 .sectionTitleRow {
@@ -86,24 +98,32 @@
     margin-bottom: 10px;
 }
 
+/* sectionTitle ora usa var(--accent) invece di rgb(25,124,33)
+   che era quasi illeggibile su sfondo dark */
 .sectionTitle {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     margin: 0 0 10px;
-    color: rgb(25, 124, 33);
+    color: var(--accent);
+    letter-spacing: 0.01em;
 }
 
+/* muted ora è davvero muted — prima era var(--text) cioè bianco pieno */
 .muted {
-    color: var(--text);
+    color: var(--muted);
     font-size: 13px;
 }
 
 .row {
     display: flex;
     gap: 12px;
+    flex-wrap: wrap;
+    /* su schermi stretti va a capo invece di overflow */
 }
 
-/* chips */
+/* ============================================================
+   CHIPS (Sport selector)
+   ============================================================ */
 .chips {
     display: flex;
     gap: 10px;
@@ -112,275 +132,299 @@
 
 .chip {
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, .06);
+    background: rgba(255, 255, 255, 0.06);
     color: var(--text);
-    padding: 9px 12px;
+    padding: 9px 16px;
     border-radius: 999px;
     cursor: pointer;
     font-weight: 700;
-    transition: background .15s ease, border-color .15s ease, transform .05s ease;
+    font-size: 14px;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
 }
 
 .chip:hover {
-    background: rgba(255, 255, 255, .10);
-    border-color: rgba(255, 255, 255, .16);
+    background: rgba(255, 255, 255, 0.10);
+    border-color: rgba(255, 255, 255, 0.16);
 }
 
 .chipActive {
-    background: rgba(34, 197, 94, .18);
-    border-color: rgba(34, 197, 94, .55);
-    color: var(--text);
+    background: var(--accent-bg);
+    border-color: rgba(34, 197, 94, 0.55);
+    color: var(--accent);
 }
-
 
 .chip:active {
     transform: translateY(1px);
 }
 
-
-
-/* input */
+/* ============================================================
+   INPUTS
+   ============================================================ */
 .label {
-    display: grid;
-    gap: 8px;
-    font-size: 14px;
-    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    flex: 1;
+    /* dentro .row si distribuiscono equamente */
 }
 
 .input {
     height: 42px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, .06);
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text);
     padding: 0 12px;
     outline: none;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .input:focus {
-    border-color: rgba(34, 197, 94, .65);
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, .18);
+    border-color: rgba(34, 197, 94, 0.65);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
 }
 
-.label .input {
-    color: rgba(32, 139, 72, 0.65);
+/* placeholder visibile su dark */
+.input::placeholder {
+    color: var(--muted2);
 }
 
+/* select ha la stessa apparenza degli input */
+.input option {
+    background: var(--card);
+    color: var(--text);
+}
+
+/* customerHint — era #5f6b7a invisibile su dark */
 .customerHint {
-    font-size: 0.85rem;
-    color: #5f6b7a;
-    margin-top: 26px;
-    display: inline;
+    font-size: 12px;
+    color: var(--accent);
+    opacity: 0.80;
+    margin-top: 4px;
 }
 
-
-/* slots */
-.slots {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-
+/* ============================================================
+   SLOTS GRID
+   grid con auto-fill invece di flex-wrap libero:
+   le colonne si allineano sempre, niente slot "galleggianti".
+   ============================================================ */
+.slotsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
 }
 
 .slot {
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, .05);
-    border-radius: 14px;
-    padding: 12px;
-    margin: 4px 7px;
-    /* gap: 5px; */
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    padding: 12px 14px;
     cursor: pointer;
-    min-width: 150px;
-    flex: 1 1 160px;
     text-align: left;
-    transition: border-color .15s ease, background .15s ease, transform .05s ease;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.05s ease;
 }
 
 .slot:hover {
-    background: rgba(255, 255, 255, .08);
-    border-color: rgba(255, 255, 255, .16);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+    transform: translateY(-1px);
+}
+
+.slot:active {
+    transform: translateY(0);
 }
 
 .slotActive {
-    background: rgba(34, 197, 94, .18);
-    border-color: rgba(34, 197, 94, .55);
+    background: var(--accent-bg);
+    border-color: rgba(34, 197, 94, 0.55);
 }
 
 .slotTime {
     display: block;
     font-weight: 800;
+    font-size: 14px;
     color: var(--text);
-
 }
 
 .slotMeta {
     display: block;
-    margin-top: 4px;
-    font-size: 13px;
+    margin-top: 3px;
+    font-size: 12px;
     color: var(--muted);
 }
 
-
-/* summary */
+/* ============================================================
+   SUMMARY (destra)
+   Sticky — rimane visibile mentre si scrolla il pannello sx.
+   align-self: flex-start è fondamentale per lo sticky in flexbox:
+   senza, l'elemento si estende all'altezza del fratello e non ha
+   "spazio" per scorrere.
+   ============================================================ */
 .summary {
-    width: 320px;
-    top: 95px;
-    background: transparent;
+    width: 360px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    /* navbar 75px + 15px respiro */
+    align-self: flex-start;
 }
 
 .summaryCard {
     border-radius: 18px;
-    border: 1px solid var(--border);
-    padding: 18px;
-    background: linear-gradient(180deg, var(--card), #0c162c);
+    border: 1px solid var(--border-accent);
+    padding: 20px;
+    background: var(--card);
     box-shadow: var(--shadow);
 }
 
-
+/* summaryTitle — era rgb(57,94,60) quasi invisibile su dark */
 .summaryTitle {
     margin: 0 0 14px;
-    font-size: 16px;
-    font-weight: 800;
-    color: rgb(57, 94, 60);
-
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.01em;
 }
 
 .summaryLine {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.summaryLine:last-of-type {
+    border-bottom: none;
 }
 
 .summaryValue {
-    font-weight: 800;
+    font-weight: 700;
+    font-size: 14px;
     color: var(--text);
+    text-align: right;
 }
 
+/* ============================================================
+   BUTTON
+   ============================================================ */
 .primaryBtn {
     width: 100%;
     margin-top: 16px;
-    height: 44px;
+    height: 46px;
     border: none;
     border-radius: 12px;
     background: linear-gradient(180deg, var(--accent), var(--accent2));
-    color: #05210f;
-    font-weight: 900;
+    color: #052e16;
+    font-weight: 800;
+    font-size: 15px;
     cursor: pointer;
+    transition: filter 0.15s ease;
 }
 
-.primaryBtn:hover {
-    filter: brightness(1.03);
+.primaryBtn:hover:not(:disabled) {
+    filter: brightness(1.06);
 }
 
-.disabled {
-    opacity: 0.5;
+.primaryBtn:disabled {
+    opacity: 0.45;
     cursor: not-allowed;
 }
 
 .hint {
-    margin: 12px 0 0;
+    margin: 10px 0 0;
     color: var(--muted2);
     font-size: 12px;
     line-height: 1.4;
 }
 
-
+/* ============================================================
+   FEEDBACK BOXES
+   Colori corretti per sfondo dark:
+   - testo chiaro invece che scuro
+   - opacity più alta per leggibilità
+   ============================================================ */
 .errorBox {
     margin-top: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     padding: 12px 14px;
-    border-radius: 12px;
-    font-size: 0.95rem;
+    border-radius: 10px;
+    font-size: 13px;
     background: rgba(220, 38, 38, 0.12);
-    border: 1px solid rgba(220, 38, 38, 0.25);
-    color: #7f1d1d;
+    border: 1px solid rgba(220, 38, 38, 0.30);
+    color: #fca5a5;
+    /* rosso chiaro — leggibile su dark */
 }
 
 .successBox {
     margin-top: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 4px;
     padding: 12px 14px;
-    border-radius: 12px;
-    font-size: 0.95rem;
-    background: rgba(22, 163, 74, 0.12);
-    border: 1px solid rgba(22, 163, 74, 0.25);
-    color: #278a09;
+    border-radius: 10px;
+    font-size: 13px;
+    background: rgba(34, 197, 94, 0.10);
+    border: 1px solid rgba(34, 197, 94, 0.30);
+    color: #86efac;
+    /* verde chiaro — leggibile su dark */
 }
 
-
-
-/* Responsive */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 900px) {
     .layout {
         flex-direction: column;
-        width: 90%;
-        margin-left: 5%;
+        width: 92%;
+        margin: 0 auto;
+        gap: 14px;
     }
 
-
+    .panel {
+        width: 100%;
+        box-sizing: border-box;
+    }
 
     .summary {
-        width: 60%;
-        margin-left: 20%;
+        width: 100%;
+        max-width: 500px;
+        /* non si allarga troppo su tablet */
+        margin: 0 auto;
+        /* centrato */
         position: static;
     }
 }
 
-@media (max-width: 478px) {
+@media (max-width: 600px) {
     .layout {
-        width: 90%;
-        margin-right: 5%;
+        width: 94%;
     }
 
-    .panel {
-        width: 330px;
+    .slotsGrid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     }
 
-    /* input */
-    .label {
-        display: grid;
-        gap: 4px;
-        font-size: 11px;
-        color: var(--text);
-    }
-
-    .input {
-        height: 32px;
-        border-radius: 12px;
-        max-width: 130px;
-        border: 1px solid var(--border);
-        background: rgba(255, 255, 255, .06);
-        color: var(--text);
-        padding: 0 10px;
-        outline: none;
-    }
-
-    .summary {
-        width: 80%;
-        margin-left: 10%;
-        position: static;
+    .row {
+        flex-direction: column;
+        /* input impilati su mobile piccolo */
     }
 }
 
 @media (max-width: 440px) {
     .page {
-        padding: 22px 0px 50px;
-        width: 100%;
-    }
-
-    .panel {
-        width: 320px;
+        padding: 18px 0 50px;
     }
 
     .title {
         font-size: 24px;
     }
 
-    .slot {
-        min-width: 130px;
+    .slotsGrid {
+        grid-template-columns: repeat(2, 1fr);
+        /* 2 colonne fisse su mobile */
     }
 }
-
-@media (max-width: 430px) {}
