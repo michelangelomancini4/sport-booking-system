@@ -26,3 +26,16 @@ VALUES
 INSERT IGNORE INTO customers (id, full_name, phone, email, notes)
 VALUES
 (1, 'Mario Rossi', '3331234567', 'mario@example.com', 'Cliente demo');
+
+-- -----------------------------------------------------
+-- Opening Hours (0=Lun, 1=Mar, 2=Mer, 3=Gio, 4=Ven, 5=Sab, 6=Dom)
+-- -----------------------------------------------------
+INSERT IGNORE INTO opening_hours (day_of_week, open_time, close_time, is_closed)
+VALUES
+(0, '09:00:00', '23:00:00', 0),
+(1, '09:00:00', '23:00:00', 0),
+(2, '09:00:00', '23:00:00', 0),
+(3, '09:00:00', '23:00:00', 0),
+(4, '09:00:00', '23:00:00', 0),
+(5, '09:00:00', '23:00:00', 0),
+(6, '09:00:00', '23:00:00', 0);

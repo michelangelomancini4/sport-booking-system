@@ -137,6 +137,21 @@ CREATE TABLE `admin_users` (
   UNIQUE KEY `uq_admin_username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- -----------------------------------------------------
+-- Table: opening_hours
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `opening_hours`;
+
+CREATE TABLE `opening_hours` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `day_of_week` tinyint NOT NULL COMMENT '0=Lunedì, 6=Domenica',
+  `open_time` time DEFAULT NULL,
+  `close_time` time DEFAULT NULL,
+  `is_closed` tinyint NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_opening_hours_day` (`day_of_week`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
