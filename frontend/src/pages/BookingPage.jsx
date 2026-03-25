@@ -4,6 +4,8 @@ import { createBooking } from "../api/bookings";
 import { getFields } from "../api/fields";
 import { getFreeSlots } from "../api/slots";
 import { getTodayYmd } from "../utils/date";
+import OpeningHours from "../components/OpeningHours";
+
 import styles from "./BookingPage.module.css";
 
 
@@ -288,6 +290,9 @@ export default function BookingPage() {
                 <h1 className={styles.title}>Prenota</h1>
                 <p className={styles.subtitle}>Scegli sport, giorno e fascia oraria.</p>
             </header>
+            <div style={{ margin: "0 5% 18px" }}>
+                <OpeningHours />
+            </div>
 
             <div className={styles.layout}>
                 <section className={styles.panel}>

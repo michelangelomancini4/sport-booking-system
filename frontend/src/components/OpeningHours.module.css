@@ -1,0 +1,176 @@
+.wrapper {
+    margin-bottom: 18px;
+}
+
+/* ---- BANNER ---- */
+.banner {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border: none;
+    font: inherit;
+    text-align: left;
+    transition: opacity 0.15s ease;
+}
+
+.banner:hover {
+    opacity: 0.88;
+}
+
+.bannerOpen {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.22) !important;
+}
+
+.bannerClosed {
+    background: rgba(220, 38, 38, 0.08);
+    border: 1px solid rgba(220, 38, 38, 0.22) !important;
+}
+
+.bannerLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.dotOpen {
+    background: #22c55e;
+}
+
+.dotClosed {
+    background: #ef4444;
+    animation: none;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.45;
+    }
+}
+
+.bannerText {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.80);
+}
+
+.bannerHours {
+    color: #22c55e;
+    font-weight: 700;
+}
+
+.bannerRight {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.bannerHint {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.30);
+}
+
+
+.chevron {
+    color: rgba(255, 255, 255, 0.30);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.chevronOpen {
+    transform: rotate(180deg);
+}
+
+/* ---- ACCORDION ---- */
+.accordion {
+    margin-top: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    overflow: hidden;
+
+    animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.accRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.accRow:last-child {
+    border-bottom: none;
+}
+
+.accToday {
+    background: rgba(34, 197, 94, 0.06);
+}
+
+.accDay {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.50);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.accToday .accDay {
+    color: rgba(255, 255, 255, 0.88);
+    font-weight: 600;
+}
+
+.accTime {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.65);
+    font-weight: 500;
+}
+
+.accToday .accTime {
+    color: #22c55e;
+}
+
+.accTimeClosed {
+    color: rgba(255, 255, 255, 0.25) !important;
+    font-weight: 400;
+}
+
+.todayBadge {
+    font-size: 10px;
+    font-weight: 700;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.15);
+    padding: 2px 7px;
+    border-radius: 999px;
+}
