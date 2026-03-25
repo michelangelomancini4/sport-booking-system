@@ -178,3 +178,22 @@ class FieldsListOut(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+# OPENING HOURS
+
+class OpeningHourOut(BaseModel):
+    id: int
+    day_of_week: int
+    day_name: str
+    open_time: Optional[str] = None
+    close_time: Optional[str] = None
+    is_closed: int
+
+class OpeningHoursListOut(BaseModel):
+    rows: List[OpeningHourOut]
+
+class OpeningHourTodayOut(BaseModel):
+    day_of_week: int
+    day_name: str
+    open_time: Optional[str] = None
+    close_time: Optional[str] = None
+    is_closed: int
