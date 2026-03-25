@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { createCustomer, getCustomerByPhone } from "../api/customers";
-import { createBooking } from "../api/bookings";
+import { createPublicBooking } from "../api/bookings";
 import { getFields } from "../api/fields";
 import { getFreeSlots } from "../api/slots";
 import { getTodayYmd } from "../utils/date";
@@ -63,7 +62,6 @@ export default function BookingPage() {
     const [loadingSlots, setLoadingSlots] = useState(false);
     const [slotsError, setSlotsError] = useState("");
 
-    const [matchedCustomer, setMatchedCustomer] = useState(null);
 
     const [submitError, setSubmitError] = useState("");
     const [submitMsg, setSubmitMsg] = useState("");
@@ -187,31 +185,7 @@ export default function BookingPage() {
         !submitting
     );
 
-    async function handlePhoneBlur() {
-        const phone = customerPhone.trim();
 
-        if (!phone) {
-            setMatchedCustomer(null);
-            return;
-        }
-
-        try {
-            const res = await getCustomerByPhone(phone);
-            const customer = res?.customer;
-
-            if (!customer) {
-                setMatchedCustomer(null);
-                return;
-            }
-
-            setMatchedCustomer(customer);
-            setCustomerName(customer.full_name || "");
-            setCustomerEmail(customer.email || "");
-        } catch (e) {
-            setMatchedCustomer(null);
-            console.error("Errore ricerca cliente:", e);
-        }
-    }
 
 
     /**
@@ -219,6 +193,8 @@ export default function BookingPage() {
  * 1) crea cliente via POST /customers
  * 2) crea booking via POST /bookings
  */
+
+
     async function handleConfirm() {
         if (!canConfirm) return;
 
@@ -227,34 +203,11 @@ export default function BookingPage() {
             setSubmitError("");
             setSubmitMsg("");
 
-            let customerId = null;
-
-            const existingRes = await getCustomerByPhone(customerPhone.trim());
-            const existingCustomer = existingRes?.customer;
-
-            if (existingCustomer) {
-                customerId = existingCustomer.id;
-
-                // opzionale: riallinea i campi al dato salvato
-                setCustomerName(existingCustomer.full_name || "");
-                setCustomerEmail(existingCustomer.email || "");
-            } else {
-                const customerRes = await createCustomer({
-                    full_name: customerName.trim(),
-                    phone: customerPhone.trim(),
-                    email: customerEmail.trim() || null,
-                });
-
-                customerId = customerRes?.customer?.id;
-
-                if (!customerId) {
-                    throw new Error("Creazione cliente non riuscita");
-                }
-            }
-
-            const bookingRes = await createBooking({
+            const bookingRes = await createPublicBooking({
                 slot_id: selectedSlot.id,
-                customer_id: customerId,
+                full_name: customerName.trim(),
+                phone: customerPhone.trim(),
+                email: customerEmail.trim() || null,
                 players_count: Number(playersCount) || 1,
                 notes: notes.trim() || "",
             });
@@ -268,16 +221,14 @@ export default function BookingPage() {
             setCustomerEmail("");
             setNotes("");
             setSelectedSlotId(null);
-
             await fetchSlots();
+
         } catch (e) {
             if (e?.status === 409) {
-                setSubmitError("Slot già prenotato.");
-                await fetchSlots();
-                return;
+                setSubmitError("Slot già prenotato. Scegli un altro orario.");
+            } else {
+                setSubmitError("Errore durante la prenotazione. Riprova.");
             }
-
-            setSubmitError(e?.message || "Errore durante la prenotazione");
         } finally {
             setSubmitting(false);
         }
@@ -407,7 +358,6 @@ export default function BookingPage() {
                                     value={customerName}
                                     onChange={(e) => setCustomerName(e.target.value)}
                                     placeholder="Inserisci nome..."
-                                    readOnly={Boolean(matchedCustomer)}
                                 />
                             </label>
 
@@ -418,18 +368,13 @@ export default function BookingPage() {
                                     value={customerPhone}
                                     onChange={(e) => {
                                         setCustomerPhone(e.target.value);
-                                        setMatchedCustomer(null);
                                     }}
-                                    onBlur={handlePhoneBlur}
+
                                     placeholder="Inserisci numero di telefono"
                                 />
 
                             </label>
-                            {matchedCustomer && (
-                                <span className={styles.customerHint}>
-                                    Cliente esistente trovato: verranno usati i dati associati a questo numero.
-                                </span>
-                            )}
+
                         </div>
 
                         <div className={styles.row}>
@@ -441,7 +386,6 @@ export default function BookingPage() {
                                     value={customerEmail}
                                     onChange={(e) => setCustomerEmail(e.target.value)}
                                     placeholder="(opzionale)"
-                                    readOnly={Boolean(matchedCustomer)}
                                 />
                             </label>
                         </div>

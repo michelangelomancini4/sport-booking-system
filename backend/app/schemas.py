@@ -83,6 +83,22 @@ class BookingHistoryOut(BaseModel):
 
 class BookingsHistoryListOut(BaseModel):
     rows: List[BookingHistoryOut]
+
+class PublicBookingCreate(BaseModel):
+    slot_id: int
+    full_name: str = Field(min_length=2, max_length=120)
+    phone: str = Field(min_length=6, max_length=30)
+    email: Optional[str] = None
+    players_count: int = Field(default=1, ge=1)
+    notes: Optional[str] = None
+
+    @field_validator("phone")
+    @classmethod
+    def validate_phone(cls, v):
+        cleaned = re.sub(r"[\s\-]", "", v)
+        if not re.match(r"^\+?\d{6,20}$", cleaned):
+            raise ValueError("Numero di telefono non valido")
+        return cleaned  
 # CUSTOMER SECTION
 
 class CustomerOut(BaseModel):

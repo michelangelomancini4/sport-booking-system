@@ -1,4 +1,5 @@
 from typing import Optional, Dict, Any, List
+from mysql.connector import IntegrityError
 
 BOOKING_FULL_SELECT = """
     SELECT
@@ -254,3 +255,50 @@ def fetch_bookings_history(
 
     cur.execute(sql, tuple(params))
     return cur.fetchall()
+
+def insert_public_booking(
+    cur, slot_id, full_name, phone, email, players_count, notes
+) -> int:
+    
+    # 1. verifica che lo slot esista e sia attivo
+    cur.execute(
+        "SELECT id_slots FROM slots WHERE id_slots = %s AND is_active = 1 LIMIT 1",
+        (slot_id,)
+    )
+    if cur.fetchone() is None:
+        raise ValueError(f"slot_not_found:{slot_id}")
+
+    # 2. lookup-or-create customer
+    cur.execute(
+        "SELECT id FROM customers WHERE phone = %s LIMIT 1",
+        (phone,)
+    )
+    row = cur.fetchone()
+
+    if row:
+        customer_id = row["id"]
+    else:
+        try:
+            cur.execute(
+                "INSERT INTO customers (full_name, phone, email) VALUES (%s, %s, %s)",
+                (full_name, phone, email)
+            )
+            customer_id = cur.lastrowid
+        except IntegrityError:
+            # race condition: un altro thread ha inserito lo stesso numero
+            cur.execute(
+                "SELECT id FROM customers WHERE phone = %s LIMIT 1",
+                (phone,)
+            )
+            row = cur.fetchone()
+            if not row:
+                raise  # propaga l'IntegrityError originale
+            customer_id = row["id"]
+
+    # 3. inserisci la booking — status usa il DEFAULT 'active' del DB
+    cur.execute(
+        """INSERT INTO bookings (slot_id, customer_id, players_count, notes)
+           VALUES (%s, %s, %s, %s)""",
+        (slot_id, customer_id, players_count, notes)
+    )
+    return cur.lastrowid

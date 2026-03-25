@@ -1,7 +1,6 @@
 import { api } from "./client";
 
 export function getBookings(params = {}) {
-    // in futuro: day, field_id, status...
     const qs = new URLSearchParams(params).toString();
     const url = qs ? `/bookings?${qs}` : "/bookings";
     return api.request(url);
@@ -30,4 +29,8 @@ export function getBookingsHistory(params = {}) {
     const qs = new URLSearchParams(params).toString();
     const url = qs ? `/bookings/history?${qs}` : "/bookings/history";
     return api.request(url);
+}
+
+export function createPublicBooking(payload) {
+    return api.request("/bookings/public", { method: "POST", body: payload });
 }

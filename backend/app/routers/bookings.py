@@ -8,7 +8,7 @@ from app.db import get_db
 from app.schemas import (
     BookingCreate, BookingUpdate,
     BookingCreateOut, BookingsListOut, DeleteBookingOut,
-    BookingsHistoryListOut,  
+    BookingsHistoryListOut,  PublicBookingCreate,
 )
 from app.repos.bookings_repo import (
     fetch_booking_full,
@@ -18,7 +18,8 @@ from app.repos.bookings_repo import (
     update_booking,
     cancel_booking,
     booking_exists,
-    booking_in_history,  
+    booking_in_history, 
+    insert_public_booking, 
 )
 
 router = APIRouter(prefix="/bookings", tags=["bookings"])
@@ -87,6 +88,7 @@ def create_booking(payload: BookingCreate, db=Depends(get_db)):
         db.commit()
         booking = fetch_booking_full(cur, booking_id)
         return {"booking": booking}
+    
     except IntegrityError as e:
         db.rollback()
         msg = str(e)
@@ -149,6 +151,37 @@ def delete_booking(booking_id: int, db=Depends(get_db),current_admin: str = Depe
     except HTTPException:
         db.rollback()
         raise
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        cur.close()
+
+@router.post("/public", response_model=BookingCreateOut, status_code=201)
+def create_public_booking(payload: PublicBookingCreate, db=Depends(get_db)):
+    cur = db.cursor(dictionary=True)
+    try:
+        booking_id = insert_public_booking(
+            cur,
+            slot_id=payload.slot_id,
+            full_name=payload.full_name,
+            phone=payload.phone,
+            email=payload.email,
+            players_count=payload.players_count,
+            notes=payload.notes,
+        )
+        db.commit()
+        booking = fetch_booking_full(cur, booking_id)
+        return {"booking": booking}
+    except ValueError as e:
+        db.rollback()
+        if str(e).startswith("slot_not_found"):
+            raise HTTPException(status_code=404, detail="Slot non trovato o non disponibile")
+        raise HTTPException(status_code=400, detail="Dati non validi")
+    except IntegrityError:
+        db.rollback()
+        # slot verificato sopra → questo è quasi certamente uq_bookings_slot
+        raise HTTPException(status_code=409, detail="Slot già prenotato")
     except Exception:
         db.rollback()
         raise

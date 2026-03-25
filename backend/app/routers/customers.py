@@ -26,7 +26,7 @@ def list_customers(db=Depends(get_db),current_admin: str = Depends(get_current_a
 
 
 @router.get("/by-phone/{phone}")
-def get_customer_by_phone(phone: str, db=Depends(get_db),):
+def get_customer_by_phone(phone: str, db=Depends(get_db),current_admin: str = Depends(get_current_admin),):
     cur = db.cursor(dictionary=True)
     try:
         customer = fetch_customer_by_phone(cur, phone)
