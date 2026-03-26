@@ -10,6 +10,8 @@ load_dotenv()
 
 # Leggiamo dal .env — mai hardcodare segreti nel codice
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError("SECRET_KEY mancante nel .env — l'app non può partire senza")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 8  # 8 ore — una giornata lavorativa
 
