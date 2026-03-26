@@ -8,7 +8,6 @@ async function request(path, { method = "GET", body, headers } = {}) {
         method,
         headers: {
             "Content-Type": "application/json",
-            // Se il token esiste lo aggiunge, altrimenti niente
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...(headers ?? {}),
         },
@@ -18,6 +17,13 @@ async function request(path, { method = "GET", body, headers } = {}) {
     let data = null
     const isJson = res.headers.get("content-type")?.includes("application/json")
     if (isJson) data = await res.json().catch(() => null)
+
+    // Token scaduto o non valido → logout automatico e redirect al login
+    if (res.status === 401 && token) {
+        localStorage.removeItem("token")
+        window.location.href = "/login"
+        return
+    }
 
     if (!res.ok) {
         const message = data?.detail || data?.message || `HTTP ${res.status}`
