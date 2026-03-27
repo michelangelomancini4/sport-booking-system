@@ -213,3 +213,12 @@ class OpeningHourTodayOut(BaseModel):
     open_time: Optional[str] = None
     close_time: Optional[str] = None
     is_closed: int
+
+class OpeningHourUpdate(BaseModel):
+    day_of_week: int = Field(ge=0, le=6)
+    open_time: Optional[str] = None
+    close_time: Optional[str] = None
+    is_closed: bool = False
+
+class OpeningHoursUpdateIn(BaseModel):
+    days: List[OpeningHourUpdate]

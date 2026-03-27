@@ -78,3 +78,35 @@ def _timedelta_to_str(td) -> str:
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
     return f"{hours:02d}:{minutes:02d}"
+
+def update_opening_hours_bulk(cur, days: list[dict]) -> int:
+    """
+    Aggiorna tutti i giorni passati in una sola chiamata.
+    
+    Ogni dict in `days` deve avere:
+      - day_of_week: int (0-6)
+      - open_time: str | None  es. "09:00"
+      - close_time: str | None es. "23:00"
+      - is_closed: bool
+    
+    Restituisce il numero di righe aggiornate.
+    """
+    updated = 0
+
+    for day in days:
+        cur.execute("""
+            UPDATE opening_hours
+            SET
+                open_time  = %s,
+                close_time = %s,
+                is_closed  = %s
+            WHERE day_of_week = %s
+        """, (
+            None if day.is_closed else day.open_time,
+            None if day.is_closed else day.close_time,
+            1 if day.is_closed else 0,
+            day.day_of_week,
+        ))
+        updated += cur.rowcount
+
+    return updated
