@@ -1,143 +1,120 @@
+/* ============================================================
+   DESIGN TOKENS — stesso sistema di HomePage e BookingPage
+   ============================================================ */
+:root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card2: #162032;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-accent: rgba(34, 197, 94, 0.25);
+    --text: rgba(255, 255, 255, 0.92);
+    --muted: rgba(255, 255, 255, 0.50);
+    --muted2: rgba(255, 255, 255, 0.28);
+    --accent: #22c55e;
+    --accent2: #16a34a;
+    --accent-bg: rgba(34, 197, 94, 0.10);
+    --shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+/* ============================================================
+   PAGE
+   ============================================================ */
 .page {
-    /* debug */
-    background-color: yellowgreen;
+    min-width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    padding: 28px 0 60px;
 }
 
-
-.adminpage_container {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    /* debug */
-}
-
+/* ============================================================
+   HEADER
+   ============================================================ */
 .header {
     display: flex;
     flex-direction: column;
+    align-items: center;
     text-align: center;
     gap: 6px;
+    margin-bottom: 28px;
 }
 
 .title {
     margin: 0;
     font-size: 28px;
+    font-weight: 800;
     letter-spacing: -0.02em;
-    margin-top: 10px;
-
+    color: var(--text);
 }
 
 .subtitle {
     margin: 0;
-    opacity: 0.8;
-    line-height: 1.4;
+    color: var(--accent);
+    font-size: 14px;
+    opacity: 0.85;
 }
 
-/*  */
+/* ============================================================
+   LAYOUT PRINCIPALE
+   ============================================================ */
 .sections_container {
-    width: 70%;
-    margin-left: 15%;
-    /* display: flex;
-    justify-content: space-around; */
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
+.toprow {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.bottomrow {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
 .card {
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    border-radius: 14px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.7);
-    margin: 20px 0px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: var(--shadow);
 }
 
 .cardHeader {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
+    align-items: flex-start;
+    margin-bottom: 18px;
 }
 
 .cardTitle {
-    margin: 0;
-    font-size: 18px;
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
 }
 
 .cardSubtitle {
     margin: 0;
-    opacity: 0.75;
-    font-size: 14px;
+    font-size: 13px;
+    color: var(--muted);
 }
 
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
 .formGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-}
-
-/* bookingsection */
-
-.bookingsection {
-
-    display: flex;
-    justify-content: space-between;
-}
-
-.bookingsection section {
-
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    border-radius: 14px;
-    padding: 16px;
-    background: rgba(255, 255, 255, 0.7);
-    margin: 20px 0px;
-}
-
-.bookinglist {
-    flex-basis: 50%;
-    list-style: none;
-    padding: 0;
-    margin-top: 16px;
-
-    gap: 12px;
-}
-
-.bookingdetail {
-    flex-basis: 30%;
-
-}
-
-.bookingTitle {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.bookingMeta {
-    font-size: 12px;
-    opacity: 0.65;
-}
-
-.bookingItem.bookingSelected {
-    border-left: 9px solid #2e7d32;
-    background: #f1f8f2;
-}
-
-.bookingItem {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.75);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-    cursor: pointer;
-}
-
-
-
-@media (max-width: 720px) {
-    .formGrid {
-        grid-template-columns: 1fr;
-    }
 }
 
 .field {
@@ -148,29 +125,71 @@
 
 .label {
     font-size: 13px;
-    opacity: 0.85;
+    color: var(--muted);
 }
 
 .input {
-    height: 40px;
+    height: 42px;
     border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
     padding: 0 12px;
     outline: none;
-    background: white;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    font: inherit;
 }
 
 .input:focus {
-    border-color: rgba(0, 0, 0, 0.25);
+    border-color: rgba(34, 197, 94, 0.65);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+.input::placeholder {
+    color: var(--muted2);
+}
+
+.input option {
+    background: var(--card);
+    color: var(--text);
+}
+
+.input:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
 }
 
 .hint {
     font-size: 12px;
-    opacity: 0.7;
+    color: var(--muted2);
 }
 
+.textarea {
+    min-height: 90px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    padding: 10px 12px;
+    outline: none;
+    resize: vertical;
+    font: inherit;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.textarea:focus {
+    border-color: rgba(34, 197, 94, 0.65);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
 .actions {
-    margin-top: 14px;
+    margin-top: 16px;
     display: flex;
     gap: 12px;
     align-items: center;
@@ -178,129 +197,206 @@
 }
 
 .primaryBtn {
-    height: 40px;
-    padding: 0 14px;
+    height: 42px;
+    padding: 0 18px;
     border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: rgba(0, 0, 0, 0.90);
-    color: white;
+    border: none;
+    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    color: #052e16;
+    font-weight: 800;
+    font-size: 14px;
     cursor: pointer;
+    transition: filter 0.15s ease;
+}
+
+.primaryBtn:hover:not(:disabled) {
+    filter: brightness(1.06);
 }
 
 .primaryBtn:disabled {
-    opacity: 0.6;
+    opacity: 0.45;
     cursor: not-allowed;
 }
 
 .secondaryBtn {
-    height: 40px;
+    height: 42px;
     padding: 0 14px;
     border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: white;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
     cursor: pointer;
+    font-size: 14px;
 }
 
-.error {
-    color: crimson;
+.iconBtn {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.iconBtn:hover {
+    background: rgba(255, 255, 255, 0.10);
+    transform: translateY(-1px);
+}
+
+.iconBtn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+}
+
+.dangerBtn {
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(225, 17, 59, 0.697);
+    background: rgba(220, 20, 60, 0.08);
+    color: #fca5a5;
+    cursor: pointer;
     font-size: 13px;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.dangerBtn:hover {
+    background: rgba(220, 20, 60, 0.15);
+}
+
+.logoutBtn {
+    align-self: center;
+    padding: 8px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(220, 20, 60, 0.35);
+    background: rgba(220, 20, 60, 0.08);
+    color: #fca5a5;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    margin-top: 4px;
+    transition: background 0.15s ease;
+}
+
+.logoutBtn:hover {
+    background: rgba(220, 20, 60, 0.15);
+}
+
+/* ============================================================
+   FEEDBACK
+   ============================================================ */
+.error {
+    font-size: 13px;
+    color: #fca5a5;
+}
+
+.success {
+    font-size: 13px;
+    color: #86efac;
 }
 
 .message {
     font-size: 13px;
-    opacity: 0.85;
+    color: var(--muted);
 }
 
+.muted {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.placeholder {
+    color: var(--muted);
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    font-size: 13px;
+}
+
+/* ============================================================
+   RESULT CARD (SlotGenerator)
+   ============================================================ */
 .resultCard {
-    margin-top: 14px;
+    margin-top: 16px;
     border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    padding: 12px;
-    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border);
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .resultTitle {
     font-weight: 700;
-    margin-bottom: 10px;
+    font-size: 14px;
+    color: var(--accent);
+    margin-bottom: 12px;
 }
 
 .resultGrid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
 }
 
+.value {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* ============================================================
+   EDIT SECTION (BookingDetailPanel)
+   ============================================================ */
 .editSection {
     margin-top: 18px;
     padding-top: 16px;
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    border-top: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
 .sectionTitleSmall {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
+    color: var(--accent);
     margin: 0;
 }
 
-.textarea {
-    min-height: 90px;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    padding: 10px 12px;
-    outline: none;
-    background: white;
-    resize: vertical;
-    font: inherit;
+/* ============================================================
+   BOOKINGS SECTION
+   ============================================================ */
+
+
+.bookinglist {
+    flex: 58;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+    min-width: 0;
 }
 
-.textarea:focus {
-    border-color: rgba(0, 0, 0, 0.25);
-}
-
-@media (max-width: 720px) {
-    .resultGrid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.muted {
-    font-size: 12px;
-    opacity: 0.7;
-}
-
-.value {
-    font-size: 14px;
-}
-
-.placeholder {
-    opacity: 0.7;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px dashed rgba(0, 0, 0, 0.18);
-}
-
-/* Bookings list */
-.bookingNow {
-    border: 2px solid #4caf50;
-}
-
-.nowBadge {
-    margin-left: 8px;
-    padding: 3px 8px;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    background: #4caf50;
-    color: white;
+.bookingdetail {
+    flex: 38;
+    flex-shrink: 0;
+    position: sticky;
+    top: 90px;
+    align-self: flex-start;
 }
 
 .bookingList {
     list-style: none;
     padding: 0;
-    margin: 12px 0 0;
+    margin: 14px 0 0;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -309,18 +405,34 @@
 .bookingItem {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
     gap: 12px;
-    padding: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.10);
+    padding: 14px;
+    border: 1px solid var(--border);
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.75);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 .bookingItem:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-    border-color: rgba(0, 0, 0, 0.16);
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.14);
+    transform: translateY(-1px);
+}
+
+.bookingSelected {
+    border-left: 5px solid var(--accent) !important;
+    background: rgba(34, 197, 94, 0.158) !important;
+    border-color: rgba(34, 197, 94, 0.35) !important;
+}
+
+.bookingNow {
+    border-color: rgba(34, 197, 94, 0.45) !important;
+}
+
+.bookingCancelled {
+    opacity: 0.65;
 }
 
 .bookingMain {
@@ -332,96 +444,85 @@
 
 .bookingTitle {
     font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
 }
 
 .bookingMeta {
     font-size: 12px;
-    opacity: 0.75;
+    color: var(--muted);
 }
 
-.bookingCancelled {
-    opacity: 0.82;
-}
-
-.dangerBtn {
-    height: 36px;
-    padding: 0 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(220, 20, 60, 0.35);
-    background: rgba(220, 20, 60, 0.08);
-    color: crimson;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.dangerBtn:hover {
-    background: rgba(220, 20, 60, 0.12);
-}
-
-
-.iconBtn {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.65);
-    cursor: pointer;
-    transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
-}
-
-.iconBtn:hover {
-    background: rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.14);
-    transform: translateY(-1px);
-}
-
-.iconBtn:active {
-    transform: translateY(0px);
-}
-
-.iconBtn:disabled {
-    opacity: 0.6;
-    cursor: default;
-    transform: none;
-}
-
-.spin {
-    animation: spin 0.9s linear infinite;
-}
-
+/* ============================================================
+   BADGES
+   ============================================================ */
 .statusBadge {
-    margin-left: 10px;
-    padding: 4px 8px;
+    margin-left: 8px;
+    padding: 3px 8px;
     border-radius: 999px;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
 }
 
 .active {
-    background: #e6f4ea;
-    color: #1e7a3e;
-    font-weight: 600;
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
 }
 
 .cancelled {
-    background: #f3d6d6;
-    color: #8a2f2f;
+    background: rgba(220, 38, 38, 0.15);
+    color: #fca5a5;
 }
 
-.logoutBtn {
-    align-self: center;
-    padding: 8px 16px;
-    border-radius: 10px;
-    border: 1px solid rgba(220, 20, 60, 0.35);
-    background: rgba(220, 20, 60, 0.08);
-    color: crimson;
-    cursor: pointer;
+.nowBadge {
+    margin-left: 6px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(34, 197, 94, 0.25);
+    color: #86efac;
+}
+
+/* ============================================================
+   OPENING HOURS EDITOR
+   ============================================================ */
+.ohRow {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr 100px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.ohRow:last-of-type {
+    border-bottom: none;
+}
+
+.ohDay {
+    font-size: 13px;
     font-weight: 600;
-    margin-top: 8px;
+    color: var(--text);
 }
 
-.logoutBtn:hover {
-    background: rgba(220, 20, 60, 0.15);
+.ohToggleLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.ohToggleText {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+.spin {
+    animation: spin 0.9s linear infinite;
 }
 
 @keyframes spin {
@@ -434,33 +535,49 @@
     }
 }
 
-.ohRow {
-    display: grid;
-    grid-template-columns: 110px 1fr 1fr 100px;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+
+    .toprow,
+    .bottomrow {
+        flex-direction: column;
+    }
+
+    .bookingsection {
+        flex-direction: column;
+    }
+
+    .bookingdetail {
+        width: 100%;
+        position: static;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .resultGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .ohRow {
+        grid-template-columns: 90px 1fr 1fr 80px;
+    }
 }
 
-.ohRow:last-of-type {
-    border-bottom: none;
-}
+@media (max-width: 600px) {
+    .sections_container {
+        width: 94%;
+    }
 
-.ohDay {
-    font-size: 13px;
-    font-weight: 600;
-}
+    .ohRow {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
 
-.ohToggleLabel {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.ohToggleText {
-    font-size: 13px;
-    opacity: 0.75;
+    .ohDay {
+        grid-column: 1 / -1;
+    }
 }

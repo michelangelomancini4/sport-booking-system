@@ -65,7 +65,7 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Slot minutes</span>
+                    <span className={styles.label}>Durata slot (min)</span>
                     <input
                         className={styles.input}
                         type="number"
@@ -77,7 +77,7 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Date from</span>
+                    <span className={styles.label}>Da data</span>
                     <input
                         className={styles.input}
                         type="date"
@@ -87,7 +87,7 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Date to</span>
+                    <span className={styles.label}>A data</span>
                     <input
                         className={styles.input}
                         type="date"
@@ -97,7 +97,7 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Start time</span>
+                    <span className={styles.label}>Ora inizio</span>
                     <input
                         className={styles.input}
                         type="time"
@@ -107,7 +107,7 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>End time</span>
+                    <span className={styles.label}>Ora fine</span>
                     <input
                         className={styles.input}
                         type="time"
@@ -117,14 +117,14 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Price cents (override)</span>
+                    <span className={styles.label}>Prezzo centesimi (override)</span>
                     <input
                         className={styles.input}
                         type="number"
                         min="0"
                         value={priceCents}
                         onChange={(e) => setPriceCents(e.target.value)}
-                        placeholder="(blank = default)"
+                        placeholder="(vuoto = default)"
                     />
                     <span className={styles.hint}>
                         Lascia vuoto per usare il prezzo default dello sport.
@@ -134,7 +134,7 @@ export default function SlotGenerator({ styles }) {
 
             <div className={styles.actions}>
                 <button className={styles.primaryBtn} onClick={handleGenerate} disabled={loading}>
-                    {loading ? "Generating..." : "Generate slots"}
+                    {loading ? "Generazione..." : "Genera slot"}
                 </button>
                 {error && <span className={styles.error}>{error}</span>}
             </div>

@@ -35,7 +35,7 @@ export default function BookingDetailPanel({ selectedBookingId, selectedBooking,
 
     if (!selectedBookingId) {
         return (
-            <section className={styles.card}>
+            <div className={styles.card}>
                 <div className={styles.cardHeader}>
                     <div>
                         <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
@@ -44,25 +44,25 @@ export default function BookingDetailPanel({ selectedBookingId, selectedBooking,
                         </p>
                     </div>
                 </div>
-            </section>
+            </div>
         );
     }
 
     if (!booking) {
         return (
-            <section className={styles.card}>
+            <div className={styles.card}>
                 <div className={styles.cardHeader}>
                     <div>
                         <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
                         <p className={styles.cardSubtitle}>Nessun dato disponibile.</p>
                     </div>
                 </div>
-            </section>
+            </div>
         );
     }
 
     return (
-        <section className={styles.card}>
+        <div className={styles.card}>
             <div className={styles.cardHeader}>
                 <div>
                     <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
@@ -164,6 +164,6 @@ export default function BookingDetailPanel({ selectedBookingId, selectedBooking,
                     </div>
                 </div>
             )}
-        </section>
+        </div>
     );
 }

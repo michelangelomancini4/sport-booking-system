@@ -16,8 +16,8 @@ export default function AdminPage() {
     const navigate = useNavigate();
 
     function handleLogout() {
-        logout()
-        navigate("/login")
+        logout();
+        navigate("/login");
     }
 
     return (
@@ -25,34 +25,14 @@ export default function AdminPage() {
             <header className={styles.header}>
                 <h1 className={styles.title}>Admin Dashboard</h1>
                 <p className={styles.subtitle}>Gestione operativa del centro sportivo.</p>
-                <button onClick={handleLogout} className={styles.logoutBtn}>
-                    Logout
-                </button>
+
             </header>
 
             <div className={styles.sections_container}>
-                <section className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <h2 className={styles.cardTitle}>Generatore Slot</h2>
-                        <p className={styles.cardSubtitle}>
-                            Crea slot in bulk per sport e intervallo date.
-                        </p>
-                    </div>
-                    <SlotGenerator styles={styles} />
-                </section>
 
-                <section className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <h2 className={styles.cardTitle}>Orari di apertura</h2>
-                        <p className={styles.cardSubtitle}>
-                            Modifica gli orari settimanali del centro.
-                        </p>
-                    </div>
-                    <OpeningHoursEditor />
-                </section>
-
-                <div className={styles.bookingsection}>
-                    <section className={styles.bookinglist}>
+                {/* RIGA 1 — usata ogni giorno */}
+                <div className={styles.toprow}>
+                    <div className={styles.bookinglist}>
                         <BookingsPanel
                             selectedBookingId={selectedBookingId}
                             onSelectBooking={(id, booking) => {
@@ -65,15 +45,43 @@ export default function AdminPage() {
                                 setSelectedBooking(null);
                             }}
                         />
-                    </section>
-                    <section className={styles.bookingdetail}>
+                    </div>
+                    <div className={styles.bookingdetail}>
                         <BookingDetailPanel
                             selectedBookingId={selectedBookingId}
                             selectedBooking={selectedBooking}
                             isHistory={isHistory}
                         />
+                    </div>
+                </div>
+
+                {/* RIGA 2 — usata occasionalmente */}
+                <div className={styles.bottomrow}>
+                    <section className={styles.card} style={{ flex: 58 }}>
+                        <div className={styles.cardHeader}>
+                            <div>
+                                <h2 className={styles.cardTitle}>Generatore Slot</h2>
+                                <p className={styles.cardSubtitle}>
+                                    Crea slot in bulk per sport e intervallo date.
+                                </p>
+                            </div>
+                        </div>
+                        <SlotGenerator styles={styles} />
+                    </section>
+
+                    <section className={styles.card} style={{ flex: 38 }}>
+                        <div className={styles.cardHeader}>
+                            <div>
+                                <h2 className={styles.cardTitle}>Orari di apertura</h2>
+                                <p className={styles.cardSubtitle}>
+                                    Modifica gli orari settimanali del centro.
+                                </p>
+                            </div>
+                        </div>
+                        <OpeningHoursEditor />
                     </section>
                 </div>
+
             </div>
         </div>
     );
