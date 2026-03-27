@@ -433,3 +433,34 @@
         transform: rotate(360deg);
     }
 }
+
+.ohRow {
+    display: grid;
+    grid-template-columns: 110px 1fr 1fr 100px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.ohRow:last-of-type {
+    border-bottom: none;
+}
+
+.ohDay {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ohToggleLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.ohToggleText {
+    font-size: 13px;
+    opacity: 0.75;
+}

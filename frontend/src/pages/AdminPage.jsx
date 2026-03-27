@@ -6,6 +6,7 @@ import styles from "./AdminPage.module.css";
 import SlotGenerator from "../components/admin/SlotGenerator";
 import BookingsPanel from "../components/admin/BookingsPanel";
 import BookingDetailPanel from "../components/admin/BookingDetailPanel";
+import OpeningHoursEditor from "../components/admin/OpeningHoursEditor";
 
 export default function AdminPage() {
     const [selectedBookingId, setSelectedBookingId] = useState(null);
@@ -38,6 +39,16 @@ export default function AdminPage() {
                         </p>
                     </div>
                     <SlotGenerator styles={styles} />
+                </section>
+
+                <section className={styles.card}>
+                    <div className={styles.cardHeader}>
+                        <h2 className={styles.cardTitle}>Orari di apertura</h2>
+                        <p className={styles.cardSubtitle}>
+                            Modifica gli orari settimanali del centro.
+                        </p>
+                    </div>
+                    <OpeningHoursEditor />
                 </section>
 
                 <div className={styles.bookingsection}>
