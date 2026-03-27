@@ -20,7 +20,9 @@ export default function ConfirmModal({ message, onConfirm, onCancel }) {
                 gap: 20,
                 boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
             }}>
-                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5 }}>{message}</p>
+                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.5, color: "#1a1a1a" }}>
+                    {message}
+                </p>
                 <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
                     <button onClick={onCancel} style={{
                         padding: "8px 18px",

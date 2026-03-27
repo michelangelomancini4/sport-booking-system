@@ -231,27 +231,44 @@ export default function BookingsPanel({ selectedBookingId, onSelectBooking, onMo
                                 <div className={styles.bookingMain}>
                                     <div className={styles.bookingTitle}>
                                         <b>{b.field_name}</b> — {b.full_name}
-                                        <span className={`${styles.statusBadge} ${isHistory ? styles.cancelled : styles.active}`}>
-                                            {isHistory ? "ANNULLATA" : "ATTIVA"}
-                                        </span>
+                                        {!isHistory && (
+                                            <span className={`${styles.statusBadge} ${styles.active}`}>
+                                                ATTIVA
+                                            </span>
+                                        )}
+                                        {isHistory && (
+                                            <span className={`${styles.statusBadge} ${styles.cancelled}`}>
+                                                ANNULLATA
+                                            </span>
+                                        )}
                                         {isNow && <span className={styles.nowBadge}>IN CORSO</span>}
                                     </div>
 
-                                    <div className={styles.bookingMeta}>🏷️ {b.sport_name}</div>
-                                    <div className={styles.bookingMeta}>📞 {b.phone || "—"}</div>
-                                    <div className={styles.bookingMeta}>👥 {b.players_count} giocatori</div>
                                     <div className={styles.bookingMeta}>
-                                        {new Date(b.starts_at).toLocaleString("it-IT")} →{" "}
-                                        {new Date(b.ends_at).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
+                                        {b.sport_name} · {b.phone || "—"} · {b.players_count} giocatori
+                                    </div>
+                                    <div className={styles.bookingMeta}>
+                                        {new Date(b.starts_at).toLocaleString("it-IT", {
+                                            day: "2-digit", month: "2-digit", year: "numeric",
+                                            hour: "2-digit", minute: "2-digit"
+                                        })} →{" "}
+                                        {new Date(b.ends_at).toLocaleTimeString("it-IT", {
+                                            hour: "2-digit", minute: "2-digit"
+                                        })}
                                     </div>
 
                                     {isHistory && b.archived_at && (
                                         <div className={styles.bookingMeta}>
-                                            🗑️ Annullata il {new Date(b.archived_at).toLocaleString("it-IT")}
+                                            Annullata il {new Date(b.archived_at).toLocaleString("it-IT", {
+                                                day: "2-digit", month: "2-digit", year: "numeric",
+                                                hour: "2-digit", minute: "2-digit"
+                                            })}
                                         </div>
                                     )}
 
-                                    {b.notes && <div className={styles.bookingMeta}>📝 {b.notes}</div>}
+                                    {b.notes && (
+                                        <div className={styles.bookingMeta}>Note: {b.notes}</div>
+                                    )}
                                 </div>
 
                                 {!isHistory && (

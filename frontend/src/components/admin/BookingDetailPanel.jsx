@@ -66,27 +66,13 @@ export default function BookingDetailPanel({ selectedBookingId, selectedBooking,
             <div className={styles.cardHeader}>
                 <div>
                     <h2 className={styles.cardTitle}>Dettaglio prenotazione</h2>
-                    <p className={styles.cardSubtitle}>Scheda completa della booking selezionata.</p>
+                    <p className={styles.cardSubtitle}>
+                        ID {booking.id_booking ?? booking.booking_id}
+                    </p>
                 </div>
             </div>
 
             <div className={styles.resultGrid}>
-                <div>
-                    <span className={styles.muted}>ID booking</span>
-                    <div className={styles.value}>{booking.id_booking ?? booking.booking_id}</div>
-                </div>
-                <div>
-                    <span className={styles.muted}>Status</span>
-                    <div className={styles.value}>{booking.status === "cancelled" ? "Annullata" : "Attiva"}</div>
-                </div>
-                <div>
-                    <span className={styles.muted}>Sport</span>
-                    <div className={styles.value}>{booking.sport_name || "—"}</div>
-                </div>
-                <div>
-                    <span className={styles.muted}>Campo</span>
-                    <div className={styles.value}>{booking.field_name || "—"}</div>
-                </div>
                 <div>
                     <span className={styles.muted}>Cliente</span>
                     <div className={styles.value}>{booking.full_name || "—"}</div>
@@ -96,36 +82,59 @@ export default function BookingDetailPanel({ selectedBookingId, selectedBooking,
                     <div className={styles.value}>{booking.phone || "—"}</div>
                 </div>
                 <div>
-                    <span className={styles.muted}>Email</span>
-                    <div className={styles.value}>{booking.email || "—"}</div>
+                    <span className={styles.muted}>Sport</span>
+                    <div className={styles.value}>{booking.sport_name || "—"}</div>
                 </div>
                 <div>
-                    <span className={styles.muted}>Inizio</span>
-                    <div className={styles.value}>
-                        {booking.starts_at ? new Date(booking.starts_at).toLocaleString("it-IT") : "—"}
-                    </div>
+                    <span className={styles.muted}>Campo</span>
+                    <div className={styles.value}>{booking.field_name || "—"}</div>
                 </div>
-                <div>
-                    <span className={styles.muted}>Fine</span>
+                <div style={{ gridColumn: "1 / -1" }}>
+                    <span className={styles.muted}>Orario</span>
                     <div className={styles.value}>
-                        {booking.ends_at ? new Date(booking.ends_at).toLocaleString("it-IT") : "—"}
+                        {booking.starts_at ? new Date(booking.starts_at).toLocaleDateString("it-IT", {
+                            day: "2-digit", month: "2-digit", year: "numeric"
+                        }) : "—"}
+                        {" · "}
+                        {booking.starts_at ? new Date(booking.starts_at).toLocaleTimeString("it-IT", {
+                            hour: "2-digit", minute: "2-digit"
+                        }) : "—"}
+                        {" → "}
+                        {booking.ends_at ? new Date(booking.ends_at).toLocaleTimeString("it-IT", {
+                            hour: "2-digit", minute: "2-digit"
+                        }) : "—"}
                     </div>
                 </div>
                 <div>
                     <span className={styles.muted}>Giocatori</span>
                     <div className={styles.value}>{booking.players_count}</div>
                 </div>
+                <div>
+                    <span className={styles.muted}>Status</span>
+                    <div className={styles.value}>
+                        {booking.status === "cancelled" ? "Annullata" : "Attiva"}
+                    </div>
+                </div>
+                {booking.email && (
+                    <div style={{ gridColumn: "1 / -1" }}>
+                        <span className={styles.muted}>Email</span>
+                        <div className={styles.value}>{booking.email}</div>
+                    </div>
+                )}
                 {booking.notes && (
-                    <div>
+                    <div style={{ gridColumn: "1 / -1" }}>
                         <span className={styles.muted}>Note</span>
                         <div className={styles.value}>{booking.notes}</div>
                     </div>
                 )}
                 {isHistory && booking.archived_at && (
-                    <div>
+                    <div style={{ gridColumn: "1 / -1" }}>
                         <span className={styles.muted}>Annullata il</span>
                         <div className={styles.value}>
-                            {new Date(booking.archived_at).toLocaleString("it-IT")}
+                            {new Date(booking.archived_at).toLocaleString("it-IT", {
+                                day: "2-digit", month: "2-digit", year: "numeric",
+                                hour: "2-digit", minute: "2-digit"
+                            })}
                         </div>
                     </div>
                 )}

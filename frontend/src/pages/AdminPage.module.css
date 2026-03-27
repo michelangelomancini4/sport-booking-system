@@ -255,20 +255,22 @@
 }
 
 .dangerBtn {
-    height: 36px;
+    height: 34px;
     padding: 0 12px;
-    border-radius: 10px;
-    border: 1px solid rgba(225, 17, 59, 0.697);
-    background: rgba(220, 20, 60, 0.08);
-    color: #fca5a5;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: transparent;
+    color: var(--muted);
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     white-space: nowrap;
-    transition: background 0.15s ease;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .dangerBtn:hover {
-    background: rgba(220, 20, 60, 0.15);
+    background: rgba(220, 20, 60, 0.10);
+    color: #fca5a5;
+    border-color: rgba(220, 20, 60, 0.429);
 }
 
 .logoutBtn {
