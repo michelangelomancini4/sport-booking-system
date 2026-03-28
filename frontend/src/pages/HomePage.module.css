@@ -44,23 +44,17 @@
    ============================================================ */
 .jumbotron {
     position: relative;
-    display: flex;
-    margin: 0 auto;
+    height: 520px;
     overflow: hidden;
 }
 
-
-.jumbo_left_box,
-.jumbo_right_box {
-    flex: 1;
-    height: 460px;
-    width: 100%;
-    overflow: hidden;
+.jumbo_bg {
+    position: absolute;
+    inset: 0;
     background-size: cover;
     background-position: center;
     background-color: var(--card2);
 }
-
 
 .jumbo_overlay {
     position: absolute;
@@ -68,35 +62,21 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: var(--text);
-    gap: 10px;
-
-    background: linear-gradient(to bottom,
-            rgba(15, 23, 42, 0.65) 0%,
-            rgba(15, 23, 42, 0.62) 50%,
-            rgba(15, 23, 42, 0.85) 100%);
+    align-items: flex-start;
+    padding: 0 56px;
+    gap: 16px;
+    background: linear-gradient(105deg,
+            rgba(15, 23, 42, 1.00) 0%,
+            rgba(15, 23, 42, 0.95) 25%,
+            rgba(15, 23, 42, 0.70) 50%,
+            rgba(15, 23, 42, 0.25) 75%,
+            rgba(15, 23, 42, 0.10) 100%);
 }
-
-
-.jumbotron::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 120px;
-    pointer-events: none;
-    z-index: 3;
-    background: linear-gradient(to bottom,
-            transparent 0%,
-            rgba(15, 23, 42, 0.70) 60%,
-            rgba(15, 23, 42, 1.00) 100%);
-}
-
 
 .jumbo_eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-size: 11px;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -105,13 +85,21 @@
     margin: 0;
 }
 
+.jumbo_eyebrow_line {
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+    opacity: 0.7;
+}
+
 .jumbo_title {
-    font-size: 38px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-size: 56px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
     margin: 0;
     color: var(--text);
-    line-height: 1.15;
 }
 
 .jumbo_title span {
@@ -122,93 +110,166 @@
     margin: 0;
     font-size: 15px;
     color: var(--muted);
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
-/* CTA nell'hero */
+.jumbo_actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 4px;
+}
+
 .jumbo_cta {
     display: inline-block;
-    margin-top: 6px;
-    padding: 11px 26px;
-    background: linear-gradient(180deg, var(--accent), var(--accent2));
+    padding: 13px 28px;
+    background: var(--accent);
     color: #052e16;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 14px;
-    border-radius: 12px;
+    border-radius: 10px;
     text-decoration: none;
     transition: filter 0.15s ease;
+    letter-spacing: -0.01em;
 }
 
 .jumbo_cta:hover {
     filter: brightness(1.06);
 }
 
+.jumbo_ghost {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.40);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.jumbo_ghost:hover {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.jumbo_ghost_circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+/* .jumbo_sports {
+    position: absolute;
+    bottom: 28px;
+    right: 40px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.sport_badge {
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    background: rgba(15, 23, 42, 0.65);
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.60);
+    letter-spacing: 0.5px;
+} */
+
+.jumbo_wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 80px;
+    z-index: 4;
+}
 
 /* ============================================================
    BOOKING BOX SECTION
    ============================================================ */
-.booking_box_container {
+.cta_row_container {
     display: flex;
     justify-content: center;
-    padding: 32px 16px;
+    margin: 0;
 }
 
-.booking_box {
-    width: 100%;
-    max-width: 420px;
-    padding: 22px 20px;
-    border: 1px solid var(--border-accent);
-    border-radius: 16px;
-    background: var(--card);
-    text-align: center;
+.cta_row {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+    padding: 40px 40px 48px;
+    border-bottom: 1px solid var(--border);
+
 }
 
-.booking_title {
-    margin: 0 0 6px;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+.cta_left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cta_title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
     color: var(--text);
 }
 
-.booking_subtitle {
-    margin: 0 0 12px;
+.cta_sub {
+    font-size: 13px;
     color: var(--muted);
-    font-size: 13px;
+    margin: 0;
 }
 
+.cta_steps {
+    display: flex;
+    gap: 16px;
+    align-items: center;
 
-.booking_sports {
-    margin: 0 0 18px;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 1px;
-    color: var(--accent);
 }
 
-.booking_cta {
-    display: inline-block;
-    text-decoration: none;
-    padding: 11px 22px;
-    border-radius: 12px;
-    background: linear-gradient(180deg, var(--accent), var(--accent2));
-    color: #052e16;
+.step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.step_num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent-bg);
+    border: 1px solid rgba(34, 197, 94, 0.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
     font-weight: 700;
-    font-size: 14px;
-    transition: filter 0.15s ease;
+    color: var(--accent);
+    flex-shrink: 0;
 }
 
-.booking_cta:hover {
-    filter: brightness(1.06);
+.step_sep {
+    color: var(--muted2);
 }
-
 
 /* ============================================================
    CARDS SECTION (Dove siamo / Orari / Contatti)
    
    ============================================================ */
 .cardsSection {
-    padding: 0 16px 36px;
+    padding: 36px 16px 48px;
 }
 
 .cardsContainer {
@@ -225,6 +286,16 @@
     border: 1px solid var(--border);
     border-radius: 16px;
     padding: 18px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.cardBody {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
 /* Contenitore icona */
@@ -279,10 +350,31 @@
    RESPONSIVE
    ============================================================ */
 @media (max-width: 900px) {
+    .jumbo_overlay {
+        padding: 0 32px;
+    }
+
+    .jumbo_title {
+        font-size: 42px;
+    }
+
+    .cta_row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 40px 40px 36px;
+        gap: 20px;
+    }
+
+    .cta_steps {
+        display: none;
+    }
+
     .cardsContainer {
         flex-direction: column;
         gap: 12px;
         align-items: center;
+        max-width: 1000px;
+
     }
 
     .card {
@@ -292,13 +384,15 @@
 }
 
 @media (max-width: 480px) {
-
-    .jumbo_left_box,
-    .jumbo_right_box {
-        height: 380px;
+    .jumbo_title {
+        font-size: 34px;
     }
 
-    .jumbo_title {
-        font-size: 28px;
+    .jumbo_overlay {
+        padding: 0 24px;
+    }
+
+    .cta_row {
+        padding: 28px 24px;
     }
 }
