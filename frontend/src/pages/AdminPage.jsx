@@ -30,7 +30,6 @@ export default function AdminPage() {
 
             <div className={styles.sections_container}>
 
-                {/* RIGA 1 — usata ogni giorno */}
                 <div className={styles.toprow}>
                     <div className={styles.bookinglist}>
                         <BookingsPanel
@@ -55,29 +54,26 @@ export default function AdminPage() {
                     </div>
                 </div>
 
-                {/* RIGA 2 — usata occasionalmente */}
                 <div className={styles.bottomrow}>
-                    <section className={styles.card} style={{ flex: 58 }}>
-                        <div className={styles.cardHeader}>
-                            <div>
-                                <h2 className={styles.cardTitle}>Generatore Slot</h2>
-                                <p className={styles.cardSubtitle}>
-                                    Crea slot in bulk per sport e intervallo date.
-                                </p>
-                            </div>
+                    <section className={`${styles.card} ${styles.slotCard}`}>                        <div className={styles.cardHeader}>
+                        <div>
+                            <h2 className={styles.cardTitle}>Generatore Slot</h2>
+                            <p className={styles.cardSubtitle}>
+                                Crea slot in bulk per sport e intervallo date.
+                            </p>
                         </div>
+                    </div>
                         <SlotGenerator styles={styles} />
                     </section>
 
-                    <section className={styles.card} style={{ flex: 38 }}>
-                        <div className={styles.cardHeader}>
-                            <div>
-                                <h2 className={styles.cardTitle}>Orari di apertura</h2>
-                                <p className={styles.cardSubtitle}>
-                                    Modifica gli orari settimanali del centro.
-                                </p>
-                            </div>
+                    <section className={`${styles.card} ${styles.ohCard}`}>                        <div className={styles.cardHeader}>
+                        <div>
+                            <h2 className={styles.cardTitle}>Orari di apertura</h2>
+                            <p className={styles.cardSubtitle}>
+                                Modifica gli orari settimanali del centro.
+                            </p>
                         </div>
+                    </div>
                         <OpeningHoursEditor />
                     </section>
                 </div>

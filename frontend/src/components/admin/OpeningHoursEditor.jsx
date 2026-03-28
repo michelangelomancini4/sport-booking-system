@@ -86,10 +86,14 @@ export default function OpeningHoursEditor() {
 
                         <label className={styles.ohToggleLabel}>
                             <input
+                                className={styles.ohToggleInput}
                                 type="checkbox"
                                 checked={!isClosed}
                                 onChange={(e) => handleChange(i, "is_closed", e.target.checked ? 0 : 1)}
                             />
+                            <div className={`${styles.ohTrack} ${!isClosed ? styles.ohTrackOn : ""}`}>
+                                <div className={`${styles.ohThumb} ${!isClosed ? styles.ohThumbOn : ""}`} />
+                            </div>
                             <span className={styles.ohToggleText}>
                                 {isClosed ? "Chiuso" : "Aperto"}
                             </span>
