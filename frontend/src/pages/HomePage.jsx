@@ -67,49 +67,58 @@ export default function HomePage() {
             <section className={styles.cardsSection}>
                 <div className={styles.cardsContainer}>
                     <article className={styles.card}>
-                        <div className={styles.cardIcon}>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5">
-                                <path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.5-2-4.5-4.5-4.5z" />
-                                <circle cx="8" cy="6" r="1.5" />
-                            </svg>
-                        </div>
-                        <div className={styles.cardBody}>
-                            <h4 className={styles.cardTitle}>Dove siamo</h4>
-                            <p className={styles.cardText}>Indirizzo / zona</p>
-                            <a className={styles.cardLink} href="https://www.google.com/maps?q=centro%20sportivo%20padel" target="_blank" rel="noreferrer">
-                                Apri su Maps →
-                            </a>
-                        </div>
-                    </article>
-
-                    <article className={styles.card}>
-                        <div className={styles.cardIcon}>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5">
-                                <circle cx="8" cy="8" r="6" />
-                                <path d="M8 4.5V8l2.5 2" />
-                            </svg>
-                        </div>
-                        <div className={styles.cardBody}>
-                            <h4 className={styles.cardTitle}>Orari</h4>
-                            <p className={styles.cardText}>09:00 – 23:00</p>
-                            <p className={styles.cardHint}>Tutti i giorni</p>
+                        <div className={styles.card2}>
+                            <div className={styles.cardIcon}>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5">
+                                    <path d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8.5 4.5 8.5s4.5-5 4.5-8.5c0-2.5-2-4.5-4.5-4.5z" />
+                                    <circle cx="8" cy="6" r="1.5" />
+                                </svg>
+                            </div>
+                            <div className={styles.cardBody}>
+                                <h4 className={styles.cardTitle}>Dove siamo</h4>
+                                <p className={styles.cardText}>Indirizzo / zona</p>
+                                <a className={styles.cardLink} href="https://www.google.com/maps?q=centro%20sportivo%20padel" target="_blank" rel="noreferrer">
+                                    Apri su Maps →
+                                </a>
+                            </div>
                         </div>
                     </article>
 
                     <article className={styles.card}>
-                        <div className={styles.cardIcon}>
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5">
-                                <path d="M3 3h2l1 3-1.5 1.5a9 9 0 003 3L9 9l3 1v2a1 1 0 01-1 1A11 11 0 012 4a1 1 0 011-1z" />
-                            </svg>
-                        </div>
-                        <div className={styles.cardBody}>
-                            <h4 className={styles.cardTitle}>Contatti</h4>
-                            <p className={styles.cardText}>Telefono / WhatsApp</p>
-                            <a className={styles.cardLink} href="https://wa.me/393331234567" target="_blank" rel="noreferrer">
-                                Scrivici su WhatsApp →
-                            </a>
+                        <div className={styles.card2}>
+
+                            <div className={styles.cardIcon}>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5">
+                                    <circle cx="8" cy="8" r="6" />
+                                    <path d="M8 4.5V8l2.5 2" />
+                                </svg>
+                            </div>
+                            <div className={styles.cardBody}>
+                                <h4 className={styles.cardTitle}>Orari</h4>
+                                <p className={styles.cardText}>09:00 – 23:00</p>
+                                <p className={styles.cardHint}>Tutti i giorni</p>
+                            </div>
                         </div>
                     </article>
+
+                    <article className={styles.card}>
+                        <div className={styles.card2}>
+
+                            <div className={styles.cardIcon}>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#22c55e" strokeWidth="1.5">
+                                    <path d="M3 3h2l1 3-1.5 1.5a9 9 0 003 3L9 9l3 1v2a1 1 0 01-1 1A11 11 0 012 4a1 1 0 011-1z" />
+                                </svg>
+                            </div>
+                            <div className={styles.cardBody}>
+                                <h4 className={styles.cardTitle}>Contatti</h4>
+                                <p className={styles.cardText}>Telefono / WhatsApp</p>
+                                <a className={styles.cardLink} href="https://wa.me/393331234567" target="_blank" rel="noreferrer">
+                                    Scrivici su WhatsApp →
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
                 </div>
             </section>
 
