@@ -35,8 +35,7 @@ export default function SlotGenerator({ styles }) {
                 slot_minutes: Number(slotMinutes),
             };
 
-            if (priceCents !== "") payload.price_cents = Number(priceCents);
-
+            if (priceCents !== "") payload.price_cents = Math.round(Number(priceCents) * 100);
             const data = await generateSlots(payload);
             setResult(data);
         } catch (e) {
@@ -117,14 +116,15 @@ export default function SlotGenerator({ styles }) {
                 </label>
 
                 <label className={styles.field}>
-                    <span className={styles.label}>Prezzo centesimi (override)</span>
+                    <span className={styles.label}>Prezzo (€, opzionale)</span>
                     <input
                         className={styles.input}
                         type="number"
                         min="0"
+                        step="0.01"
                         value={priceCents}
                         onChange={(e) => setPriceCents(e.target.value)}
-                        placeholder="(vuoto = default)"
+                        placeholder="es. 10.00"
                     />
                     <span className={styles.hint}>
                         Lascia vuoto per usare il prezzo default dello sport.
@@ -141,31 +141,30 @@ export default function SlotGenerator({ styles }) {
 
             {result && (
                 <div className={styles.resultCard}>
-                    <div className={styles.resultTitle}>Result</div>
-
+                    <div className={styles.resultTitle}>Riepilogo generazione</div>
                     <div className={styles.resultGrid}>
                         <div>
                             <span className={styles.muted}>Sport ID</span>
                             <div className={styles.value}>{result.sport_id}</div>
                         </div>
                         <div>
-                            <span className={styles.muted}>Fields</span>
+                            <span className={styles.muted}>Campi</span>
                             <div className={styles.value}>{result.fields_count}</div>
                         </div>
                         <div>
-                            <span className={styles.muted}>Created</span>
+                            <span className={styles.muted}>Slot creati</span>
                             <div className={styles.value}>{result.created}</div>
                         </div>
                         <div>
-                            <span className={styles.muted}>Skipped</span>
+                            <span className={styles.muted}>Saltati (esistenti)</span>
                             <div className={styles.value}>{result.skipped}</div>
                         </div>
                         <div>
-                            <span className={styles.muted}>Price</span>
+                            <span className={styles.muted}>Prezzo</span>
                             <div className={styles.value}>€{(result.price_cents / 100).toFixed(2)}</div>
                         </div>
                         <div>
-                            <span className={styles.muted}>Range</span>
+                            <span className={styles.muted}>Periodo</span>
                             <div className={styles.value}>
                                 {result.date_from} → {result.date_to} ({result.start_time}–{result.end_time})
                             </div>
@@ -173,6 +172,7 @@ export default function SlotGenerator({ styles }) {
                     </div>
                 </div>
             )}
+
         </>
     );
 }
