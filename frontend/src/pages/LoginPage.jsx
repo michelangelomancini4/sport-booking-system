@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { loginRequest } from "../api/auth"
+import styles from "./LoginPage.module.css"
 
 export default function LoginPage() {
     const [username, setUsername] = useState("")
@@ -33,47 +34,55 @@ export default function LoginPage() {
     }
 
     return (
-        <div style={{ maxWidth: 400, margin: "80px auto", padding: "0 1rem" }}>
-            <h1>Accesso Admin</h1>
+        <div className={styles.page}>
+            <div className={styles.card}>
 
-            <form onSubmit={handleSubmit}>
-                <div style={{ marginBottom: "1rem" }}>
-                    <label htmlFor="username">Username</label>
-                    <input
-                        id="username"
-                        type="text"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
-                        required
-                        autoComplete="username"
-                        style={{ display: "block", width: "100%", marginTop: 4 }}
-                    />
-                </div>
+                <div className={styles.logo}>Sport<span>Booking</span></div>
 
-                <div style={{ marginBottom: "1rem" }}>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        id="password"
-                        type="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        required
-                        autoComplete="current-password"
-                        style={{ display: "block", width: "100%", marginTop: 4 }}
-                    />
-                </div>
+                <h1 className={styles.title}>Accesso Admin</h1>
+                <p className={styles.subtitle}>Inserisci le tue credenziali per continuare</p>
 
-                {/* Mostra l'errore solo se esiste */}
-                {error && (
-                    <p style={{ color: "red", marginBottom: "1rem" }}>
-                        {error}
-                    </p>
-                )}
+                <form onSubmit={handleSubmit}>
+                    <div className={styles.field}>
+                        <label htmlFor="username" className={styles.label}>Username</label>
+                        <input
+                            id="username"
+                            type="text"
+                            className={styles.input}
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
+                            required
+                            autoComplete="username"
+                            placeholder="es. admin"
+                        />
+                    </div>
 
-                <button type="submit" disabled={loading}>
-                    {loading ? "Accesso in corso..." : "Accedi"}
-                </button>
-            </form>
+                    <div className={styles.field}>
+                        <label htmlFor="password" className={styles.label}>Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            className={styles.input}
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
+                            required
+                            autoComplete="current-password"
+                            placeholder="••••••••"
+                        />
+                    </div>
+
+                    {error && <p className={styles.error}>{error}</p>}
+
+                    <button
+                        type="submit"
+                        className={styles.btn}
+                        disabled={loading}
+                    >
+                        {loading ? "Accesso in corso..." : "Accedi"}
+                    </button>
+                </form>
+
+            </div>
         </div>
     )
 }
