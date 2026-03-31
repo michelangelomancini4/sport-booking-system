@@ -1,6 +1,11 @@
 from datetime import date
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query,  Request
 from mysql.connector import IntegrityError
+
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
 
 from app.auth.dependencies import get_current_admin
 
@@ -158,7 +163,8 @@ def delete_booking(booking_id: int, db=Depends(get_db),current_admin: str = Depe
         cur.close()
 
 @router.post("/public", response_model=BookingCreateOut, status_code=201)
-def create_public_booking(payload: PublicBookingCreate, db=Depends(get_db)):
+@limiter.limit("5/minute")
+def create_public_booking(request: Request,payload: PublicBookingCreate, db=Depends(get_db)):
     cur = db.cursor(dictionary=True)
     try:
         booking_id = insert_public_booking(
